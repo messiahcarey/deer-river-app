@@ -9,7 +9,7 @@ export async function GET() {
     console.log('All env vars:', Object.keys(process.env).filter(key => key.includes('DATABASE')))
     
     // Ensure the URL starts with the correct protocol
-    const dbUrl = process.env.DATABASE_URL
+    const dbUrl = process.env.DATABASE_URL?.trim()
     if (!dbUrl || (!dbUrl.startsWith('postgresql://') && !dbUrl.startsWith('postgres://'))) {
       throw new Error(`Invalid DATABASE_URL format: ${dbUrl}`)
     }

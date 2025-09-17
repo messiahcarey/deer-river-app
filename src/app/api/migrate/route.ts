@@ -26,6 +26,9 @@ export async function POST() {
       })
     }
     
+    // Trim whitespace from DATABASE_URL
+    env.DATABASE_URL = env.DATABASE_URL.trim()
+    
     // Run Prisma migrations with explicit environment
     const { stdout, stderr } = await execAsync('npx prisma migrate deploy', { env })
     
