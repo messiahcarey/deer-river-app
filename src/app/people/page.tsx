@@ -38,8 +38,8 @@ export default function PeoplePage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [editingPerson, setEditingPerson] = useState<Person | null>(null);
-  const [locations, setLocations] = useState<any[]>([]);
-  const [factions, setFactions] = useState<any[]>([]);
+  const [locations, setLocations] = useState<Array<{id: string; name: string; kind: string}>>([]);
+  const [factions, setFactions] = useState<Array<{id: string; name: string; color: string | null}>>([]);
 
   useEffect(() => {
     fetchPeople();
