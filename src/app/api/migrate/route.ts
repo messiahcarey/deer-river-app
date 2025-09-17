@@ -8,6 +8,7 @@ export async function POST() {
   try {
     console.log('Running database migrations...')
     console.log('DATABASE_URL:', process.env.DATABASE_URL ? 'Set' : 'Not set')
+    console.log('DATABASE_URL value:', process.env.DATABASE_URL)
     
     // Set environment variable explicitly for the command
     const env = { ...process.env }
@@ -28,6 +29,7 @@ export async function POST() {
     
     // Trim whitespace from DATABASE_URL
     env.DATABASE_URL = env.DATABASE_URL.trim()
+    console.log('Trimmed DATABASE_URL:', env.DATABASE_URL)
     
     // Run Prisma migrations with explicit environment
     const { stdout, stderr } = await execAsync('npx prisma migrate deploy', { env })
