@@ -119,6 +119,7 @@ export default function MapDisplay({ onMapUpload }: MapDisplayProps) {
           </div>
           
           <div className="border rounded-lg overflow-hidden">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={mapImage}
               alt="Deer River Map"

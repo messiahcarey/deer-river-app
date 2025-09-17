@@ -72,7 +72,7 @@ export default function MapPage() {
             🏗️ Buildings & Map of Deer River
           </h1>
           <p className="text-lg text-amber-700">
-            Manage your town's buildings, residents, and workers. Upload your hand-drawn map for reference.
+            Manage your town&apos;s buildings, residents, and workers. Upload your hand-drawn map for reference.
           </p>
         </header>
 
