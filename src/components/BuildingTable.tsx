@@ -66,6 +66,8 @@ export default function BuildingTable({ buildings, loading, error, onRefresh }: 
         return '🏰'
       case 'dock':
         return '⚓'
+      case 'infrastructure':
+        return '🏗️'
       default:
         return '📍'
     }
@@ -81,6 +83,8 @@ export default function BuildingTable({ buildings, loading, error, onRefresh }: 
         return 'bg-red-100 text-red-800'
       case 'dock':
         return 'bg-cyan-100 text-cyan-800'
+      case 'infrastructure':
+        return 'bg-yellow-100 text-yellow-800'
       default:
         return 'bg-gray-100 text-gray-800'
     }
@@ -152,6 +156,7 @@ export default function BuildingTable({ buildings, loading, error, onRefresh }: 
           <option value="business">Business</option>
           <option value="residential">Residential</option>
           <option value="military">Military</option>
+          <option value="infrastructure">Infrastructure</option>
           <option value="dock">Dock</option>
         </select>
         <button
