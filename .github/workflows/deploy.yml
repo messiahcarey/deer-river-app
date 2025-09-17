@@ -1,0 +1,46 @@
+name: Deploy to AWS
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '22'
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Run linting
+      run: npm run lint
+      
+    - name: Build application
+      run: npm run build
+      env:
+        DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
+        NEXTAUTH_URL: ${{ secrets.NEXTAUTH_URL }}
+        
+    - name: Deploy to AWS Amplify
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-east-1
+        
+    - name: Deploy to Amplify
+      run: |
+        # This will be handled by Amplify's automatic deployment
+        echo "Deployment triggered via Amplify"
