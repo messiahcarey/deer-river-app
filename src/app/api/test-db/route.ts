@@ -5,12 +5,20 @@ const prisma = new PrismaClient()
 
 export async function GET() {
   try {
+    console.log('Testing database connection...')
+    console.log('DATABASE_URL:', process.env.DATABASE_URL ? 'Set' : 'Not set')
+    
     // Test database connection
     await prisma.$connect()
+    
+    // Try a simple query
+    const result = await prisma.$queryRaw`SELECT 1 as test`
+    console.log('Database query result:', result)
     
     return NextResponse.json({ 
       success: true, 
       message: 'Database connection successful',
+      queryResult: result,
       timestamp: new Date().toISOString()
     }, {
       headers: {
@@ -24,6 +32,7 @@ export async function GET() {
     return NextResponse.json({ 
       success: false, 
       error: error instanceof Error ? error.message : 'Unknown error',
+      errorType: error instanceof Error ? error.constructor.name : 'Unknown',
       timestamp: new Date().toISOString()
     }, { 
       status: 500,

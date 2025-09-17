@@ -2,8 +2,12 @@ import { NextResponse } from 'next/server'
 
 export async function GET() {
   try {
+    const dbUrl = process.env.DATABASE_URL
+    const maskedDbUrl = dbUrl ? dbUrl.replace(/:[^:@]+@/, ':***@') : 'Not set'
+    
     const envVars = {
-      DATABASE_URL: process.env.DATABASE_URL ? 'Set' : 'Not set',
+      DATABASE_URL: dbUrl ? 'Set' : 'Not set',
+      DATABASE_URL_MASKED: maskedDbUrl,
       NODE_ENV: process.env.NODE_ENV,
       NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET ? 'Set' : 'Not set',
       NEXTAUTH_URL: process.env.NEXTAUTH_URL,
