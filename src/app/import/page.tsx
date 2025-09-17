@@ -59,7 +59,16 @@ export default function ImportPage() {
       headers.forEach((header, index) => {
         obj[header] = values[index] || ''
       })
-      return obj
+      
+      // Convert to CSVRow interface
+      return {
+        Name: obj.Name || '',
+        Race: obj.Race || '',
+        Age: obj.Age || '',
+        Occupation: obj.Occupation || '',
+        Presence: obj.Presence || '',
+        Notes: obj.Notes || ''
+      }
     })
     return data
   }
