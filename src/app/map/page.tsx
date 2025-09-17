@@ -41,16 +41,22 @@ export default function MapPage() {
   const fetchBuildings = async () => {
     try {
       setLoading(true)
+      console.log('Fetching buildings from /api/locations...')
       const response = await fetch('/api/locations')
+      console.log('Response status:', response.status)
       const data = await response.json()
+      console.log('Response data:', data)
       
       if (data.success) {
         setBuildings(data.data)
+        console.log('Buildings loaded:', data.data.length)
       } else {
         setError(data.error || 'Failed to fetch buildings')
+        console.error('API error:', data.error)
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unknown error')
+      console.error('Fetch error:', err)
     } finally {
       setLoading(false)
     }
@@ -106,6 +112,16 @@ Market Stall,Business,"Temporary market stall or trading post",70,60,2,"Open-air
       }
     } catch (err) {
       alert(`Import failed: ${err instanceof Error ? err.message : 'Unknown error'}`)
+    }
+  }
+
+  const handleTestDatabase = async () => {
+    try {
+      const response = await fetch('/api/test-db')
+      const data = await response.json()
+      alert(`Database test: ${data.success ? 'SUCCESS' : 'FAILED'}\n${data.message}`)
+    } catch (err) {
+      alert(`Database test failed: ${err instanceof Error ? err.message : 'Unknown error'}`)
     }
   }
 
@@ -190,14 +206,18 @@ Market Stall,Business,"Temporary market stall or trading post",70,60,2,"Open-air
                   >
                     🔄 Refresh
                   </button>
-                  {buildings.length === 0 && (
-                    <button
-                      onClick={handleImportLocations}
-                      className="bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-lg transition-colors"
-                    >
-                      📊 Import All Locations
-                    </button>
-                  )}
+                  <button
+                    onClick={handleImportLocations}
+                    className="bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-lg transition-colors"
+                  >
+                    📊 Import All Locations
+                  </button>
+                  <button
+                    onClick={handleTestDatabase}
+                    className="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-lg transition-colors"
+                  >
+                    🔧 Test Database
+                  </button>
                 </div>
               </div>
               <p className="text-gray-600 mb-4">
