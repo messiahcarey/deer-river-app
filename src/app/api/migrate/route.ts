@@ -35,10 +35,47 @@ export async function POST() {
     // Test connection and create tables by running a simple query
     await prisma.$connect()
     
-    // Create tables by running a query that will trigger table creation
-    // This is a workaround since we can't run migrations directly
-    const result = await prisma.$queryRaw`
-      CREATE TABLE IF NOT EXISTS "Person" (
+    // Create all tables from the schema
+    const tables = [
+      // ResourceCategory table (no dependencies)
+      `CREATE TABLE IF NOT EXISTS "ResourceCategory" (
+        "id" TEXT NOT NULL PRIMARY KEY,
+        "name" TEXT NOT NULL UNIQUE,
+        "unit" TEXT NOT NULL,
+        "notes" TEXT
+      );`,
+      
+      // Location table (no dependencies)
+      `CREATE TABLE IF NOT EXISTS "Location" (
+        "id" TEXT NOT NULL PRIMARY KEY,
+        "name" TEXT NOT NULL,
+        "kind" TEXT NOT NULL,
+        "parentId" TEXT,
+        "x" REAL,
+        "y" REAL,
+        "address" TEXT,
+        "notes" TEXT
+      );`,
+      
+      // Faction table (no dependencies)
+      `CREATE TABLE IF NOT EXISTS "Faction" (
+        "id" TEXT NOT NULL PRIMARY KEY,
+        "name" TEXT NOT NULL UNIQUE,
+        "motto" TEXT,
+        "description" TEXT,
+        "color" TEXT
+      );`,
+      
+      // Household table (depends on Location)
+      `CREATE TABLE IF NOT EXISTS "Household" (
+        "id" TEXT NOT NULL PRIMARY KEY,
+        "name" TEXT,
+        "locationId" TEXT NOT NULL,
+        "notes" TEXT
+      );`,
+      
+      // Person table (depends on Faction, Household, Location)
+      `CREATE TABLE IF NOT EXISTS "Person" (
         "id" TEXT NOT NULL PRIMARY KEY,
         "name" TEXT NOT NULL,
         "species" TEXT NOT NULL,
@@ -50,8 +87,58 @@ export async function POST() {
         "worksAtId" TEXT,
         "tags" TEXT NOT NULL,
         "notes" TEXT
-      );
-    `
+      );`,
+      
+      // Opinion table (depends on Person)
+      `CREATE TABLE IF NOT EXISTS "Opinion" (
+        "id" TEXT NOT NULL PRIMARY KEY,
+        "fromPersonId" TEXT NOT NULL,
+        "toPersonId" TEXT NOT NULL,
+        "score" INTEGER NOT NULL,
+        "reason" TEXT,
+        "updatedAt" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        UNIQUE("fromPersonId", "toPersonId")
+      );`,
+      
+      // Alliance table (depends on Faction)
+      `CREATE TABLE IF NOT EXISTS "Alliance" (
+        "id" TEXT NOT NULL PRIMARY KEY,
+        "factionAId" TEXT NOT NULL,
+        "factionBId" TEXT NOT NULL,
+        "type" TEXT NOT NULL,
+        "stance" TEXT NOT NULL,
+        "notes" TEXT,
+        "startedAt" TIMESTAMP,
+        UNIQUE("factionAId", "factionBId")
+      );`,
+      
+      // TownResourceLedger table (depends on ResourceCategory, Person, Faction)
+      `CREATE TABLE IF NOT EXISTS "TownResourceLedger" (
+        "id" TEXT NOT NULL PRIMARY KEY,
+        "date" TIMESTAMP NOT NULL,
+        "resourceCategoryId" TEXT NOT NULL,
+        "delta" REAL NOT NULL,
+        "reason" TEXT NOT NULL,
+        "sourcePersonId" TEXT,
+        "sourceFactionId" TEXT
+      );`,
+      
+      // EventLog table (depends on Location)
+      `CREATE TABLE IF NOT EXISTS "EventLog" (
+        "id" TEXT NOT NULL PRIMARY KEY,
+        "date" TIMESTAMP NOT NULL,
+        "title" TEXT NOT NULL,
+        "details" TEXT,
+        "locationId" TEXT
+      );`
+    ]
+    
+    // Execute all table creation queries
+    for (const query of tables) {
+      await prisma.$queryRaw`${query}`
+    }
+    
+    const result = "All tables created successfully"
     
     console.log('Schema creation result:', result)
     
