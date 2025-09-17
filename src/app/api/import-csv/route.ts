@@ -1,8 +1,5 @@
 import { NextResponse } from 'next/server'
 import { PrismaClient } from '@prisma/client'
-import { Logger } from '@/lib/logger'
-import { handleApiError, validateDatabaseUrl, AppError } from '@/lib/error-handler'
-import { metrics } from '@/lib/cloudwatch'
 
 export async function POST(request: Request) {
   try {

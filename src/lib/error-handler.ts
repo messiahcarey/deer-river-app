@@ -4,15 +4,15 @@ import { Logger } from './logger'
 export interface ApiError extends Error {
   statusCode?: number
   code?: string
-  details?: any
+  details?: unknown
 }
 
 export class AppError extends Error implements ApiError {
   statusCode: number
   code: string
-  details?: any
+  details?: unknown
 
-  constructor(message: string, statusCode: number = 500, code: string = 'INTERNAL_ERROR', details?: any) {
+  constructor(message: string, statusCode: number = 500, code: string = 'INTERNAL_ERROR', details?: unknown) {
     super(message)
     this.statusCode = statusCode
     this.code = code
@@ -72,7 +72,7 @@ export function handleApiError(error: unknown, context: string = 'API'): NextRes
   })
 }
 
-export function validateRequired(data: any, fields: string[]): void {
+export function validateRequired(data: Record<string, unknown>, fields: string[]): void {
   const missing = fields.filter(field => !data[field])
   if (missing.length > 0) {
     throw new AppError(
