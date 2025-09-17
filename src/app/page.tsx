@@ -66,7 +66,7 @@ export default function Home() {
               <h2 className="text-2xl font-semibold text-gray-800">Resources</h2>
             </div>
             <p className="text-gray-600">
-              Monitor the town's economy and resource management.
+              Monitor the town&apos;s economy and resource management.
             </p>
           </Link>
 
