@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
+import PersonEditModal from "@/components/PersonEditModal";
 
 interface Person {
   id: string;
@@ -36,9 +37,14 @@ export default function PeoplePage() {
   const [people, setPeople] = useState<Person[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [editingPerson, setEditingPerson] = useState<Person | null>(null);
+  const [locations, setLocations] = useState<any[]>([]);
+  const [factions, setFactions] = useState<any[]>([]);
 
   useEffect(() => {
     fetchPeople();
+    fetchLocations();
+    fetchFactions();
   }, []);
 
   const fetchPeople = async () => {
@@ -56,6 +62,56 @@ export default function PeoplePage() {
       setError(err instanceof Error ? err.message : 'Unknown error');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchLocations = async () => {
+    try {
+      const response = await fetch('/api/locations');
+      const data = await response.json();
+      if (data.success) {
+        setLocations(data.data);
+      }
+    } catch (err) {
+      console.error('Failed to fetch locations:', err);
+    }
+  };
+
+  const fetchFactions = async () => {
+    try {
+      const response = await fetch('/api/factions');
+      const data = await response.json();
+      if (data.success) {
+        setFactions(data.data);
+      }
+    } catch (err) {
+      console.error('Failed to fetch factions:', err);
+    }
+  };
+
+  const handleEditPerson = (person: Person) => {
+    setEditingPerson(person);
+  };
+
+  const handleSavePerson = async (updatedPerson: Partial<Person>) => {
+    try {
+      const response = await fetch(`/api/people/${updatedPerson.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updatedPerson),
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        await fetchPeople(); // Refresh the list
+        setEditingPerson(null);
+      } else {
+        throw new Error(data.error || 'Failed to update person');
+      }
+    } catch (err) {
+      throw err;
     }
   };
 
@@ -139,8 +195,9 @@ export default function PeoplePage() {
                     <th className="px-4 py-3 text-left font-semibold text-gray-700">Occupation</th>
                     <th className="px-4 py-3 text-left font-semibold text-gray-700">Faction</th>
                     <th className="px-4 py-3 text-left font-semibold text-gray-700">Lives At</th>
-                    <th className="px-4 py-3 text-left font-semibold text-gray-700">Works At</th>
-                    <th className="px-4 py-3 text-left font-semibold text-gray-700">Status</th>
+                            <th className="px-4 py-3 text-left font-semibold text-gray-700">Works At</th>
+                            <th className="px-4 py-3 text-left font-semibold text-gray-700">Status</th>
+                            <th className="px-4 py-3 text-left font-semibold text-gray-700">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">
@@ -179,15 +236,23 @@ export default function PeoplePage() {
                       <td className="px-4 py-3 text-gray-700">
                         {person.worksAt?.name || 'None'}
                       </td>
-                      <td className="px-4 py-3">
-                        <span className={`px-2 py-1 rounded text-xs font-medium ${
-                          person.tags === 'present' 
-                            ? 'bg-green-100 text-green-800' 
-                            : 'bg-red-100 text-red-800'
-                        }`}>
-                          {person.tags === 'present' ? 'Present' : 'Absent'}
-                        </span>
-                      </td>
+                              <td className="px-4 py-3">
+                                <span className={`px-2 py-1 rounded text-xs font-medium ${
+                                  person.tags === 'present' 
+                                    ? 'bg-green-100 text-green-800' 
+                                    : 'bg-red-100 text-red-800'
+                                }`}>
+                                  {person.tags === 'present' ? 'Present' : 'Absent'}
+                                </span>
+                              </td>
+                              <td className="px-4 py-3">
+                                <button
+                                  onClick={() => handleEditPerson(person)}
+                                  className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+                                >
+                                  Edit
+                                </button>
+                              </td>
                     </tr>
                   ))}
                 </tbody>
@@ -226,6 +291,17 @@ export default function PeoplePage() {
               </div>
             </div>
           </div>
+        )}
+
+        {/* Edit Person Modal */}
+        {editingPerson && (
+          <PersonEditModal
+            person={editingPerson}
+            locations={locations}
+            factions={factions}
+            onClose={() => setEditingPerson(null)}
+            onSave={handleSavePerson}
+          />
         )}
       </div>
     </div>
