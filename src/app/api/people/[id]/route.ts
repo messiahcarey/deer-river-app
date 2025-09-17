@@ -3,9 +3,10 @@ import { PrismaClient } from '@prisma/client'
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
     const dbUrl = process.env.DATABASE_URL?.trim()
     if (!dbUrl || (!dbUrl.startsWith('postgresql://') && !dbUrl.startsWith('postgres://'))) {
       return NextResponse.json({ 
@@ -33,7 +34,7 @@ export async function GET(
     await prismaWithEnv.$connect()
     
     const person = await prismaWithEnv.person.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         faction: true,
         livesAt: true,
@@ -89,9 +90,10 @@ export async function GET(
 
 export async function PUT(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
     const dbUrl = process.env.DATABASE_URL?.trim()
     if (!dbUrl || (!dbUrl.startsWith('postgresql://') && !dbUrl.startsWith('postgres://'))) {
       return NextResponse.json({ 
@@ -122,7 +124,7 @@ export async function PUT(
     const { name, species, age, occupation, notes, tags, factionId, livesAtId, worksAtId } = body
     
     const updatedPerson = await prismaWithEnv.person.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         name,
         species,
@@ -175,9 +177,10 @@ export async function PUT(
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
     const dbUrl = process.env.DATABASE_URL?.trim()
     if (!dbUrl || (!dbUrl.startsWith('postgresql://') && !dbUrl.startsWith('postgres://'))) {
       return NextResponse.json({ 
@@ -205,7 +208,7 @@ export async function DELETE(
     await prismaWithEnv.$connect()
     
     await prismaWithEnv.person.delete({
-      where: { id: params.id }
+      where: { id }
     })
     
     await prismaWithEnv.$disconnect()
