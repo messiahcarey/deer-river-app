@@ -7,13 +7,25 @@ export async function GET() {
   try {
     console.log('Testing database connection...')
     console.log('DATABASE_URL:', process.env.DATABASE_URL ? 'Set' : 'Not set')
+    console.log('All env vars:', Object.keys(process.env).filter(key => key.includes('DATABASE')))
+    
+    // Create Prisma client with explicit environment variable
+    const prismaWithEnv = new PrismaClient({
+      datasources: {
+        db: {
+          url: process.env.DATABASE_URL
+        }
+      }
+    })
     
     // Test database connection
-    await prisma.$connect()
+    await prismaWithEnv.$connect()
     
     // Try a simple query
-    const result = await prisma.$queryRaw`SELECT 1 as test`
+    const result = await prismaWithEnv.$queryRaw`SELECT 1 as test`
     console.log('Database query result:', result)
+    
+    await prismaWithEnv.$disconnect()
     
     return NextResponse.json({ 
       success: true, 
