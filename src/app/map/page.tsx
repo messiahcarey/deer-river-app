@@ -61,6 +61,54 @@ export default function MapPage() {
     console.log('Map uploaded:', file.name)
   }
 
+  const handleImportLocations = async () => {
+    try {
+      // Create a CSV file with the location data
+      const csvData = `Name,Type,Description,X,Y,Capacity,Notes
+Rusty Pike Inn,Business,"Two-story inn with brown shingled roof and chimney",45,60,20,"Tavern and inn run by Rurik Copperpot"
+Forge of Fortune,Business,"Single-story blacksmith with brown roof",55,60,5,"Blacksmith shop run by Oswin Finch"
+Ironclad Armory,Business,"Small single-story building with brown roof",50,70,3,"Armor shop run by Eamon Hargrove"
+Brigid's Curiosities,Business,"Larger building with bright blue roof and white cross",65,55,8,"Curiosities shop run by Brigid Stormaxe"
+River's Edge Goods,Business,"Building with reddish-brown shingled roof",75,55,6,"General goods shop run by Torrin"
+Moondancer's Marina,Business,"Single-story building with brown roof and wooden dock",25,25,4,"Ferry dock managed by Valenna Moondancer"
+Tobren Veylinor's Manor,Residential,"A single house previously in disrepair but now being repaired",30,80,15,"Noble estate with dock access"
+Corven's Barracks,Military,"Building with brown roof",80,70,12,"Guard barracks and training facility"
+Corven's Drill Tents,Military,"Three conical tents in fenced clearing",90,40,8,"Training grounds and temporary quarters"
+Ferrin Sisters Gardens,Residential,"Two small conical tents by the river, one of which is a greenhouse",20,90,4,"Herbalist gardens and living quarters"
+Central Well,Infrastructure,"Small circular well or fountain in central clearing",60,65,1,"Community water source"
+Forest Cabin 1,Residential,"Small rustic house with brown roof in forest clearing",85,75,3,"Isolated forest dwelling"
+Forest Cabin 2,Residential,"Small rustic house with thatched roof in forest clearing",70,85,3,"Isolated forest dwelling"
+Forest Cabin 3,Residential,"Small rustic house with brown roof in forest clearing",40,45,3,"Isolated forest dwelling"
+Refugee Tents 1,Residential,"Three conical tents in forest clearing",75,80,6,"Temporary refugee housing"
+Refugee Tents 2,Residential,"Single tent in forest clearing",35,70,2,"Temporary refugee housing"
+Refugee Tents 3,Residential,"Two tents in forest clearing",60,40,4,"Temporary refugee housing"
+Guard Post,Military,"Small watchtower or guard station",45,50,2,"Security checkpoint"
+Storage Shed,Infrastructure,"Small storage building with brown roof",55,75,1,"Community storage"
+Market Stall,Business,"Temporary market stall or trading post",70,60,2,"Open-air trading area"`
+
+      const blob = new Blob([csvData], { type: 'text/csv' })
+      const file = new File([blob], 'deer-river-locations.csv', { type: 'text/csv' })
+
+      const formData = new FormData()
+      formData.append('csvFile', file)
+
+      const response = await fetch('/api/import-locations', {
+        method: 'POST',
+        body: formData,
+      })
+
+      const result = await response.json()
+      if (result.success) {
+        await fetchBuildings() // Refresh the buildings
+        alert(`Successfully imported ${result.importedCount} locations!`)
+      } else {
+        alert(`Import failed: ${result.error}`)
+      }
+    } catch (err) {
+      alert(`Import failed: ${err instanceof Error ? err.message : 'Unknown error'}`)
+    }
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-100">
       <div className="container mx-auto px-4 py-8">
@@ -135,12 +183,22 @@ export default function MapPage() {
                 <h2 className="text-2xl font-semibold text-gray-800">
                   🏗️ Buildings & Occupants
                 </h2>
-                <button
-                  onClick={fetchBuildings}
-                  className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors"
-                >
-                  🔄 Refresh
-                </button>
+                <div className="flex gap-2">
+                  <button
+                    onClick={fetchBuildings}
+                    className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors"
+                  >
+                    🔄 Refresh
+                  </button>
+                  {buildings.length === 0 && (
+                    <button
+                      onClick={handleImportLocations}
+                      className="bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-lg transition-colors"
+                    >
+                      📊 Import All Locations
+                    </button>
+                  )}
+                </div>
               </div>
               <p className="text-gray-600 mb-4">
                 View all buildings in Deer River and see who lives and works in each one.
