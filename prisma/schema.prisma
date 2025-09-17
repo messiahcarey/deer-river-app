@@ -54,6 +54,7 @@ model Faction {
   members     Person[]
   alliancesA  Alliance[] @relation("A")
   alliancesB  Alliance[] @relation("B")
+  resourceEntries TownResourceLedger[]
 }
 
 model Alliance {
@@ -86,6 +87,7 @@ model Location {
   residents Person[]   @relation("LivesAt")
   workers   Person[]   @relation("WorksAt")
   households Household[]
+  events    EventLog[]
 }
 
 model Household {
