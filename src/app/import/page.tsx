@@ -1,0 +1,390 @@
+'use client'
+
+import { useState, useRef } from 'react'
+import Link from 'next/link'
+
+interface CSVRow {
+  Name: string
+  Race: string
+  Age: string
+  Occupation: string
+  Presence: string
+  Notes: string
+}
+
+interface ImportResult {
+  success: boolean
+  message: string
+  importedCount: number
+  errorCount: number
+  errors: Array<{ name: string; error: string }>
+  locations: number
+  factions: number
+  timestamp: string
+}
+
+export default function ImportPage() {
+  const [csvData, setCsvData] = useState<CSVRow[]>([])
+  const [isUploading, setIsUploading] = useState(false)
+  const [importResult, setImportResult] = useState<ImportResult | null>(null)
+  const [dragActive, setDragActive] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
+
+  const parseCSV = (csvText: string): CSVRow[] => {
+    const lines = csvText.trim().split('\n')
+    const headers = lines[0].split(',').map(h => h.trim())
+    const data = lines.slice(1).map(line => {
+      const values = []
+      let inQuote = false
+      let currentVal = ''
+      for (let i = 0; i < line.length; i++) {
+        const char = line[i]
+        if (char === '"') {
+          inQuote = !inQuote
+          if (!inQuote && line[i + 1] === ',') { // End of quoted field
+            values.push(currentVal.trim())
+            currentVal = ''
+            i++ // Skip comma
+          }
+        } else if (char === ',' && !inQuote) {
+          values.push(currentVal.trim())
+          currentVal = ''
+        } else {
+          currentVal += char
+        }
+      }
+      values.push(currentVal.trim()) // Push the last value
+      
+      const obj: any = {}
+      headers.forEach((header, index) => {
+        obj[header] = values[index] || ''
+      })
+      return obj
+    })
+    return data
+  }
+
+  const handleFileUpload = (file: File) => {
+    if (file.type !== 'text/csv' && !file.name.endsWith('.csv')) {
+      alert('Please upload a CSV file')
+      return
+    }
+
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      const csvText = e.target?.result as string
+      const parsedData = parseCSV(csvText)
+      setCsvData(parsedData)
+      setImportResult(null)
+    }
+    reader.readAsText(file)
+  }
+
+  const handleDrag = (e: React.DragEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    if (e.type === 'dragenter' || e.type === 'dragover') {
+      setDragActive(true)
+    } else if (e.type === 'dragleave') {
+      setDragActive(false)
+    }
+  }
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setDragActive(false)
+    
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      handleFileUpload(e.dataTransfer.files[0])
+    }
+  }
+
+  const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      handleFileUpload(e.target.files[0])
+    }
+  }
+
+  const handleImport = async () => {
+    if (csvData.length === 0) {
+      alert('Please upload a CSV file first')
+      return
+    }
+
+    setIsUploading(true)
+    setImportResult(null)
+
+    try {
+      // Convert CSV data back to a file for upload
+      const csvText = [
+        'Name,Race,Age,Occupation,Presence,Notes',
+        ...csvData.map(row => 
+          `${row.Name},${row.Race},${row.Age},${row.Occupation},${row.Presence},"${row.Notes}"`
+        )
+      ].join('\n')
+
+      const blob = new Blob([csvText], { type: 'text/csv' })
+      const file = new File([blob], 'residents.csv', { type: 'text/csv' })
+
+      const formData = new FormData()
+      formData.append('csvFile', file)
+
+      const response = await fetch('/api/import-csv', {
+        method: 'POST',
+        body: formData,
+      })
+
+      const result = await response.json()
+      setImportResult(result)
+    } catch (error) {
+      console.error('Import failed:', error)
+      setImportResult({
+        success: false,
+        message: 'Import failed: ' + (error instanceof Error ? error.message : 'Unknown error'),
+        importedCount: 0,
+        errorCount: 0,
+        errors: [],
+        locations: 0,
+        factions: 0,
+        timestamp: new Date().toISOString()
+      })
+    } finally {
+      setIsUploading(false)
+    }
+  }
+
+  const downloadSampleCSV = () => {
+    const sampleData = `Name,Race,Age,Occupation,Presence,Notes
+Rurik Copperpot,Human,58,Innkeeper (Rusty Pike Inn/Tavern),Present,"Boisterous; stout, large nose; pragmatic about adventurers."
+Oswin Finch,Human,8,Blacksmith (Forge of Fortune),Present,"Wispy grey beard, missing left ear; serious, grim worker."
+Torrin,Human,44,Shopkeeper (River's Edge Goods),Present,"Gruff, impatient, protective; tolerates adventurers for coin."`
+    
+    const blob = new Blob([sampleData], { type: 'text/csv' })
+    const url = window.URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = 'deer-river-residents-sample.csv'
+    a.click()
+    window.URL.revokeObjectURL(url)
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-100">
+      <div className="container mx-auto px-4 py-8">
+        <header className="mb-8">
+          <Link href="/" className="text-amber-600 hover:text-amber-800 mb-4 inline-block">
+            ← Back to Home
+          </Link>
+          <h1 className="text-4xl font-bold text-amber-900 mb-4">
+            📊 CSV Import
+          </h1>
+          <p className="text-lg text-amber-700">
+            Import resident data from CSV files to populate Deer River&apos;s database.
+          </p>
+        </header>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* Upload Section */}
+          <div className="bg-white rounded-lg shadow-lg p-6">
+            <h2 className="text-2xl font-semibold text-gray-800 mb-4">
+              Upload CSV File
+            </h2>
+            
+            <div
+              className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
+                dragActive 
+                  ? 'border-amber-400 bg-amber-50' 
+                  : 'border-gray-300 hover:border-amber-400'
+              }`}
+              onDragEnter={handleDrag}
+              onDragLeave={handleDrag}
+              onDragOver={handleDrag}
+              onDrop={handleDrop}
+            >
+              <div className="text-4xl mb-4">📁</div>
+              <p className="text-gray-600 mb-4">
+                Drag and drop your CSV file here, or click to browse
+              </p>
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                className="bg-amber-500 hover:bg-amber-600 text-white px-6 py-2 rounded-lg transition-colors"
+              >
+                Choose File
+              </button>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept=".csv"
+                onChange={handleFileInputChange}
+                className="hidden"
+              />
+            </div>
+
+            <div className="mt-4 flex gap-2">
+              <button
+                onClick={downloadSampleCSV}
+                className="text-amber-600 hover:text-amber-800 text-sm underline"
+              >
+                Download Sample CSV
+              </button>
+            </div>
+
+            {csvData.length > 0 && (
+              <div className="mt-6">
+                <h3 className="text-lg font-semibold text-gray-800 mb-2">
+                  Preview ({csvData.length} residents)
+                </h3>
+                <div className="max-h-64 overflow-y-auto border rounded-lg">
+                  <table className="w-full text-sm">
+                    <thead className="bg-gray-50 sticky top-0">
+                      <tr>
+                        <th className="px-3 py-2 text-left">Name</th>
+                        <th className="px-3 py-2 text-left">Race</th>
+                        <th className="px-3 py-2 text-left">Age</th>
+                        <th className="px-3 py-2 text-left">Occupation</th>
+                        <th className="px-3 py-2 text-left">Presence</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {csvData.slice(0, 10).map((row, index) => (
+                        <tr key={index} className="border-t">
+                          <td className="px-3 py-2">{row.Name}</td>
+                          <td className="px-3 py-2">{row.Race}</td>
+                          <td className="px-3 py-2">{row.Age}</td>
+                          <td className="px-3 py-2 truncate max-w-32" title={row.Occupation}>
+                            {row.Occupation}
+                          </td>
+                          <td className="px-3 py-2">
+                            <span className={`px-2 py-1 rounded text-xs ${
+                              row.Presence === 'Present' 
+                                ? 'bg-green-100 text-green-800' 
+                                : 'bg-red-100 text-red-800'
+                            }`}>
+                              {row.Presence}
+                            </span>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                  {csvData.length > 10 && (
+                    <div className="px-3 py-2 text-gray-500 text-sm">
+                      ... and {csvData.length - 10} more residents
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Import Section */}
+          <div className="bg-white rounded-lg shadow-lg p-6">
+            <h2 className="text-2xl font-semibold text-gray-800 mb-4">
+              Import to Database
+            </h2>
+
+            <div className="space-y-4">
+              <div className="bg-blue-50 p-4 rounded-lg">
+                <h3 className="font-semibold text-blue-800 mb-2">CSV Format Requirements</h3>
+                <ul className="text-sm text-blue-700 space-y-1">
+                  <li>• <strong>Name:</strong> Resident&apos;s full name</li>
+                  <li>• <strong>Race:</strong> Species (Human, Elf, Dwarf, etc.)</li>
+                  <li>• <strong>Age:</strong> Numeric age (optional)</li>
+                  <li>• <strong>Occupation:</strong> Job or role</li>
+                  <li>• <strong>Presence:</strong> Present or Absent</li>
+                  <li>• <strong>Notes:</strong> Additional details</li>
+                </ul>
+              </div>
+
+              <button
+                onClick={handleImport}
+                disabled={csvData.length === 0 || isUploading}
+                className={`w-full py-3 px-4 rounded-lg font-semibold transition-colors ${
+                  csvData.length === 0 || isUploading
+                    ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                    : 'bg-green-500 hover:bg-green-600 text-white'
+                }`}
+              >
+                {isUploading ? 'Importing...' : `Import ${csvData.length} Residents`}
+              </button>
+
+              {importResult && (
+                <div className={`p-4 rounded-lg ${
+                  importResult.success 
+                    ? 'bg-green-50 border border-green-200' 
+                    : 'bg-red-50 border border-red-200'
+                }`}>
+                  <h3 className={`font-semibold mb-2 ${
+                    importResult.success ? 'text-green-800' : 'text-red-800'
+                  }`}>
+                    {importResult.success ? '✅ Import Successful' : '❌ Import Failed'}
+                  </h3>
+                  <p className={`text-sm mb-2 ${
+                    importResult.success ? 'text-green-700' : 'text-red-700'
+                  }`}>
+                    {importResult.message}
+                  </p>
+                  
+                  {importResult.success && (
+                    <div className="text-sm text-green-700 space-y-1">
+                      <p>• Imported: {importResult.importedCount} residents</p>
+                      <p>• Created: {importResult.locations} locations</p>
+                      <p>• Created: {importResult.factions} factions</p>
+                      {importResult.errorCount > 0 && (
+                        <p>• Errors: {importResult.errorCount} residents</p>
+                      )}
+                    </div>
+                  )}
+
+                  {importResult.errors && importResult.errors.length > 0 && (
+                    <div className="mt-3">
+                      <h4 className="font-semibold text-red-800 mb-2">Errors:</h4>
+                      <div className="max-h-32 overflow-y-auto">
+                        {importResult.errors.map((error, index) => (
+                          <div key={index} className="text-xs text-red-700 mb-1">
+                            <strong>{error.name}:</strong> {error.error}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Instructions */}
+        <div className="mt-8 bg-white rounded-lg shadow-lg p-6">
+          <h2 className="text-2xl font-semibold text-gray-800 mb-4">
+            How to Use CSV Import
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="text-center">
+              <div className="text-3xl mb-2">1️⃣</div>
+              <h3 className="font-semibold text-gray-800 mb-2">Prepare Your Data</h3>
+              <p className="text-sm text-gray-600">
+                Create a CSV file with the required columns: Name, Race, Age, Occupation, Presence, and Notes.
+              </p>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl mb-2">2️⃣</div>
+              <h3 className="font-semibold text-gray-800 mb-2">Upload & Preview</h3>
+              <p className="text-sm text-gray-600">
+                Upload your CSV file and review the data preview to ensure everything looks correct.
+              </p>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl mb-2">3️⃣</div>
+              <h3 className="font-semibold text-gray-800 mb-2">Import to Database</h3>
+              <p className="text-sm text-gray-600">
+                Click the import button to add all residents to Deer River&apos;s database.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}

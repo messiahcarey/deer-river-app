@@ -95,6 +95,19 @@ export default function Home() {
               View the audit log of all activities and changes in Deer River.
             </p>
           </Link>
+
+          <Link 
+            href="/import" 
+            className="bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow border-l-4 border-emerald-500"
+          >
+            <div className="flex items-center mb-4">
+              <span className="text-3xl mr-3">📊</span>
+              <h2 className="text-2xl font-semibold text-gray-800">CSV Import</h2>
+            </div>
+            <p className="text-gray-600">
+              Import resident data from CSV files to populate the database.
+            </p>
+          </Link>
         </div>
 
         <div className="text-center mt-12">
