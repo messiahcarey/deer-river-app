@@ -7,6 +7,7 @@ const execAsync = promisify(exec)
 export async function POST() {
   try {
     console.log('Running database migrations...')
+    console.log('DATABASE_URL:', process.env.DATABASE_URL ? 'Set' : 'Not set')
     
     // Run Prisma migrations
     const { stdout, stderr } = await execAsync('npx prisma migrate deploy')
@@ -19,13 +20,16 @@ export async function POST() {
     return NextResponse.json({ 
       success: true, 
       message: 'Database migrations completed successfully',
-      output: stdout 
+      output: stdout,
+      stderr: stderr || null,
+      timestamp: new Date().toISOString()
     })
   } catch (error) {
     console.error('Migration failed:', error)
     return NextResponse.json({ 
       success: false, 
-      error: error instanceof Error ? error.message : 'Unknown error' 
+      error: error instanceof Error ? error.message : 'Unknown error',
+      timestamp: new Date().toISOString()
     }, { status: 500 })
   }
 }
