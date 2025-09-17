@@ -9,8 +9,25 @@ export async function POST() {
     console.log('Running database migrations...')
     console.log('DATABASE_URL:', process.env.DATABASE_URL ? 'Set' : 'Not set')
     
-    // Run Prisma migrations
-    const { stdout, stderr } = await execAsync('npx prisma migrate deploy')
+    // Set environment variable explicitly for the command
+    const env = { ...process.env }
+    if (!env.DATABASE_URL) {
+      return NextResponse.json({ 
+        success: false, 
+        error: 'DATABASE_URL environment variable not found',
+        timestamp: new Date().toISOString()
+      }, { 
+        status: 500,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
+          'Access-Control-Allow-Headers': 'Content-Type',
+        }
+      })
+    }
+    
+    // Run Prisma migrations with explicit environment
+    const { stdout, stderr } = await execAsync('npx prisma migrate deploy', { env })
     
     console.log('Migration output:', stdout)
     if (stderr) {
