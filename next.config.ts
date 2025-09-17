@@ -11,12 +11,19 @@ const nextConfig: NextConfig = {
   env: {
     DATABASE_URL: process.env.DATABASE_URL,
   },
-  // Disable database connection during build
+  // Optimize for serverless deployment
   webpack: (config, { isServer }) => {
     if (isServer) {
       config.externals.push('@prisma/client');
     }
     return config;
+  },
+  // Disable database connection during build
+  typescript: {
+    ignoreBuildErrors: false,
+  },
+  eslint: {
+    ignoreDuringBuilds: false,
   },
 };
 

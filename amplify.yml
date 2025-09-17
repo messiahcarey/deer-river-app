@@ -3,10 +3,13 @@ frontend:
   phases:
     preBuild:
       commands:
-        - npm ci
+        - echo "Installing dependencies..."
+        - npm ci --legacy-peer-deps
+        - echo "Generating Prisma client..."
         - npx prisma generate
     build:
       commands:
+        - echo "Building application..."
         - npm run build
   artifacts:
     baseDirectory: .next
