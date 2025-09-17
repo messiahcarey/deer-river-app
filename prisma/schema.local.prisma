@@ -1,0 +1,108 @@
+generator client {
+  provider = "prisma-client-js"
+  engineType = "binary"
+  binaryTargets = ["native"]
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Person {
+  id       String @id @default(cuid())
+  name     String
+  species  String
+  age      Int?
+  occupation String?
+  factionId    String?
+  faction      Faction? @relation(fields: [factionId], references: [id])
+  householdId  String?
+  household    Household? @relation(fields: [householdId], references: [id])
+  livesAtId    String
+  livesAt      Location @relation("LivesAt", fields: [livesAtId], references: [id])
+  worksAtId    String?
+  worksAt      Location? @relation("WorksAt", fields: [worksAtId], references: [id])
+  tags         String
+  notes        String?
+
+  opinionsFrom Opinion[] @relation("From")
+  opinionsTo   Opinion[] @relation("To")
+  resourceEntries TownResourceLedger[]
+}
+
+model Faction {
+  id          String @id @default(cuid())
+  name        String
+  description String?
+  alignment   String?
+  members     Person[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Household {
+  id          String @id @default(cuid())
+  name        String
+  description String?
+  members     Person[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Location {
+  id          String @id @default(cuid())
+  name        String
+  type        String
+  description String?
+  x           Float?
+  y           Float?
+  residents   Person[] @relation("LivesAt")
+  workers     Person[] @relation("WorksAt")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Opinion {
+  id        String @id @default(cuid())
+  fromId    String
+  from      Person @relation("From", fields: [fromId], references: [id])
+  toId      String
+  to        Person @relation("To", fields: [toId], references: [id])
+  score     Int
+  notes     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([fromId, toId])
+}
+
+model ResourceCategory {
+  id          String @id @default(cuid())
+  name        String
+  description String?
+  unit        String
+  ledgerEntries TownResourceLedger[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model TownResourceLedger {
+  id          String @id @default(cuid())
+  categoryId  String
+  category    ResourceCategory @relation(fields: [categoryId], references: [id])
+  amount      Float
+  change      Float
+  reason      String?
+  personId    String?
+  person      Person? @relation(fields: [personId], references: [id])
+  createdAt   DateTime @default(now())
+}
+
+model EventLog {
+  id        String @id @default(cuid())
+  event     String
+  details   String?
+  personId  String?
+  createdAt DateTime @default(now())
+}
