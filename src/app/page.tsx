@@ -108,6 +108,19 @@ export default function Home() {
               Import resident data from CSV files to populate the database.
             </p>
           </Link>
+
+          <Link 
+            href="/admin" 
+            className="bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow border-l-4 border-gray-500"
+          >
+            <div className="flex items-center mb-4">
+              <span className="text-3xl mr-3">🔧</span>
+              <h2 className="text-2xl font-semibold text-gray-800">Admin Dashboard</h2>
+            </div>
+            <p className="text-gray-600">
+              Monitor application health, performance, and system metrics.
+            </p>
+          </Link>
         </div>
 
         <div className="text-center mt-12">

@@ -1,5 +1,8 @@
 import { NextResponse } from 'next/server'
 import { PrismaClient } from '@prisma/client'
+import { Logger } from '@/lib/logger'
+import { handleApiError, validateDatabaseUrl, AppError } from '@/lib/error-handler'
+import { metrics } from '@/lib/cloudwatch'
 
 export async function POST(request: Request) {
   try {
@@ -156,110 +159,58 @@ export async function POST(request: Request) {
 }
 
 async function createBasicLocations(prisma: PrismaClient) {
-  const locations = {
-    'Deer River': await prisma.location.upsert({
-      where: { name: 'Deer River' },
-      update: {},
-      create: {
-        name: 'Deer River',
-        kind: 'Town',
-        address: 'Main settlement',
-        notes: 'The main town of Deer River'
-      }
-    }),
-    'Rusty Pike Inn': await prisma.location.upsert({
-      where: { name: 'Rusty Pike Inn' },
-      update: {},
-      create: {
-        name: 'Rusty Pike Inn',
-        kind: 'Business',
-        address: 'Main street',
-        notes: 'Tavern and inn run by Rurik Copperpot'
-      }
-    }),
-    'Forge of Fortune': await prisma.location.upsert({
-      where: { name: 'Forge of Fortune' },
-      update: {},
-      create: {
-        name: 'Forge of Fortune',
-        kind: 'Business',
-        address: 'Blacksmith district',
-        notes: 'Blacksmith shop run by Oswin Finch'
-      }
-    }),
-    'River\'s Edge Goods': await prisma.location.upsert({
-      where: { name: 'River\'s Edge Goods' },
-      update: {},
-      create: {
-        name: 'River\'s Edge Goods',
-        kind: 'Business',
-        address: 'Market square',
-        notes: 'General goods shop run by Torrin'
-      }
-    }),
-    'Ironclad Armory': await prisma.location.upsert({
-      where: { name: 'Ironclad Armory' },
-      update: {},
-      create: {
-        name: 'Ironclad Armory',
-        kind: 'Business',
-        address: 'Armor district',
-        notes: 'Armor shop run by Eamon Hargrove'
-      }
-    }),
-    'Marina': await prisma.location.upsert({
-      where: { name: 'Marina' },
-      update: {},
-      create: {
-        name: 'Marina',
-        kind: 'Dock',
-        address: 'Lustrous Run',
-        notes: 'Ferry dock managed by Valenna Moondancer'
-      }
+  const locationData = [
+    { name: 'Deer River', kind: 'Town', address: 'Main settlement', notes: 'The main town of Deer River' },
+    { name: 'Rusty Pike Inn', kind: 'Business', address: 'Main street', notes: 'Tavern and inn run by Rurik Copperpot' },
+    { name: 'Forge of Fortune', kind: 'Business', address: 'Blacksmith district', notes: 'Blacksmith shop run by Oswin Finch' },
+    { name: 'River\'s Edge Goods', kind: 'Business', address: 'Market square', notes: 'General goods shop run by Torrin' },
+    { name: 'Ironclad Armory', kind: 'Business', address: 'Armor district', notes: 'Armor shop run by Eamon Hargrove' },
+    { name: 'Marina', kind: 'Dock', address: 'Lustrous Run', notes: 'Ferry dock managed by Valenna Moondancer' }
+  ]
+
+  const locations: Record<string, { id: string }> = {}
+  
+  for (const locData of locationData) {
+    let location = await prisma.location.findFirst({
+      where: { name: locData.name }
     })
+    
+    if (!location) {
+      location = await prisma.location.create({
+        data: locData
+      })
+    }
+    
+    locations[locData.name] = { id: location.id }
   }
+  
   return locations
 }
 
 async function createBasicFactions(prisma: PrismaClient) {
-  const factions = {
-    'Town Council': await prisma.faction.upsert({
-      where: { name: 'Town Council' },
-      update: {},
-      create: {
-        name: 'Town Council',
-        description: 'Governing body of Deer River',
-        color: '#4A90E2'
-      }
-    }),
-    'Guard': await prisma.faction.upsert({
-      where: { name: 'Guard' },
-      update: {},
-      create: {
-        name: 'Guard',
-        description: 'Town guard and security',
-        color: '#E24A4A'
-      }
-    }),
-    'Merchants': await prisma.faction.upsert({
-      where: { name: 'Merchants' },
-      update: {},
-      create: {
-        name: 'Merchants',
-        description: 'Business owners and traders',
-        color: '#4AE24A'
-      }
-    }),
-    'Refugees': await prisma.faction.upsert({
-      where: { name: 'Refugees' },
-      update: {},
-      create: {
-        name: 'Refugees',
-        description: 'Displaced people seeking shelter',
-        color: '#E2E24A'
-      }
+  const factionData = [
+    { name: 'Town Council', description: 'Governing body of Deer River', color: '#4A90E2' },
+    { name: 'Guard', description: 'Town guard and security', color: '#E24A4A' },
+    { name: 'Merchants', description: 'Business owners and traders', color: '#4AE24A' },
+    { name: 'Refugees', description: 'Displaced people seeking shelter', color: '#E2E24A' }
+  ]
+
+  const factions: Record<string, { id: string }> = {}
+  
+  for (const factionDataItem of factionData) {
+    let faction = await prisma.faction.findFirst({
+      where: { name: factionDataItem.name }
     })
+    
+    if (!faction) {
+      faction = await prisma.faction.create({
+        data: factionDataItem
+      })
+    }
+    
+    factions[factionDataItem.name] = { id: faction.id }
   }
+  
   return factions
 }
 
