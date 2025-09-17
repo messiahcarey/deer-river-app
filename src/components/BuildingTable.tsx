@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import BuildingEditModal from './BuildingEditModal'
 
 interface Person {
   id: string
@@ -21,6 +22,9 @@ interface Building {
   kind: string
   address: string | null
   notes: string | null
+  x: number | null
+  y: number | null
+  capacity: number | null
   residents: Person[]
   workers: Person[]
 }
@@ -34,6 +38,7 @@ interface BuildingTableProps {
 
 export default function BuildingTable({ buildings, loading, error, onRefresh }: BuildingTableProps) {
   const [selectedBuilding, setSelectedBuilding] = useState<Building | null>(null)
+  const [editingBuilding, setEditingBuilding] = useState<Building | null>(null)
   const [filterKind, setFilterKind] = useState<string>('all')
   const [searchTerm, setSearchTerm] = useState('')
 
@@ -87,6 +92,32 @@ export default function BuildingTable({ buildings, loading, error, onRefresh }: 
         return 'bg-yellow-100 text-yellow-800'
       default:
         return 'bg-gray-100 text-gray-800'
+    }
+  }
+
+  const handleEditBuilding = (building: Building) => {
+    setEditingBuilding(building)
+  }
+
+  const handleSaveBuilding = async (updatedBuilding: Partial<Building>) => {
+    try {
+      const response = await fetch(`/api/locations/${updatedBuilding.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updatedBuilding),
+      })
+
+      const data = await response.json()
+      if (data.success) {
+        await onRefresh() // Refresh the list
+        setEditingBuilding(null)
+      } else {
+        throw new Error(data.error || 'Failed to update building')
+      }
+    } catch (err) {
+      throw err
     }
   }
 
@@ -242,12 +273,20 @@ export default function BuildingTable({ buildings, loading, error, onRefresh }: 
                     </div>
                   </td>
                   <td className="px-4 py-3">
-                    <button
-                      onClick={() => setSelectedBuilding(building)}
-                      className="text-blue-600 hover:text-blue-800 text-xs font-medium"
-                    >
-                      View Details
-                    </button>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => setSelectedBuilding(building)}
+                        className="text-blue-600 hover:text-blue-800 text-xs font-medium"
+                      >
+                        View Details
+                      </button>
+                      <button
+                        onClick={() => handleEditBuilding(building)}
+                        className="text-green-600 hover:text-green-800 text-xs font-medium bg-green-50 px-2 py-1 rounded"
+                      >
+                        ✏️ Edit
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -412,6 +451,15 @@ export default function BuildingTable({ buildings, loading, error, onRefresh }: 
             </div>
           </div>
         </div>
+      )}
+
+      {/* Building Edit Modal */}
+      {editingBuilding && (
+        <BuildingEditModal
+          building={editingBuilding}
+          onClose={() => setEditingBuilding(null)}
+          onSave={handleSaveBuilding}
+        />
       )}
     </div>
   )

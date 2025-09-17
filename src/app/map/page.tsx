@@ -140,99 +140,93 @@ Market Stall,Business,"Temporary market stall or trading post",70,60,2,"Open-air
           </p>
         </header>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Map Section */}
-          <div className="space-y-6">
-            <div className="bg-white rounded-lg shadow-lg p-6">
-              <h2 className="text-2xl font-semibold text-gray-800 mb-4">
-                🗺️ Deer River Map
-              </h2>
-              <p className="text-gray-600 mb-4">
-                Upload your hand-drawn map to visualize the layout of Deer River.
-              </p>
-              <MapDisplay onMapUpload={handleMapUpload} />
-              
-              {mapFile && (
-                <div className="mt-4 bg-green-50 border border-green-200 rounded-lg p-4">
-                  <h3 className="font-semibold text-green-800 mb-2">Map Uploaded Successfully!</h3>
-                  <p className="text-sm text-green-700">
-                    File: {mapFile.name} ({(mapFile.size / 1024 / 1024).toFixed(2)} MB)
+                {/* Map Section - Full Width at Top */}
+                <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
+                  <h2 className="text-2xl font-semibold text-gray-800 mb-4">
+                    🗺️ Deer River Map
+                  </h2>
+                  <p className="text-gray-600 mb-4">
+                    Upload your hand-drawn map to visualize the layout of Deer River.
                   </p>
+                  <MapDisplay onMapUpload={handleMapUpload} />
+                  
+                  {mapFile && (
+                    <div className="mt-4 bg-green-50 border border-green-200 rounded-lg p-4">
+                      <h3 className="font-semibold text-green-800 mb-2">Map Uploaded Successfully!</h3>
+                      <p className="text-sm text-green-700">
+                        File: {mapFile.name} ({(mapFile.size / 1024 / 1024).toFixed(2)} MB)
+                      </p>
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
 
-            {/* Quick Stats */}
-            <div className="bg-white rounded-lg shadow-lg p-6">
-              <h3 className="text-xl font-semibold text-gray-800 mb-4">Town Overview</h3>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="text-center">
-                  <div className="text-3xl font-bold text-blue-600">{buildings.length}</div>
-                  <div className="text-sm text-gray-600">Buildings</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-3xl font-bold text-green-600">
-                    {buildings.reduce((sum, b) => sum + b.residents.length, 0)}
+                {/* Quick Stats */}
+                <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
+                  <h3 className="text-xl font-semibold text-gray-800 mb-4">Town Overview</h3>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div className="text-center">
+                      <div className="text-3xl font-bold text-blue-600">{buildings.length}</div>
+                      <div className="text-sm text-gray-600">Buildings</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-3xl font-bold text-green-600">
+                        {buildings.reduce((sum, b) => sum + b.residents.length, 0)}
+                      </div>
+                      <div className="text-sm text-gray-600">Residents</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-3xl font-bold text-purple-600">
+                        {buildings.reduce((sum, b) => sum + b.workers.length, 0)}
+                      </div>
+                      <div className="text-sm text-gray-600">Workers</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-3xl font-bold text-orange-600">
+                        {new Set(buildings.map(b => b.kind)).size}
+                      </div>
+                      <div className="text-sm text-gray-600">Building Types</div>
+                    </div>
                   </div>
-                  <div className="text-sm text-gray-600">Residents</div>
                 </div>
-                <div className="text-center">
-                  <div className="text-3xl font-bold text-purple-600">
-                    {buildings.reduce((sum, b) => sum + b.workers.length, 0)}
-                  </div>
-                  <div className="text-sm text-gray-600">Workers</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-3xl font-bold text-orange-600">
-                    {new Set(buildings.map(b => b.kind)).size}
-                  </div>
-                  <div className="text-sm text-gray-600">Building Types</div>
-                </div>
-              </div>
-            </div>
-          </div>
 
-          {/* Buildings Section */}
-          <div className="space-y-6">
-            <div className="bg-white rounded-lg shadow-lg p-6">
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-2xl font-semibold text-gray-800">
-                  🏗️ Buildings & Occupants
-                </h2>
-                <div className="flex gap-2">
-                  <button
-                    onClick={fetchBuildings}
-                    className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors"
-                  >
-                    🔄 Refresh
-                  </button>
-                  <button
-                    onClick={handleImportLocations}
-                    className="bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-lg transition-colors"
-                  >
-                    📊 Import All Locations
-                  </button>
-                  <button
-                    onClick={handleTestDatabase}
-                    className="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-lg transition-colors"
-                  >
-                    🔧 Test Database
-                  </button>
+                {/* Buildings Section - Full Width Below Map */}
+                <div className="bg-white rounded-lg shadow-lg p-6">
+                  <div className="flex justify-between items-center mb-4">
+                    <h2 className="text-2xl font-semibold text-gray-800">
+                      🏗️ Buildings & Occupants
+                    </h2>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={fetchBuildings}
+                        className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors"
+                      >
+                        🔄 Refresh
+                      </button>
+                      <button
+                        onClick={handleImportLocations}
+                        className="bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-lg transition-colors"
+                      >
+                        📊 Import All Locations
+                      </button>
+                      <button
+                        onClick={handleTestDatabase}
+                        className="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-lg transition-colors"
+                      >
+                        🔧 Test Database
+                      </button>
+                    </div>
+                  </div>
+                  <p className="text-gray-600 mb-4">
+                    View all buildings in Deer River and see who lives and works in each one.
+                  </p>
+                  
+                  <BuildingTable 
+                    buildings={buildings}
+                    loading={loading}
+                    error={error}
+                    onRefresh={fetchBuildings}
+                  />
                 </div>
-              </div>
-              <p className="text-gray-600 mb-4">
-                View all buildings in Deer River and see who lives and works in each one.
-              </p>
-              
-              <BuildingTable 
-                buildings={buildings}
-                loading={loading}
-                error={error}
-                onRefresh={fetchBuildings}
-              />
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   )
