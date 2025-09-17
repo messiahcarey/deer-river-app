@@ -57,7 +57,7 @@ export async function POST(request: Request) {
     const lines = csvText.trim().split('\n')
     const headers = lines[0].split(',').map(h => h.trim())
     const data = lines.slice(1).map(line => {
-      const values = []
+      const values: string[] = []
       let inQuote = false
       let currentVal = ''
       for (let i = 0; i < line.length; i++) {
