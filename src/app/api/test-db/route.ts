@@ -10,6 +10,12 @@ export async function GET() {
       success: true, 
       message: 'Database connection successful',
       timestamp: new Date().toISOString()
+    }, {
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type',
+      }
     })
   } catch (error) {
     console.error('Database connection failed:', error)
@@ -17,6 +23,24 @@ export async function GET() {
       success: false, 
       error: error instanceof Error ? error.message : 'Unknown error',
       timestamp: new Date().toISOString()
-    }, { status: 500 })
+    }, { 
+      status: 500,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type',
+      }
+    })
   }
+}
+
+export async function OPTIONS() {
+  return new NextResponse(null, {
+    status: 200,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type',
+    },
+  })
 }
