@@ -1,0 +1,11 @@
+Name,Type,Description,X,Y,Capacity,Notes
+Rusty Pike Inn,Business,"Two-story inn with brown shingled roof and chimney",45,60,20,"Tavern and inn run by Rurik Copperpot"
+Forge of Fortune,Business,"Single-story blacksmith with brown roof",55,60,5,"Blacksmith shop run by Oswin Finch"
+Ironclad Armory,Business,"Small single-story building with brown roof",50,70,3,"Armor shop run by Eamon Hargrove"
+Brigid's Curiosities,Business,"Larger building with bright blue roof and white cross",65,55,8,"Curiosities shop run by Brigid Stormaxe"
+River's Edge Goods,Business,"Building with reddish-brown shingled roof",75,55,6,"General goods shop run by Torrin"
+Moondancer's Marina,Business,"Single-story building with brown roof and wooden dock",25,25,4,"Ferry dock managed by Valenna Moondancer"
+Tobren Veylinor's Manor,Residential,"Fortified complex with palisade fence and multiple structures",30,80,15,"Noble estate with dock access"
+Corven's Barracks,Military,"Building with brown roof",80,70,12,"Guard barracks and training facility"
+Corven's Drill Tents,Military,"Three conical tents in fenced clearing",90,40,8,"Training grounds and temporary quarters"
+Ferrin Sisters Gardens,Residential,"Two small conical tents by the river",20,90,4,"Herbalist gardens and living quarters"
