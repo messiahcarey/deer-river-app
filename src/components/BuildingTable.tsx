@@ -45,6 +45,17 @@ export default function BuildingTable({ buildings, loading, error, onRefresh }: 
     return matchesKind && matchesSearch
   })
 
+  // Sort buildings: those with residents/workers first, then by name
+  const sortedBuildings = filteredBuildings.sort((a, b) => {
+    const aHasOccupants = a.residents.length > 0 || a.workers.length > 0
+    const bHasOccupants = b.residents.length > 0 || b.workers.length > 0
+    
+    if (aHasOccupants && !bHasOccupants) return -1
+    if (!aHasOccupants && bHasOccupants) return 1
+    
+    return a.name.localeCompare(b.name)
+  })
+
   const getKindIcon = (kind: string) => {
     switch (kind.toLowerCase()) {
       case 'business':
@@ -166,7 +177,7 @@ export default function BuildingTable({ buildings, loading, error, onRefresh }: 
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
-              {filteredBuildings.map((building) => (
+              {sortedBuildings.map((building) => (
                 <tr key={building.id} className="hover:bg-gray-50">
                   <td className="px-4 py-3">
                     <div className="flex items-center space-x-2">
@@ -239,7 +250,7 @@ export default function BuildingTable({ buildings, loading, error, onRefresh }: 
           </table>
         </div>
 
-        {filteredBuildings.length === 0 && (
+        {sortedBuildings.length === 0 && (
           <div className="text-center py-8">
             <div className="text-4xl mb-4">🏗️</div>
             <h3 className="text-lg font-semibold text-gray-800 mb-2">
@@ -254,6 +265,44 @@ export default function BuildingTable({ buildings, loading, error, onRefresh }: 
           </div>
         )}
       </div>
+
+      {/* Unassigned Residents Section */}
+      {sortedBuildings.length > 0 && (
+        <div className="mt-8 bg-yellow-50 border border-yellow-200 rounded-lg p-6">
+          <h3 className="text-lg font-semibold text-yellow-800 mb-4">
+            👥 Unassigned Residents
+          </h3>
+          <p className="text-sm text-yellow-700 mb-4">
+            These residents don&apos;t have assigned living or working locations yet.
+          </p>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {sortedBuildings
+              .filter(building => building.residents.length === 0 && building.workers.length === 0)
+              .map((building) => (
+                <div key={building.id} className="bg-white p-4 rounded-lg border border-yellow-200">
+                  <div className="flex items-center space-x-2 mb-2">
+                    <span className="text-lg">{getKindIcon(building.kind)}</span>
+                    <h4 className="font-medium text-gray-800">{building.name}</h4>
+                  </div>
+                  <p className="text-sm text-gray-600 mb-2">{building.address || 'No description'}</p>
+                  <div className="text-xs text-yellow-600">
+                    No residents or workers assigned
+                  </div>
+                </div>
+              ))}
+          </div>
+          
+          {sortedBuildings.filter(building => building.residents.length === 0 && building.workers.length === 0).length === 0 && (
+            <div className="text-center py-4">
+              <div className="text-2xl mb-2">✅</div>
+              <p className="text-sm text-yellow-700">
+                All buildings have residents or workers assigned!
+              </p>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Building Details Modal */}
       {selectedBuilding && (

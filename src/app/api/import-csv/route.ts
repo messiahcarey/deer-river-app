@@ -214,9 +214,10 @@ async function createBasicFactions(prisma: PrismaClient) {
 function extractWorkLocation(occupation: string, locations: Record<string, { id: string }>) {
   if (occupation.includes('Rusty Pike')) return locations['Rusty Pike Inn']?.id
   if (occupation.includes('Forge of Fortune')) return locations['Forge of Fortune']?.id
-  if (occupation.includes('River\'s Edge')) return locations['River\'s Edge Goods']?.id
+  if (occupation.includes('River\'s Edge') || occupation.includes('River\'s Edge Goods')) return locations['River\'s Edge Goods']?.id
   if (occupation.includes('Ironclad Armory')) return locations['Ironclad Armory']?.id
-  if (occupation.includes('Ferrymaster') || occupation.includes('Marina')) return locations['Marina']?.id
+  if (occupation.includes('Ferrymaster') || occupation.includes('Marina')) return locations['Moondancer\'s Marina']?.id
+  if (occupation.includes('Curiosities')) return locations['Brigid\'s Curiosities']?.id
   return null
 }
 
