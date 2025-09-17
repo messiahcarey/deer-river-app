@@ -2,8 +2,7 @@
 
 import Link from "next/link"
 import { useState, useEffect } from "react"
-import MapDisplay from "@/components/MapDisplay"
-import BuildingTable from "@/components/BuildingTable"
+import BuildingEditModal from "@/components/BuildingEditModal"
 
 interface Person {
   id: string
@@ -32,10 +31,10 @@ interface Building {
 }
 
 export default function MapPage() {
-  const [mapFile, setMapFile] = useState<File | null>(null)
   const [buildings, setBuildings] = useState<Building[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [editingBuilding, setEditingBuilding] = useState<Building | null>(null)
 
   useEffect(() => {
     fetchBuildings()
@@ -44,30 +43,45 @@ export default function MapPage() {
   const fetchBuildings = async () => {
     try {
       setLoading(true)
-      console.log('Fetching buildings from /api/locations...')
       const response = await fetch('/api/locations')
-      console.log('Response status:', response.status)
       const data = await response.json()
-      console.log('Response data:', data)
       
       if (data.success) {
         setBuildings(data.data)
-        console.log('Buildings loaded:', data.data.length)
       } else {
         setError(data.error || 'Failed to fetch buildings')
-        console.error('API error:', data.error)
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unknown error')
-      console.error('Fetch error:', err)
     } finally {
       setLoading(false)
     }
   }
 
-  const handleMapUpload = (file: File) => {
-    setMapFile(file)
-    console.log('Map uploaded:', file.name)
+  const handleEditBuilding = (building: Building) => {
+    setEditingBuilding(building)
+  }
+
+  const handleSaveBuilding = async (updatedBuilding: Partial<Building>) => {
+    try {
+      const response = await fetch(`/api/locations/${updatedBuilding.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updatedBuilding),
+      })
+
+      const data = await response.json()
+      if (data.success) {
+        await fetchBuildings() // Refresh the list
+        setEditingBuilding(null)
+      } else {
+        throw new Error(data.error || 'Failed to update building')
+      }
+    } catch (err) {
+      throw err
+    }
   }
 
   const handleImportLocations = async () => {
@@ -118,13 +132,37 @@ Market Stall,Business,"Temporary market stall or trading post",70,60,2,"Open-air
     }
   }
 
-  const handleTestDatabase = async () => {
-    try {
-      const response = await fetch('/api/test-db')
-      const data = await response.json()
-      alert(`Database test: ${data.success ? 'SUCCESS' : 'FAILED'}\n${data.message}`)
-    } catch (err) {
-      alert(`Database test failed: ${err instanceof Error ? err.message : 'Unknown error'}`)
+  const getKindIcon = (kind: string) => {
+    switch (kind.toLowerCase()) {
+      case 'business':
+        return '🏪'
+      case 'residential':
+        return '🏠'
+      case 'military':
+        return '🏰'
+      case 'dock':
+        return '⚓'
+      case 'infrastructure':
+        return '🏗️'
+      default:
+        return '📍'
+    }
+  }
+
+  const getKindColor = (kind: string) => {
+    switch (kind.toLowerCase()) {
+      case 'business':
+        return 'bg-blue-100 text-blue-800'
+      case 'residential':
+        return 'bg-green-100 text-green-800'
+      case 'military':
+        return 'bg-red-100 text-red-800'
+      case 'dock':
+        return 'bg-cyan-100 text-cyan-800'
+      case 'infrastructure':
+        return 'bg-yellow-100 text-yellow-800'
+      default:
+        return 'bg-gray-100 text-gray-800'
     }
   }
 
@@ -136,100 +174,180 @@ Market Stall,Business,"Temporary market stall or trading post",70,60,2,"Open-air
             ← Back to Home
           </Link>
           <h1 className="text-4xl font-bold text-amber-900 mb-4">
-            🏗️ Buildings & Map of Deer River
+            🏗️ Buildings of Deer River
           </h1>
           <p className="text-lg text-amber-700">
-            Manage your town&apos;s buildings, residents, and workers. Upload your hand-drawn map for reference.
+            Manage the buildings and locations of Deer River. View their details, residents, and workers.
           </p>
         </header>
 
-                {/* Map Section - Full Width at Top */}
-                <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
-                  <h2 className="text-2xl font-semibold text-gray-800 mb-4">
-                    🗺️ Deer River Map
-                  </h2>
-                  <p className="text-gray-600 mb-4">
-                    Upload your hand-drawn map to visualize the layout of Deer River.
-                  </p>
-                  <MapDisplay onMapUpload={handleMapUpload} />
-                  
-                  {mapFile && (
-                    <div className="mt-4 bg-green-50 border border-green-200 rounded-lg p-4">
-                      <h3 className="font-semibold text-green-800 mb-2">Map Uploaded Successfully!</h3>
-                      <p className="text-sm text-green-700">
-                        File: {mapFile.name} ({(mapFile.size / 1024 / 1024).toFixed(2)} MB)
-                      </p>
-                    </div>
-                  )}
-                </div>
+        <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-2xl font-semibold text-gray-800">
+              Buildings ({buildings.length})
+            </h2>
+            <div className="flex gap-4">
+              <button
+                onClick={fetchBuildings}
+                className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors"
+              >
+                🔄 Refresh
+              </button>
+              <button
+                onClick={handleImportLocations}
+                className="bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-lg transition-colors"
+              >
+                📊 Import All Locations
+              </button>
+            </div>
+          </div>
 
-                {/* Quick Stats */}
-                <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
-                  <h3 className="text-xl font-semibold text-gray-800 mb-4">Town Overview</h3>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <div className="text-center">
-                      <div className="text-3xl font-bold text-blue-600">{buildings.length}</div>
-                      <div className="text-sm text-gray-600">Buildings</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-3xl font-bold text-green-600">
-                        {buildings.reduce((sum, b) => sum + b.residents.length, 0)}
-                      </div>
-                      <div className="text-sm text-gray-600">Residents</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-3xl font-bold text-purple-600">
-                        {buildings.reduce((sum, b) => sum + b.workers.length, 0)}
-                      </div>
-                      <div className="text-sm text-gray-600">Workers</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-3xl font-bold text-orange-600">
-                        {new Set(buildings.map(b => b.kind)).size}
-                      </div>
-                      <div className="text-sm text-gray-600">Building Types</div>
-                    </div>
-                  </div>
-                </div>
+          {loading && (
+            <div className="text-center py-8">
+              <div className="text-4xl mb-4">⏳</div>
+              <p className="text-gray-600">Loading buildings...</p>
+            </div>
+          )}
 
-                {/* Buildings Section - Full Width Below Map */}
-                <div className="bg-white rounded-lg shadow-lg p-6">
-                  <div className="flex justify-between items-center mb-4">
-                    <h2 className="text-2xl font-semibold text-gray-800">
-                      🏗️ Buildings & Occupants
-                    </h2>
-                    <div className="flex gap-2">
-                      <button
-                        onClick={fetchBuildings}
-                        className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors"
-                      >
-                        🔄 Refresh
-                      </button>
-                      <button
-                        onClick={handleImportLocations}
-                        className="bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-lg transition-colors"
-                      >
-                        📊 Import All Locations
-                      </button>
-                      <button
-                        onClick={handleTestDatabase}
-                        className="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-lg transition-colors"
-                      >
-                        🔧 Test Database
-                      </button>
-                    </div>
-                  </div>
-                  <p className="text-gray-600 mb-4">
-                    View all buildings in Deer River and see who lives and works in each one.
-                  </p>
-                  
-                  <BuildingTable 
-                    buildings={buildings}
-                    loading={loading}
-                    error={error}
-                    onRefresh={fetchBuildings}
-                  />
+          {error && (
+            <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+              <p className="text-red-700">
+                <strong>Error:</strong> {error}
+              </p>
+            </div>
+          )}
+
+          {!loading && !error && buildings.length === 0 && (
+            <div className="text-center py-12">
+              <div className="text-6xl mb-4">🏗️</div>
+              <h3 className="text-xl font-semibold text-gray-800 mb-4">
+                No Buildings Found
+              </h3>
+              <p className="text-gray-600 mb-6">
+                Import some building data using the CSV import feature to get started.
+              </p>
+              <button
+                onClick={handleImportLocations}
+                className="bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-3 rounded-lg transition-colors"
+              >
+                📊 Import Building Data
+              </button>
+            </div>
+          )}
+
+          {!loading && !error && buildings.length > 0 && (
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-4 py-3 text-left font-semibold text-gray-700">Building</th>
+                    <th className="px-4 py-3 text-left font-semibold text-gray-700">Type</th>
+                    <th className="px-4 py-3 text-left font-semibold text-gray-700">Address</th>
+                    <th className="px-4 py-3 text-left font-semibold text-gray-700">Capacity</th>
+                    <th className="px-4 py-3 text-left font-semibold text-gray-700">Residents</th>
+                    <th className="px-4 py-3 text-left font-semibold text-gray-700">Workers</th>
+                    <th className="px-4 py-3 text-left font-semibold text-gray-700">Coordinates</th>
+                    <th className="px-4 py-3 text-left font-semibold text-gray-700">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-200">
+                  {buildings.map((building) => (
+                    <tr key={building.id} className="hover:bg-gray-50">
+                      <td className="px-4 py-3">
+                        <div className="flex items-center space-x-2">
+                          <span className="text-lg">{getKindIcon(building.kind)}</span>
+                          <div>
+                            <div className="font-medium text-gray-900">{building.name}</div>
+                            {building.notes && (
+                              <div className="text-xs text-gray-500 truncate w-48">{building.notes}</div>
+                            )}
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-4 py-3">
+                        <span className={`px-2 py-1 rounded text-xs font-medium ${getKindColor(building.kind)}`}>
+                          {building.kind}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 text-gray-700">
+                        {building.address || 'N/A'}
+                      </td>
+                      <td className="px-4 py-3 text-gray-700">
+                        {building.capacity || 'N/A'}
+                      </td>
+                      <td className="px-4 py-3 text-gray-700">
+                        {building.residents.length > 0 ? (
+                          <ul className="list-disc list-inside text-xs">
+                            {building.residents.map(p => <li key={p.id}>{p.name}</li>)}
+                          </ul>
+                        ) : 'None'}
+                      </td>
+                      <td className="px-4 py-3 text-gray-700">
+                        {building.workers.length > 0 ? (
+                          <ul className="list-disc list-inside text-xs">
+                            {building.workers.map(p => <li key={p.id}>{p.name}</li>)}
+                          </ul>
+                        ) : 'None'}
+                      </td>
+                      <td className="px-4 py-3 text-gray-700 text-xs">
+                        {building.x !== null && building.y !== null ? `${building.x}, ${building.y}` : 'N/A'}
+                      </td>
+                      <td className="px-4 py-3">
+                        <button
+                          onClick={() => handleEditBuilding(building)}
+                          className="text-blue-600 hover:text-blue-800 text-sm font-medium bg-blue-50 px-2 py-1 rounded"
+                        >
+                          ✏️ Edit
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+
+        {!loading && !error && buildings.length > 0 && (
+          <div className="bg-white rounded-lg shadow-lg p-6">
+            <h3 className="text-xl font-semibold text-gray-800 mb-4">
+              Quick Stats
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <div className="bg-blue-50 p-4 rounded-lg text-center">
+                <div className="text-2xl font-bold text-blue-600">{buildings.length}</div>
+                <div className="text-sm text-blue-700">Total Buildings</div>
+              </div>
+              <div className="bg-green-50 p-4 rounded-lg text-center">
+                <div className="text-2xl font-bold text-green-600">
+                  {buildings.reduce((sum, b) => sum + b.residents.length, 0)}
                 </div>
+                <div className="text-sm text-green-700">Residents</div>
+              </div>
+              <div className="bg-purple-50 p-4 rounded-lg text-center">
+                <div className="text-2xl font-bold text-purple-600">
+                  {buildings.reduce((sum, b) => sum + b.workers.length, 0)}
+                </div>
+                <div className="text-sm text-purple-700">Workers</div>
+              </div>
+              <div className="bg-orange-50 p-4 rounded-lg text-center">
+                <div className="text-2xl font-bold text-orange-600">
+                  {new Set(buildings.map(b => b.kind)).size}
+                </div>
+                <div className="text-sm text-orange-700">Building Types</div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Edit Building Modal */}
+        {editingBuilding && (
+          <BuildingEditModal
+            building={editingBuilding}
+            onClose={() => setEditingBuilding(null)}
+            onSave={handleSaveBuilding}
+          />
+        )}
       </div>
     </div>
   )
