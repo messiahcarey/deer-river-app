@@ -135,7 +135,7 @@ export async function POST() {
     
     // Execute all table creation queries
     for (const query of tables) {
-      await prisma.$queryRaw`${query}`
+      await prisma.$executeRawUnsafe(query)
     }
     
     const result = "All tables created successfully"
