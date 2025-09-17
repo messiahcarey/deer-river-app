@@ -10,9 +10,119 @@ datasource db {
 }
 
 model Person {
-  id       String @id @default(cuid())
-  name     String
-  species  String
-  age      Int?
-  notes    String?
+  id           String   @id @default(cuid())
+  name         String
+  species      String
+  age          Int?
+  occupation   String?
+  factionId    String?
+  faction      Faction? @relation(fields: [factionId], references: [id])
+  householdId  String?
+  household    Household? @relation(fields: [householdId], references: [id])
+  livesAtId    String
+  livesAt      Location @relation("LivesAt", fields: [livesAtId], references: [id])
+  worksAtId    String?
+  worksAt      Location? @relation("WorksAt", fields: [worksAtId], references: [id])
+  tags         String
+  notes        String?
+
+  opinionsFrom Opinion[] @relation("From")
+  opinionsTo   Opinion[] @relation("To")
+  resourceEntries TownResourceLedger[]
+}
+
+model Opinion {
+  id           String  @id @default(cuid())
+  fromPersonId String
+  toPersonId   String
+  score        Int
+  reason       String?
+  updatedAt    DateTime @updatedAt
+
+  fromPerson Person @relation("From", fields: [fromPersonId], references: [id])
+  toPerson   Person @relation("To", fields: [toPersonId], references: [id])
+
+  @@unique([fromPersonId, toPersonId])
+}
+
+model Faction {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  motto       String?
+  description String?
+  color       String?
+  members     Person[]
+  alliancesA  Alliance[] @relation("A")
+  alliancesB  Alliance[] @relation("B")
+}
+
+model Alliance {
+  id         String  @id @default(cuid())
+  factionAId String
+  factionBId String
+  type       String
+  stance     String
+  notes      String?
+  startedAt  DateTime?
+
+  factionA Faction @relation("A", fields: [factionAId], references: [id])
+  factionB Faction @relation("B", fields: [factionBId], references: [id])
+
+  @@unique([factionAId, factionBId])
+}
+
+model Location {
+  id        String    @id @default(cuid())
+  name      String
+  kind      String
+  parentId  String?
+  parent    Location? @relation("Parent", fields: [parentId], references: [id])
+  children  Location[] @relation("Parent")
+  x         Float?
+  y         Float?
+  address   String?
+  notes     String?
+
+  residents Person[]   @relation("LivesAt")
+  workers   Person[]   @relation("WorksAt")
+  households Household[]
+}
+
+model Household {
+  id         String   @id @default(cuid())
+  name       String?
+  locationId String
+  location   Location @relation(fields: [locationId], references: [id])
+  members    Person[]
+  notes      String?
+}
+
+model ResourceCategory {
+  id    String @id @default(cuid())
+  name  String @unique
+  unit  String
+  notes String?
+  entries TownResourceLedger[]
+}
+
+model TownResourceLedger {
+  id                String   @id @default(cuid())
+  date              DateTime
+  resourceCategoryId String
+  resourceCategory   ResourceCategory @relation(fields: [resourceCategoryId], references: [id])
+  delta             Float
+  reason            String
+  sourcePersonId    String?
+  sourcePerson      Person?  @relation(fields: [sourcePersonId], references: [id])
+  sourceFactionId   String?
+  sourceFaction     Faction? @relation(fields: [sourceFactionId], references: [id])
+}
+
+model EventLog {
+  id       String   @id @default(cuid())
+  date     DateTime
+  title    String
+  details  String?
+  locationId String?
+  location Location? @relation(fields: [locationId], references: [id])
 }
