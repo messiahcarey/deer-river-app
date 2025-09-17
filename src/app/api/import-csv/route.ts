@@ -1,8 +1,6 @@
 import { NextResponse } from 'next/server'
 import { PrismaClient } from '@prisma/client'
 
-const prisma = new PrismaClient()
-
 export async function POST(request: Request) {
   try {
     console.log('Starting CSV import...')
@@ -80,7 +78,7 @@ export async function POST(request: Request) {
       }
       values.push(currentVal.trim()) // Push the last value
       
-      const obj: any = {}
+      const obj: Record<string, string> = {}
       headers.forEach((header, index) => {
         obj[header] = values[index] || ''
       })
@@ -265,7 +263,7 @@ async function createBasicFactions(prisma: PrismaClient) {
   return factions
 }
 
-function extractWorkLocation(occupation: string, locations: any) {
+function extractWorkLocation(occupation: string, locations: Record<string, { id: string }>) {
   if (occupation.includes('Rusty Pike')) return locations['Rusty Pike Inn']?.id
   if (occupation.includes('Forge of Fortune')) return locations['Forge of Fortune']?.id
   if (occupation.includes('River\'s Edge')) return locations['River\'s Edge Goods']?.id

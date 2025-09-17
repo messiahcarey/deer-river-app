@@ -55,7 +55,7 @@ export default function ImportPage() {
       }
       values.push(currentVal.trim()) // Push the last value
       
-      const obj: any = {}
+      const obj: Record<string, string> = {}
       headers.forEach((header, index) => {
         obj[header] = values[index] || ''
       })
