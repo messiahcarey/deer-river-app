@@ -138,7 +138,7 @@ export async function PUT(
     await prismaWithEnv.$connect()
     
     const body = await request.json()
-    const { name, kind, address, notes, x, y, capacity } = body
+    const { name, kind, address, notes, x, y } = body
     
     const updatedLocation = await prismaWithEnv.location.update({
       where: { id },
