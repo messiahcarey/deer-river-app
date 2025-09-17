@@ -149,7 +149,7 @@ export async function PUT(
         notes: notes || null,
         x: x ? parseInt(x) : null,
         y: y ? parseInt(y) : null,
-        capacity: capacity ? parseInt(capacity) : null,
+        // capacity: capacity ? parseInt(capacity) : null, // Temporarily disabled until migration
       }
     })
     
