@@ -33,13 +33,55 @@ export async function GET() {
     
     await prismaWithEnv.$connect()
     
-    // Fetch people with their related data
+    // Fetch people with their related data (excluding capacity field that doesn't exist yet)
     const people = await prismaWithEnv.person.findMany({
-      include: {
-        faction: true,
-        livesAt: true,
-        worksAt: true,
-        household: true
+      select: {
+        id: true,
+        name: true,
+        species: true,
+        age: true,
+        occupation: true,
+        notes: true,
+        tags: true,
+        factionId: true,
+        livesAtId: true,
+        worksAtId: true,
+        householdId: true,
+        faction: {
+          select: {
+            id: true,
+            name: true,
+            color: true,
+          },
+        },
+        livesAt: {
+          select: {
+            id: true,
+            name: true,
+            kind: true,
+            address: true,
+            notes: true,
+            x: true,
+            y: true,
+          },
+        },
+        worksAt: {
+          select: {
+            id: true,
+            name: true,
+            kind: true,
+            address: true,
+            notes: true,
+            x: true,
+            y: true,
+          },
+        },
+        household: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
       },
       orderBy: {
         name: 'asc'

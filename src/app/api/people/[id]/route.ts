@@ -35,11 +35,53 @@ export async function GET(
     
     const person = await prismaWithEnv.person.findUnique({
       where: { id },
-      include: {
-        faction: true,
-        livesAt: true,
-        worksAt: true,
-        household: true
+      select: {
+        id: true,
+        name: true,
+        species: true,
+        age: true,
+        occupation: true,
+        notes: true,
+        tags: true,
+        factionId: true,
+        livesAtId: true,
+        worksAtId: true,
+        householdId: true,
+        faction: {
+          select: {
+            id: true,
+            name: true,
+            color: true,
+          },
+        },
+        livesAt: {
+          select: {
+            id: true,
+            name: true,
+            kind: true,
+            address: true,
+            notes: true,
+            x: true,
+            y: true,
+          },
+        },
+        worksAt: {
+          select: {
+            id: true,
+            name: true,
+            kind: true,
+            address: true,
+            notes: true,
+            x: true,
+            y: true,
+          },
+        },
+        household: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
       }
     })
     
