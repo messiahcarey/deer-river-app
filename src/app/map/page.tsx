@@ -24,6 +24,9 @@ interface Building {
   kind: string
   address: string | null
   notes: string | null
+  x: number | null
+  y: number | null
+  capacity: number | null
   residents: Person[]
   workers: Person[]
 }
