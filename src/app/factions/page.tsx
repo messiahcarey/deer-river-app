@@ -32,40 +32,14 @@ export default function FactionsPage() {
   const fetchFactions = async () => {
     try {
       setLoading(true)
-      // Use mock data instead of API call
-      const mockFactions = [
-        {
-          id: '1',
-          name: 'Town Council',
-          motto: 'Unity and Progress',
-          description: 'The governing body of Deer River',
-          color: '#3B82F6',
-          members: [
-            { id: '1', name: 'John Doe', species: 'Human' },
-            { id: '2', name: 'Jane Smith', species: 'Elf' }
-          ]
-        },
-        {
-          id: '2',
-          name: 'Merchants Guild',
-          motto: 'Prosperity Through Trade',
-          description: 'The commercial backbone of the town',
-          color: '#10B981',
-          members: [
-            { id: '3', name: 'Bob Wilson', species: 'Dwarf' }
-          ]
-        },
-        {
-          id: '3',
-          name: 'Artisans Union',
-          motto: 'Craftsmanship and Quality',
-          description: 'Masters of their respective trades',
-          color: '#F59E0B',
-          members: []
-        }
-      ]
-      setFactions(mockFactions)
-      setError(null)
+      const response = await fetch('/api/factions')
+      const data = await response.json()
+      
+      if (data.success) {
+        setFactions(data.data)
+      } else {
+        setError(data.error || 'Failed to fetch factions')
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unknown error')
     } finally {

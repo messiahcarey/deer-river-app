@@ -44,51 +44,14 @@ export default function MapPage() {
   const fetchBuildings = async () => {
     try {
       setLoading(true)
-      // Use mock data instead of API call
-      const mockBuildings = [
-        {
-          id: '1',
-          name: 'Town Hall',
-          kind: 'government',
-          address: '1 Main Street',
-          notes: 'The center of government',
-          x: 100,
-          y: 100,
-          capacity: 50,
-          residents: [],
-          workers: [
-            { id: '1', name: 'John Doe', species: 'Human', age: 35, occupation: 'Mayor', faction: { id: '1', name: 'Town Council', color: '#3B82F6' } }
-          ]
-        },
-        {
-          id: '2',
-          name: 'Blacksmith Shop',
-          kind: 'business',
-          address: '5 Forge Lane',
-          notes: 'Master craftsman workshop',
-          x: 200,
-          y: 150,
-          capacity: 10,
-          residents: [],
-          workers: [
-            { id: '2', name: 'Jane Smith', species: 'Elf', age: 120, occupation: 'Blacksmith', faction: { id: '3', name: 'Artisans Union', color: '#F59E0B' } }
-          ]
-        },
-        {
-          id: '3',
-          name: 'Healing House',
-          kind: 'business',
-          address: '3 Garden Street',
-          notes: 'Medical care and healing',
-          x: 150,
-          y: 200,
-          capacity: 20,
-          residents: [],
-          workers: []
-        }
-      ]
-      setBuildings(mockBuildings)
-      setError(null)
+      const response = await fetch('/api/locations')
+      const data = await response.json()
+      
+      if (data.success) {
+        setBuildings(data.data)
+      } else {
+        setError(data.error || 'Failed to fetch buildings')
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unknown error')
     } finally {

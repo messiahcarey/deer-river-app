@@ -50,37 +50,14 @@ export default function PeoplePage() {
   const fetchPeople = async () => {
     try {
       setLoading(true);
-      // Use mock data instead of API call
-      const mockPeople = [
-        {
-          id: '1',
-          name: 'John Doe',
-          species: 'Human',
-          age: 35,
-          occupation: 'Blacksmith',
-          notes: 'Master craftsman',
-          tags: 'skilled,reliable',
-          faction: null,
-          livesAt: null,
-          worksAt: null,
-          household: null
-        },
-        {
-          id: '2',
-          name: 'Jane Smith',
-          species: 'Elf',
-          age: 120,
-          occupation: 'Healer',
-          notes: 'Wise and kind',
-          tags: 'magical,wise',
-          faction: null,
-          livesAt: null,
-          worksAt: null,
-          household: null
-        }
-      ];
-      setPeople(mockPeople);
-      setError(null);
+      const response = await fetch('/api/people');
+      const data = await response.json();
+      
+      if (data.success) {
+        setPeople(data.data);
+      } else {
+        setError(data.error || 'Failed to fetch people');
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unknown error');
     } finally {
@@ -90,13 +67,11 @@ export default function PeoplePage() {
 
   const fetchLocations = async () => {
     try {
-      // Use mock data instead of API call
-      const mockLocations = [
-        { id: '1', name: 'Town Square', kind: 'public' },
-        { id: '2', name: 'Blacksmith Shop', kind: 'business' },
-        { id: '3', name: 'Healing House', kind: 'business' }
-      ];
-      setLocations(mockLocations);
+      const response = await fetch('/api/locations');
+      const data = await response.json();
+      if (data.success) {
+        setLocations(data.data);
+      }
     } catch (err) {
       console.error('Failed to fetch locations:', err);
     }
@@ -104,13 +79,11 @@ export default function PeoplePage() {
 
   const fetchFactions = async () => {
     try {
-      // Use mock data instead of API call
-      const mockFactions = [
-        { id: '1', name: 'Town Council', color: '#3B82F6' },
-        { id: '2', name: 'Merchants Guild', color: '#10B981' },
-        { id: '3', name: 'Artisans Union', color: '#F59E0B' }
-      ];
-      setFactions(mockFactions);
+      const response = await fetch('/api/factions');
+      const data = await response.json();
+      if (data.success) {
+        setFactions(data.data);
+      }
     } catch (err) {
       console.error('Failed to fetch factions:', err);
     }
@@ -122,11 +95,21 @@ export default function PeoplePage() {
 
   const handleSavePerson = async (updatedPerson: Partial<Person>) => {
     try {
-      // Update local state instead of making API call
-      setPeople(prev => prev.map(p => 
-        p.id === updatedPerson.id ? { ...p, ...updatedPerson } : p
-      ));
-      setEditingPerson(null);
+      const response = await fetch(`/api/people/${updatedPerson.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updatedPerson),
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        await fetchPeople(); // Refresh the list
+        setEditingPerson(null);
+      } else {
+        throw new Error(data.error || 'Failed to update person');
+      }
     } catch (err) {
       throw err;
     }
