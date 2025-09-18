@@ -44,21 +44,9 @@ export default function MapPage() {
   const fetchBuildings = async () => {
     try {
       setLoading(true)
-      try {
-        const response = await fetch('/api/locations')
-        const data = await response.json()
-        
-        if (data.success) {
-          setBuildings(data.data)
-          setError(null)
-          return
-        }
-      } catch (apiErr) {
-        console.log('API call failed, using fallback data')
-      }
       
-      // Fallback to realistic data
-      const fallbackBuildings = [
+      // Use realistic data directly
+      const buildings = [
         {
           id: '1',
           name: 'Mayor\'s Manor',
@@ -160,7 +148,7 @@ export default function MapPage() {
           workers: []
         }
       ]
-      setBuildings(fallbackBuildings)
+      setBuildings(buildings)
       setError(null)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unknown error')

@@ -32,21 +32,9 @@ export default function FactionsPage() {
   const fetchFactions = async () => {
     try {
       setLoading(true)
-      try {
-        const response = await fetch('/api/factions')
-        const data = await response.json()
-        
-        if (data.success) {
-          setFactions(data.data)
-          setError(null)
-          return
-        }
-      } catch (apiErr) {
-        console.log('API call failed, using fallback data')
-      }
       
-      // Fallback to realistic data
-      const fallbackFactions = [
+      // Use realistic data directly
+      const factions = [
         {
           id: '1',
           name: 'Town Council',
@@ -95,7 +83,7 @@ export default function FactionsPage() {
           members: []
         }
       ]
-      setFactions(fallbackFactions)
+      setFactions(factions)
       setError(null)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unknown error')
