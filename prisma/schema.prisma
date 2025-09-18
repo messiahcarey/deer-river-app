@@ -15,8 +15,6 @@ model Person {
   species      String
   age          Int?
   occupation   String?
-  factionId    String?
-  faction      Faction? @relation(fields: [factionId], references: [id])
   householdId  String?
   household    Household? @relation(fields: [householdId], references: [id])
   livesAtId    String
@@ -29,6 +27,10 @@ model Person {
   opinionsFrom Opinion[] @relation("From")
   opinionsTo   Opinion[] @relation("To")
   resourceEntries TownResourceLedger[]
+  
+  // New relationship models
+  memberships PersonFactionMembership[]
+  factionOpinions FactionOpinion[]
 }
 
 model Opinion {
@@ -51,10 +53,13 @@ model Faction {
   motto       String?
   description String?
   color       String?
-  members     Person[]
   alliancesA  Alliance[] @relation("A")
   alliancesB  Alliance[] @relation("B")
   resourceEntries TownResourceLedger[]
+  
+  // New relationship models
+  memberships PersonFactionMembership[]
+  opinions   FactionOpinion[]
 }
 
 model Alliance {
@@ -128,4 +133,47 @@ model EventLog {
   details  String?
   locationId String?
   location Location? @relation(fields: [locationId], references: [id])
+}
+
+/** One row per person↔faction relationship */
+model PersonFactionMembership {
+  id          String   @id @default(cuid())
+  personId    String
+  factionId   String
+  role        String?      // "member", "captain", "leader", etc.
+  isPrimary   Boolean @default(false)
+  joinedAt    DateTime @default(now())
+  leftAt      DateTime?    // null if active
+
+  /** Personal alignment with THIS faction's current direction:
+   * -100 (actively subversive) … 0 (neutral/indifferent) … +100 (strongly aligned)
+   */
+  alignment   Int      @default(0)
+
+  /** Optional: how publicly they show that alignment (0..100). */
+  openness    Int      @default(50)
+
+  /** Optional notes */
+  notes       String?
+
+  person   Person  @relation(fields: [personId], references: [id])
+  faction  Faction @relation(fields: [factionId], references: [id])
+
+  @@index([personId, factionId])
+  @@unique([personId, factionId, joinedAt]) // allows re-joining later
+}
+
+/** Feelings about factions regardless of membership */
+model FactionOpinion {
+  id        String   @id @default(cuid())
+  personId  String
+  factionId String
+  score     Int      // -100..100
+  reason    String?
+  updatedAt DateTime @updatedAt
+
+  person  Person  @relation(fields:[personId], references:[id])
+  faction Faction @relation(fields:[factionId], references:[id])
+
+  @@unique([personId, factionId], name: "personId_factionId")
 }

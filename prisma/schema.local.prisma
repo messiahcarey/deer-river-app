@@ -15,8 +15,6 @@ model Person {
   species  String
   age      Int?
   occupation String?
-  factionId    String?
-  faction      Faction? @relation(fields: [factionId], references: [id])
   householdId  String?
   household    Household? @relation(fields: [householdId], references: [id])
   livesAtId    String
@@ -29,6 +27,10 @@ model Person {
   opinionsFrom Opinion[] @relation("From")
   opinionsTo   Opinion[] @relation("To")
   resourceEntries TownResourceLedger[]
+  
+  // New relationship models
+  memberships PersonFactionMembership[]
+  factionOpinions FactionOpinion[]
 }
 
 model Faction {
