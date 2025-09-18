@@ -32,15 +32,6 @@ export async function GET() {
     await prismaWithEnv.$connect()
 
     const factions = await prismaWithEnv.faction.findMany({
-      include: {
-        members: {
-          select: {
-            id: true,
-            name: true,
-            species: true
-          }
-        }
-      },
       orderBy: {
         name: 'asc'
       }
