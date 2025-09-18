@@ -65,10 +65,6 @@ export default function FactionMembershipPanel({ personId }: FactionMembershipPa
     reason: ''
   })
 
-  useEffect(() => {
-    fetchData()
-  }, [fetchData])
-
   const fetchData = useCallback(async () => {
     try {
       setLoading(true)
@@ -95,6 +91,10 @@ export default function FactionMembershipPanel({ personId }: FactionMembershipPa
       setLoading(false)
     }
   }, [personId])
+
+  useEffect(() => {
+    fetchData()
+  }, [fetchData])
 
   const updateMembership = async (id: string, updates: Partial<Membership>) => {
     try {
