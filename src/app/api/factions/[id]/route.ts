@@ -3,10 +3,11 @@ import { PrismaClient } from '@prisma/client'
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    console.log('Fetching faction:', params.id)
+    const { id } = await params
+    console.log('Fetching faction:', id)
     
     const dbUrl = process.env.DATABASE_URL?.trim()
     if (!dbUrl || (!dbUrl.startsWith('postgresql://') && !dbUrl.startsWith('postgres://'))) {
@@ -35,7 +36,7 @@ export async function GET(
     await prismaWithEnv.$connect()
     
     const faction = await prismaWithEnv.faction.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         members: {
           select: {
@@ -118,10 +119,11 @@ export async function GET(
 
 export async function PUT(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    console.log('Updating faction:', params.id)
+    const { id } = await params
+    console.log('Updating faction:', id)
     
     const body = await request.json()
     const { name, motto, description, color } = body
@@ -153,7 +155,7 @@ export async function PUT(
     await prismaWithEnv.$connect()
     
     const faction = await prismaWithEnv.faction.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         name,
         motto: motto || null,
@@ -204,10 +206,11 @@ export async function PUT(
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    console.log('Deleting faction:', params.id)
+    const { id } = await params
+    console.log('Deleting faction:', id)
     
     const dbUrl = process.env.DATABASE_URL?.trim()
     if (!dbUrl || (!dbUrl.startsWith('postgresql://') && !dbUrl.startsWith('postgres://'))) {
@@ -237,7 +240,7 @@ export async function DELETE(
     
     // First, remove all members from this faction
     await prismaWithEnv.person.updateMany({
-      where: { factionId: params.id },
+      where: { factionId: id },
       data: { factionId: null }
     })
     
@@ -245,15 +248,15 @@ export async function DELETE(
     await prismaWithEnv.alliance.deleteMany({
       where: {
         OR: [
-          { factionAId: params.id },
-          { factionBId: params.id }
+          { factionAId: id },
+          { factionBId: id }
         ]
       }
     })
     
     // Finally, delete the faction
     await prismaWithEnv.faction.delete({
-      where: { id: params.id }
+      where: { id }
     })
     
     await prismaWithEnv.$disconnect()

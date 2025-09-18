@@ -184,7 +184,7 @@ export default function FactionsPage() {
                       <div>
                         <h3 className="text-xl font-semibold text-gray-800">{faction.name}</h3>
                         {faction.motto && (
-                          <p className="text-sm text-gray-600 italic">"{faction.motto}"</p>
+                          <p className="text-sm text-gray-600 italic">&ldquo;{faction.motto}&rdquo;</p>
                         )}
                       </div>
                     </div>
