@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 
 type Faction = {
   id: string
@@ -40,7 +40,7 @@ interface FactionMembershipPanelProps {
   personName: string
 }
 
-export default function FactionMembershipPanel({ personId, personName }: FactionMembershipPanelProps) {
+export default function FactionMembershipPanel({ personId }: FactionMembershipPanelProps) {
   const [memberships, setMemberships] = useState<Membership[]>([])
   const [opinions, setOpinions] = useState<FactionOpinion[]>([])
   const [factions, setFactions] = useState<Faction[]>([])
@@ -67,9 +67,9 @@ export default function FactionMembershipPanel({ personId, personName }: Faction
 
   useEffect(() => {
     fetchData()
-  }, [personId])
+  }, [fetchData])
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
       setLoading(true)
       const [membershipsRes, opinionsRes, factionsRes] = await Promise.all([
@@ -89,12 +89,12 @@ export default function FactionMembershipPanel({ personId, personName }: Faction
       if (factionsData.ok) setFactions(factionsData.data)
 
       setError(null)
-    } catch (err: any) {
-      setError(err.message)
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'An error occurred')
     } finally {
       setLoading(false)
     }
-  }
+  }, [personId])
 
   const updateMembership = async (id: string, updates: Partial<Membership>) => {
     try {
@@ -112,8 +112,8 @@ export default function FactionMembershipPanel({ personId, personName }: Faction
       } else {
         setError(data.error)
       }
-    } catch (err: any) {
-      setError(err.message)
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'An error occurred')
     }
   }
 
@@ -143,8 +143,8 @@ export default function FactionMembershipPanel({ personId, personName }: Faction
       } else {
         setError(data.error)
       }
-    } catch (err: any) {
-      setError(err.message)
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'An error occurred')
     }
   }
 
@@ -177,8 +177,8 @@ export default function FactionMembershipPanel({ personId, personName }: Faction
       } else {
         setError(data.error)
       }
-    } catch (err: any) {
-      setError(err.message)
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'An error occurred')
     }
   }
 

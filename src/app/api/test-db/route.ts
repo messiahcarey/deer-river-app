@@ -8,10 +8,10 @@ export async function GET() {
     console.log('DATABASE_URL value:', process.env.DATABASE_URL)
     console.log('All env vars:', Object.keys(process.env).filter(key => key.includes('DATABASE')))
     
-    // Ensure the URL starts with the correct protocol
+    // Ensure the URL is set
     const dbUrl = process.env.DATABASE_URL?.trim()
-    if (!dbUrl || (!dbUrl.startsWith('postgresql://') && !dbUrl.startsWith('postgres://'))) {
-      throw new Error(`Invalid DATABASE_URL format: ${dbUrl}`)
+    if (!dbUrl) {
+      throw new Error(`DATABASE_URL not set`)
     }
     
     // Create Prisma client with explicit environment variable

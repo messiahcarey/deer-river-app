@@ -31,13 +31,13 @@ export async function GET(request: NextRequest) {
       data: memberships,
       error: null 
     })
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error fetching memberships:', error)
     return NextResponse.json(
       { 
         ok: false, 
         data: null, 
-        error: error.message 
+        error: error instanceof Error ? error.message : 'An error occurred' 
       },
       { status: 500 }
     )
@@ -121,13 +121,13 @@ export async function POST(request: NextRequest) {
       data: membership,
       error: null 
     }, { status: 201 })
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error creating membership:', error)
     return NextResponse.json(
       { 
         ok: false, 
         data: null, 
-        error: error.message 
+        error: error instanceof Error ? error.message : 'An error occurred' 
       },
       { status: 500 }
     )

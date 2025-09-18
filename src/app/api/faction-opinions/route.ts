@@ -28,13 +28,13 @@ export async function GET(request: NextRequest) {
       data: opinions,
       error: null 
     })
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error fetching faction opinions:', error)
     return NextResponse.json(
       { 
         ok: false, 
         data: null, 
-        error: error.message 
+        error: error instanceof Error ? error.message : 'An error occurred' 
       },
       { status: 500 }
     )
@@ -125,13 +125,13 @@ export async function PUT(request: NextRequest) {
       data: opinion,
       error: null 
     })
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error upserting faction opinion:', error)
     return NextResponse.json(
       { 
         ok: false, 
         data: null, 
-        error: error.message 
+        error: error instanceof Error ? error.message : 'An error occurred' 
       },
       { status: 500 }
     )

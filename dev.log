@@ -1,0 +1,566 @@
+nohup: ignoring input
+
+> deer-river-app@0.1.0 dev
+> next dev
+
+ ⚠ Attempted to load @next/swc-win32-x64-msvc, but an error occurred: \\?\C:\Users\shane\OneDrive Outlook.com\OneDrive\Documents\Deer River\deer-river-app\node_modules\@next\swc-win32-x64-msvc\next-swc.win32-x64-msvc.node is not a valid Win32 application.
+\\?\C:\Users\shane\OneDrive Outlook.com\OneDrive\Documents\Deer River\deer-river-app\node_modules\@next\swc-win32-x64-msvc\next-swc.win32-x64-msvc.node
+ ⚠ Attempted to load @next/swc-win32-x64-msvc, but an error occurred: \\?\C:\Users\shane\OneDrive Outlook.com\OneDrive\Documents\Deer River\deer-river-app\node_modules\@next\swc-win32-x64-msvc\next-swc.win32-x64-msvc.node is not a valid Win32 application.
+\\?\C:\Users\shane\OneDrive Outlook.com\OneDrive\Documents\Deer River\deer-river-app\node_modules\@next\swc-win32-x64-msvc\next-swc.win32-x64-msvc.node
+   ▲ Next.js 15.1.3
+   - Local:        http://localhost:3000
+   - Network:      http://192.168.10.119:3000
+   - Environments: .env.local
+
+ ✓ Starting...
+ ✓ Ready in 2.5s
+ ○ Compiling /people ...
+ ✓ Compiled /people in 2.4s (629 modules)
+ GET /people 200 in 2658ms
+ ○ Compiling /api/locations ...
+ ✓ Compiled /api/locations in 968ms (638 modules)
+Fetching factions...
+ GET /api/factions 500 in 778ms
+Fetching locations...
+ GET /api/locations 500 in 787ms
+Fetching people...
+ GET /api/people 500 in 794ms
+ GET /api/factions 200 in 122ms
+Fetching factions...
+ GET /people 200 in 734ms
+Fetching locations...
+Fetching people...
+Fetching people...
+ GET /api/people 500 in 15ms
+Fetching locations...
+ GET /api/locations 500 in 19ms
+Fetching factions...
+ GET /api/factions 500 in 22ms
+ ✓ Compiled / in 282ms (644 modules)
+ GET / 200 in 441ms
+ GET /people 200 in 14ms
+Fetching people...
+ GET /api/people 500 in 23ms
+Fetching locations...
+ GET /api/locations 500 in 28ms
+Fetching factions...
+ GET /api/factions 500 in 34ms
+Fetching people...
+ GET /api/people 500 in 17ms
+Fetching locations...
+ GET /api/locations 500 in 12ms
+Fetching factions...
+ GET /api/factions 500 in 9ms
+ GET / 200 in 26ms
+ HEAD / 200 in 21ms
+Fetching people...
+ GET /api/people 500 in 9ms
+Fetching people...
+ GET /api/people 500 in 8ms
+ GET / 200 in 21ms
+ GET /people 200 in 11ms
+Fetching people...
+ GET /api/people 500 in 10ms
+Fetching factions...
+ GET /api/factions 500 in 14ms
+Fetching locations...
+ GET /api/locations 500 in 17ms
+Fetching people...
+ GET /api/people 500 in 15ms
+Fetching factions...
+ GET /api/factions 500 in 13ms
+Fetching locations...
+ GET /api/locations 500 in 11ms
+ ○ Compiling /_not-found ...
+ ✓ Compiled /_not-found in 700ms (648 modules)
+ GET /api/people 404 in 826ms
+ GET /api/factions 404 in 17ms
+ ○ Compiling /_error ...
+ ✓ Compiled /_error in 2.2s (881 modules)
+ GET /api/people 404 in 2857ms
+ GET /people 404 in 874ms
+ GET /people 404 in 315ms
+ GET /people 404 in 243ms
+ ✓ Compiled in 563ms (505 modules)
+   Reload env: .env.local
+ ✓ Compiled in 355ms (881 modules)
+ ✓ Compiled /api/test-db in 319ms (883 modules)
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\shane\OneDrive Outlook.com\OneDrive\Documents\Deer River\deer-river-app\.next\server\middleware-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\shane\\OneDrive Outlook.com\\OneDrive\\Documents\\Deer River\\deer-river-app\\.next\\server\\middleware-manifest.json'
+}
+ GET /api/test-db 500 in 389ms
+ ✓ Compiled / in 254ms (397 modules)
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\shane\OneDrive Outlook.com\OneDrive\Documents\Deer River\deer-river-app\.next\server\middleware-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\shane\\OneDrive Outlook.com\\OneDrive\\Documents\\Deer River\\deer-river-app\\.next\\server\\middleware-manifest.json'
+}
+ GET / 500 in 291ms
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\shane\OneDrive Outlook.com\OneDrive\Documents\Deer River\deer-river-app\.next\server\middleware-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\shane\\OneDrive Outlook.com\\OneDrive\\Documents\\Deer River\\deer-river-app\\.next\\server\\middleware-manifest.json'
+}
+ GET / 500 in 36ms
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\shane\OneDrive Outlook.com\OneDrive\Documents\Deer River\deer-river-app\.next\server\middleware-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\shane\\OneDrive Outlook.com\\OneDrive\\Documents\\Deer River\\deer-river-app\\.next\\server\\middleware-manifest.json'
+}
+ GET / 500 in 19ms
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\shane\OneDrive Outlook.com\OneDrive\Documents\Deer River\deer-river-app\.next\server\middleware-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\shane\\OneDrive Outlook.com\\OneDrive\\Documents\\Deer River\\deer-river-app\\.next\\server\\middleware-manifest.json'
+}
+ GET / 500 in 32ms
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\shane\OneDrive Outlook.com\OneDrive\Documents\Deer River\deer-river-app\.next\server\middleware-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\shane\\OneDrive Outlook.com\\OneDrive\\Documents\\Deer River\\deer-river-app\\.next\\server\\middleware-manifest.json'
+}
+ GET / 500 in 23ms
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\shane\OneDrive Outlook.com\OneDrive\Documents\Deer River\deer-river-app\.next\server\middleware-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\shane\\OneDrive Outlook.com\\OneDrive\\Documents\\Deer River\\deer-river-app\\.next\\server\\middleware-manifest.json'
+}
+ GET / 500 in 32ms
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\shane\OneDrive Outlook.com\OneDrive\Documents\Deer River\deer-river-app\.next\server\middleware-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\shane\\OneDrive Outlook.com\\OneDrive\\Documents\\Deer River\\deer-river-app\\.next\\server\\middleware-manifest.json'
+}
+ GET / 500 in 19ms
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\shane\OneDrive Outlook.com\OneDrive\Documents\Deer River\deer-river-app\.next\server\middleware-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\shane\\OneDrive Outlook.com\\OneDrive\\Documents\\Deer River\\deer-river-app\\.next\\server\\middleware-manifest.json'
+}
+ GET / 500 in 33ms
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\shane\OneDrive Outlook.com\OneDrive\Documents\Deer River\deer-river-app\.next\server\middleware-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\shane\\OneDrive Outlook.com\\OneDrive\\Documents\\Deer River\\deer-river-app\\.next\\server\\middleware-manifest.json'
+}
+ GET / 500 in 28ms
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\shane\OneDrive Outlook.com\OneDrive\Documents\Deer River\deer-river-app\.next\server\middleware-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\shane\\OneDrive Outlook.com\\OneDrive\\Documents\\Deer River\\deer-river-app\\.next\\server\\middleware-manifest.json'
+}
+ GET / 500 in 30ms
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\shane\OneDrive Outlook.com\OneDrive\Documents\Deer River\deer-river-app\.next\server\middleware-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\shane\\OneDrive Outlook.com\\OneDrive\\Documents\\Deer River\\deer-river-app\\.next\\server\\middleware-manifest.json'
+}
+ GET / 500 in 32ms
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\shane\OneDrive Outlook.com\OneDrive\Documents\Deer River\deer-river-app\.next\server\middleware-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\shane\\OneDrive Outlook.com\\OneDrive\\Documents\\Deer River\\deer-river-app\\.next\\server\\middleware-manifest.json'
+}
+ GET / 500 in 25ms
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\shane\OneDrive Outlook.com\OneDrive\Documents\Deer River\deer-river-app\.next\server\middleware-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\shane\\OneDrive Outlook.com\\OneDrive\\Documents\\Deer River\\deer-river-app\\.next\\server\\middleware-manifest.json'
+}
+ GET / 500 in 24ms
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\shane\OneDrive Outlook.com\OneDrive\Documents\Deer River\deer-river-app\.next\server\middleware-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\shane\\OneDrive Outlook.com\\OneDrive\\Documents\\Deer River\\deer-river-app\\.next\\server\\middleware-manifest.json'
+}
+ GET / 500 in 23ms
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\shane\OneDrive Outlook.com\OneDrive\Documents\Deer River\deer-river-app\.next\server\middleware-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\shane\\OneDrive Outlook.com\\OneDrive\\Documents\\Deer River\\deer-river-app\\.next\\server\\middleware-manifest.json'
+}
+ GET / 500 in 21ms
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\shane\OneDrive Outlook.com\OneDrive\Documents\Deer River\deer-river-app\.next\server\middleware-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\shane\\OneDrive Outlook.com\\OneDrive\\Documents\\Deer River\\deer-river-app\\.next\\server\\middleware-manifest.json'
+}
+ GET / 500 in 21ms
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\shane\OneDrive Outlook.com\OneDrive\Documents\Deer River\deer-river-app\.next\server\middleware-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\shane\\OneDrive Outlook.com\\OneDrive\\Documents\\Deer River\\deer-river-app\\.next\\server\\middleware-manifest.json'
+}
+ GET / 500 in 23ms
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\shane\OneDrive Outlook.com\OneDrive\Documents\Deer River\deer-river-app\.next\server\middleware-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\shane\\OneDrive Outlook.com\\OneDrive\\Documents\\Deer River\\deer-river-app\\.next\\server\\middleware-manifest.json'
+}
+ GET / 500 in 35ms
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\shane\OneDrive Outlook.com\OneDrive\Documents\Deer River\deer-river-app\.next\server\middleware-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\shane\\OneDrive Outlook.com\\OneDrive\\Documents\\Deer River\\deer-river-app\\.next\\server\\middleware-manifest.json'
+}
+ GET / 500 in 23ms
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\shane\OneDrive Outlook.com\OneDrive\Documents\Deer River\deer-river-app\.next\server\middleware-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\shane\\OneDrive Outlook.com\\OneDrive\\Documents\\Deer River\\deer-river-app\\.next\\server\\middleware-manifest.json'
+}
+ GET /api/test-db 500 in 21ms
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\shane\OneDrive Outlook.com\OneDrive\Documents\Deer River\deer-river-app\.next\server\middleware-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\shane\\OneDrive Outlook.com\\OneDrive\\Documents\\Deer River\\deer-river-app\\.next\\server\\middleware-manifest.json'
+}
+ GET / 500 in 22ms
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\shane\OneDrive Outlook.com\OneDrive\Documents\Deer River\deer-river-app\.next\server\middleware-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\shane\\OneDrive Outlook.com\\OneDrive\\Documents\\Deer River\\deer-river-app\\.next\\server\\middleware-manifest.json'
+}
+ GET / 500 in 21ms
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\shane\OneDrive Outlook.com\OneDrive\Documents\Deer River\deer-river-app\.next\server\middleware-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\shane\\OneDrive Outlook.com\\OneDrive\\Documents\\Deer River\\deer-river-app\\.next\\server\\middleware-manifest.json'
+}
+ GET / 500 in 22ms
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\shane\OneDrive Outlook.com\OneDrive\Documents\Deer River\deer-river-app\.next\server\middleware-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\shane\\OneDrive Outlook.com\\OneDrive\\Documents\\Deer River\\deer-river-app\\.next\\server\\middleware-manifest.json'
+}
+ GET / 500 in 23ms
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\shane\OneDrive Outlook.com\OneDrive\Documents\Deer River\deer-river-app\.next\server\middleware-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\shane\\OneDrive Outlook.com\\OneDrive\\Documents\\Deer River\\deer-river-app\\.next\\server\\middleware-manifest.json'
+}
+ GET / 500 in 23ms
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\shane\OneDrive Outlook.com\OneDrive\Documents\Deer River\deer-river-app\.next\server\middleware-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\shane\\OneDrive Outlook.com\\OneDrive\\Documents\\Deer River\\deer-river-app\\.next\\server\\middleware-manifest.json'
+}
+ GET /api/test-db 500 in 29ms
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\shane\OneDrive Outlook.com\OneDrive\Documents\Deer River\deer-river-app\.next\server\middleware-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\shane\\OneDrive Outlook.com\\OneDrive\\Documents\\Deer River\\deer-river-app\\.next\\server\\middleware-manifest.json'
+}
+ GET / 500 in 24ms
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\shane\OneDrive Outlook.com\OneDrive\Documents\Deer River\deer-river-app\.next\server\middleware-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\shane\\OneDrive Outlook.com\\OneDrive\\Documents\\Deer River\\deer-river-app\\.next\\server\\middleware-manifest.json'
+}
+ GET / 500 in 21ms
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\shane\OneDrive Outlook.com\OneDrive\Documents\Deer River\deer-river-app\.next\server\middleware-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\shane\\OneDrive Outlook.com\\OneDrive\\Documents\\Deer River\\deer-river-app\\.next\\server\\middleware-manifest.json'
+}
+ GET / 500 in 19ms
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\shane\OneDrive Outlook.com\OneDrive\Documents\Deer River\deer-river-app\.next\server\middleware-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\shane\\OneDrive Outlook.com\\OneDrive\\Documents\\Deer River\\deer-river-app\\.next\\server\\middleware-manifest.json'
+}
+ GET / 500 in 25ms
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\shane\OneDrive Outlook.com\OneDrive\Documents\Deer River\deer-river-app\.next\server\middleware-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\shane\\OneDrive Outlook.com\\OneDrive\\Documents\\Deer River\\deer-river-app\\.next\\server\\middleware-manifest.json'
+}
+ GET / 500 in 18ms
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\shane\OneDrive Outlook.com\OneDrive\Documents\Deer River\deer-river-app\.next\server\middleware-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\shane\\OneDrive Outlook.com\\OneDrive\\Documents\\Deer River\\deer-river-app\\.next\\server\\middleware-manifest.json'
+}
+ GET / 500 in 25ms
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\shane\OneDrive Outlook.com\OneDrive\Documents\Deer River\deer-river-app\.next\server\middleware-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\shane\\OneDrive Outlook.com\\OneDrive\\Documents\\Deer River\\deer-river-app\\.next\\server\\middleware-manifest.json'
+}
+ GET / 500 in 19ms
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\shane\OneDrive Outlook.com\OneDrive\Documents\Deer River\deer-river-app\.next\server\middleware-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\shane\\OneDrive Outlook.com\\OneDrive\\Documents\\Deer River\\deer-river-app\\.next\\server\\middleware-manifest.json'
+}
+ GET / 500 in 20ms
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\shane\OneDrive Outlook.com\OneDrive\Documents\Deer River\deer-river-app\.next\server\middleware-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\shane\\OneDrive Outlook.com\\OneDrive\\Documents\\Deer River\\deer-river-app\\.next\\server\\middleware-manifest.json'
+}
+ GET / 500 in 25ms
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\shane\OneDrive Outlook.com\OneDrive\Documents\Deer River\deer-river-app\.next\server\middleware-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\shane\\OneDrive Outlook.com\\OneDrive\\Documents\\Deer River\\deer-river-app\\.next\\server\\middleware-manifest.json'
+}
+ GET / 500 in 24ms
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\shane\OneDrive Outlook.com\OneDrive\Documents\Deer River\deer-river-app\.next\server\middleware-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\shane\\OneDrive Outlook.com\\OneDrive\\Documents\\Deer River\\deer-river-app\\.next\\server\\middleware-manifest.json'
+}
+ GET / 500 in 27ms
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\shane\OneDrive Outlook.com\OneDrive\Documents\Deer River\deer-river-app\.next\server\middleware-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\shane\\OneDrive Outlook.com\\OneDrive\\Documents\\Deer River\\deer-river-app\\.next\\server\\middleware-manifest.json'
+}
+ GET / 500 in 28ms
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\shane\OneDrive Outlook.com\OneDrive\Documents\Deer River\deer-river-app\.next\server\middleware-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\shane\\OneDrive Outlook.com\\OneDrive\\Documents\\Deer River\\deer-river-app\\.next\\server\\middleware-manifest.json'
+}
+ GET / 500 in 26ms
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\shane\OneDrive Outlook.com\OneDrive\Documents\Deer River\deer-river-app\.next\server\middleware-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\shane\\OneDrive Outlook.com\\OneDrive\\Documents\\Deer River\\deer-river-app\\.next\\server\\middleware-manifest.json'
+}
+ GET / 500 in 21ms
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\shane\OneDrive Outlook.com\OneDrive\Documents\Deer River\deer-river-app\.next\server\middleware-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\shane\\OneDrive Outlook.com\\OneDrive\\Documents\\Deer River\\deer-river-app\\.next\\server\\middleware-manifest.json'
+}
+ GET / 500 in 19ms
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\shane\OneDrive Outlook.com\OneDrive\Documents\Deer River\deer-river-app\.next\server\middleware-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\shane\\OneDrive Outlook.com\\OneDrive\\Documents\\Deer River\\deer-river-app\\.next\\server\\middleware-manifest.json'
+}
+ GET / 500 in 25ms
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\shane\OneDrive Outlook.com\OneDrive\Documents\Deer River\deer-river-app\.next\server\middleware-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\shane\\OneDrive Outlook.com\\OneDrive\\Documents\\Deer River\\deer-river-app\\.next\\server\\middleware-manifest.json'
+}
+ GET / 500 in 21ms
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\shane\OneDrive Outlook.com\OneDrive\Documents\Deer River\deer-river-app\.next\server\middleware-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\shane\\OneDrive Outlook.com\\OneDrive\\Documents\\Deer River\\deer-river-app\\.next\\server\\middleware-manifest.json'
+}
+ GET / 500 in 26ms
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\shane\OneDrive Outlook.com\OneDrive\Documents\Deer River\deer-river-app\.next\server\middleware-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\shane\\OneDrive Outlook.com\\OneDrive\\Documents\\Deer River\\deer-river-app\\.next\\server\\middleware-manifest.json'
+}
+ GET / 500 in 22ms
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\shane\OneDrive Outlook.com\OneDrive\Documents\Deer River\deer-river-app\.next\server\middleware-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\shane\\OneDrive Outlook.com\\OneDrive\\Documents\\Deer River\\deer-river-app\\.next\\server\\middleware-manifest.json'
+}
+ GET / 500 in 43ms
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\shane\OneDrive Outlook.com\OneDrive\Documents\Deer River\deer-river-app\.next\server\middleware-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\shane\\OneDrive Outlook.com\\OneDrive\\Documents\\Deer River\\deer-river-app\\.next\\server\\middleware-manifest.json'
+}
+ GET / 500 in 21ms
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\shane\OneDrive Outlook.com\OneDrive\Documents\Deer River\deer-river-app\.next\server\middleware-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\shane\\OneDrive Outlook.com\\OneDrive\\Documents\\Deer River\\deer-river-app\\.next\\server\\middleware-manifest.json'
+}
+ GET / 500 in 19ms
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\shane\OneDrive Outlook.com\OneDrive\Documents\Deer River\deer-river-app\.next\server\middleware-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\shane\\OneDrive Outlook.com\\OneDrive\\Documents\\Deer River\\deer-river-app\\.next\\server\\middleware-manifest.json'
+}
+ GET / 500 in 20ms
+   Reload env: .env.local
+ ✓ Compiled in 271ms (882 modules)
+ GET / 200 in 164ms
+ GET / 200 in 169ms
+ ✓ Compiled /_not-found in 339ms (886 modules)
+ GET /_next/static/css/app/layout.css?v=1758160629191 404 in 254ms
+ GET /_next/static/chunks/main-app.js?v=1758160629191 404 in 257ms
+ GET /_next/static/chunks/app-pages-internals.js 404 in 257ms
+ GET /_next/static/chunks/app/page.js 404 in 257ms
+ ✓ Compiled /favicon.ico in 211ms (397 modules)
+ GET /favicon.ico 200 in 255ms
+Testing database connection...
+DATABASE_URL: Set
+DATABASE_URL value: file:./prisma/dev.db
+All env vars: [ 'DATABASE_URL' ]
+Database connection failed: [Error [PrismaClientInitializationError]: Error in data model: Diagnostics { errors: [DatamodelError { span: Span { start: 192, end: 211, file_id: FileId(0) }, message: "Error validating datasource `db`: the URL must start with the protocol `postgresql://` or `postgres://`." }], warnings: [] }] {
+  clientVersion: '6.16.2',
+  errorCode: undefined,
+  retryable: undefined
+}
+ GET /api/test-db 500 in 322ms
+ ✓ Compiled in 423ms (902 modules)
+Testing database connection...
+DATABASE_URL: Set
+DATABASE_URL value: file:./prisma/dev.db
+All env vars: [ 'DATABASE_URL' ]
+Database connection failed: [Error [PrismaClientInitializationError]: Error in data model: Diagnostics { errors: [DatamodelError { span: Span { start: 192, end: 211, file_id: FileId(0) }, message: "Error validating datasource `db`: the URL must start with the protocol `postgresql://` or `postgres://`." }], warnings: [] }] {
+  clientVersion: '6.16.2',
+  errorCode: undefined,
+  retryable: undefined
+}
+ GET /api/test-db 500 in 336ms
+Testing database connection...
+DATABASE_URL: Set
+DATABASE_URL value: file:./prisma/dev.db
+All env vars: [ 'DATABASE_URL' ]
+Database connection failed: [Error [PrismaClientInitializationError]: Error in data model: Diagnostics { errors: [DatamodelError { span: Span { start: 192, end: 211, file_id: FileId(0) }, message: "Error validating datasource `db`: the URL must start with the protocol `postgresql://` or `postgres://`." }], warnings: [] }] {
+  clientVersion: '6.16.2',
+  errorCode: undefined,
+  retryable: undefined
+}
+ GET /api/test-db 500 in 207ms
+ GET /api/simple-test 404 in 35ms
+ ✓ Compiled in 587ms (902 modules)
+ ✓ Compiled /api/people in 186ms (389 modules)
+Fetching people...
+ GET /api/people 500 in 267ms
+Fetching people...
+ GET /api/people 500 in 5ms
+Fetching people...
+ GET /api/people 500 in 6ms
+ ✓ Compiled /_not-found in 485ms (895 modules)
+ GET /api/hello 404 in 585ms
+ GET /api/hello 404 in 13ms
+ GET /api/hello 404 in 14ms
+ GET /api/test 404 in 13ms
+ ✓ Compiled in 395ms (502 modules)
+ ✓ Compiled in 250ms (502 modules)
+ ✓ Compiled in 244ms (502 modules)
+ ✓ Compiled in 228ms (502 modules)
+ ✓ Compiled in 435ms (873 modules)
+ ✓ Compiled in 272ms (502 modules)
+ ✓ Compiled in 240ms (502 modules)
+ ✓ Compiled in 370ms (502 modules)
+ ✓ Compiled in 373ms (502 modules)
+ ✓ Compiled in 323ms (502 modules)
+ ✓ Compiled in 304ms (502 modules)
+ ✓ Compiled in 264ms (502 modules)
+ ✓ Compiled in 246ms (502 modules)
+ ✓ Compiled in 303ms (502 modules)
+ ✓ Compiled in 297ms (502 modules)
+ ✓ Compiled in 304ms (502 modules)
+ ✓ Compiled in 262ms (502 modules)
+ ✓ Compiled in 418ms (502 modules)
+ ✓ Compiled in 851ms (859 modules)
+ ✓ Compiled in 261ms (502 modules)
+ ✓ Compiled /_not-found in 188ms (863 modules)
+[Error: ENOENT: no such file or directory, open 'C:\Users\shane\OneDrive Outlook.com\OneDrive\Documents\Deer River\deer-river-app\.next\server\middleware-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\shane\\OneDrive Outlook.com\\OneDrive\\Documents\\Deer River\\deer-river-app\\.next\\server\\middleware-manifest.json'
+}
+ GET /api/test 500 in 484ms
+ GET /api/test 500 in 266ms
+[Error: ENOENT: no such file or directory, open 'C:\Users\shane\OneDrive Outlook.com\OneDrive\Documents\Deer River\deer-river-app\.next\server\middleware-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\shane\\OneDrive Outlook.com\\OneDrive\\Documents\\Deer River\\deer-river-app\\.next\\server\\middleware-manifest.json'
+}
+ GET /api/hello 500 in 236ms
+ GET /api/hello 500 in 213ms
+[Error: ENOENT: no such file or directory, stat 'C:\Users\shane\OneDrive Outlook.com\OneDrive\Documents\Deer River\deer-river-app\.next\cache\webpack\server-development\9.pack.gz'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'stat',
+  path: 'C:\\Users\\shane\\OneDrive Outlook.com\\OneDrive\\Documents\\Deer River\\deer-river-app\\.next\\cache\\webpack\\server-development\\9.pack.gz'
+}
+ ⨯ unhandledRejection: [Error: ENOENT: no such file or directory, stat 'C:\Users\shane\OneDrive Outlook.com\OneDrive\Documents\Deer River\deer-river-app\.next\cache\webpack\server-development\9.pack.gz'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'stat',
+  path: 'C:\\Users\\shane\\OneDrive Outlook.com\\OneDrive\\Documents\\Deer River\\deer-river-app\\.next\\cache\\webpack\\server-development\\9.pack.gz'
+}
+ ⨯ unhandledRejection:  [Error: ENOENT: no such file or directory, stat 'C:\Users\shane\OneDrive Outlook.com\OneDrive\Documents\Deer River\deer-river-app\.next\cache\webpack\server-development\9.pack.gz'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'stat',
+  path: 'C:\\Users\\shane\\OneDrive Outlook.com\\OneDrive\\Documents\\Deer River\\deer-river-app\\.next\\cache\\webpack\\server-development\\9.pack.gz'
+}
+<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, stat 'C:\Users\shane\OneDrive Outlook.com\OneDrive\Documents\Deer River\deer-river-app\.next\cache\webpack\server-development\9.pack.gz'
+ ✓ Compiled in 355ms (502 modules)
+ ✓ Compiled in 265ms (502 modules)
+ ✓ Compiled in 291ms (502 modules)
+ ✓ Compiled in 241ms (502 modules)
+ ✓ Compiled in 224ms (502 modules)
+ ✓ Compiled in 355ms (502 modules)
+ ✓ Compiled in 271ms (502 modules)
+<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, rename 'C:\Users\shane\OneDrive Outlook.com\OneDrive\Documents\Deer River\deer-river-app\.next\cache\webpack\client-development\1.pack.gz_' -> 'C:\Users\shane\OneDrive Outlook.com\OneDrive\Documents\Deer River\deer-river-app\.next\cache\webpack\client-development\1.pack.gz'
+ ✓ Compiled in 240ms (502 modules)
+ ✓ Compiled in 257ms (502 modules)
+<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, rename 'C:\Users\shane\OneDrive Outlook.com\OneDrive\Documents\Deer River\deer-river-app\.next\cache\webpack\client-development\0.pack.gz_' -> 'C:\Users\shane\OneDrive Outlook.com\OneDrive\Documents\Deer River\deer-river-app\.next\cache\webpack\client-development\0.pack.gz'
+ ✓ Compiled in 213ms (502 modules)
+ ✓ Compiled in 219ms (502 modules)
+<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, rename 'C:\Users\shane\OneDrive Outlook.com\OneDrive\Documents\Deer River\deer-river-app\.next\cache\webpack\client-development\0.pack.gz_' -> 'C:\Users\shane\OneDrive Outlook.com\OneDrive\Documents\Deer River\deer-river-app\.next\cache\webpack\client-development\0.pack.gz'
+ ✓ Compiled in 209ms (502 modules)
+ ✓ Compiled in 227ms (502 modules)

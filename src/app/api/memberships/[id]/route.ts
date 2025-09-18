@@ -34,13 +34,13 @@ export async function GET(
       data: membership,
       error: null 
     })
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error fetching membership:', error)
     return NextResponse.json(
       { 
         ok: false, 
         data: null, 
-        error: error.message 
+        error: error instanceof Error ? error.message : 'An error occurred' 
       },
       { status: 500 }
     )
@@ -96,13 +96,13 @@ export async function PATCH(
       data: updatedMembership,
       error: null 
     })
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error updating membership:', error)
     return NextResponse.json(
       { 
         ok: false, 
         data: null, 
-        error: error.message 
+        error: error instanceof Error ? error.message : 'An error occurred' 
       },
       { status: 500 }
     )
@@ -131,13 +131,13 @@ export async function DELETE(
       data: membership,
       error: null 
     })
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error deleting membership:', error)
     return NextResponse.json(
       { 
         ok: false, 
         data: null, 
-        error: error.message 
+        error: error instanceof Error ? error.message : 'An error occurred' 
       },
       { status: 500 }
     )

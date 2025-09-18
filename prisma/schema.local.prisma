@@ -38,9 +38,12 @@ model Faction {
   name        String
   description String?
   alignment   String?
-  members     Person[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  
+  // New relationship models
+  memberships PersonFactionMembership[]
+  opinions   FactionOpinion[]
 }
 
 model Household {
@@ -107,4 +110,47 @@ model EventLog {
   details   String?
   personId  String?
   createdAt DateTime @default(now())
+}
+
+/** One row per person↔faction relationship */
+model PersonFactionMembership {
+  id          String   @id @default(cuid())
+  personId    String
+  factionId   String
+  role        String?      // "member", "captain", "leader", etc.
+  isPrimary   Boolean @default(false)
+  joinedAt    DateTime @default(now())
+  leftAt      DateTime?    // null if active
+
+  /** Personal alignment with THIS faction's current direction:
+   * -100 (actively subversive) … 0 (neutral/indifferent) … +100 (strongly aligned)
+   */
+  alignment   Int      @default(0)
+
+  /** Optional: how publicly they show that alignment (0..100). */
+  openness    Int      @default(50)
+
+  /** Optional notes */
+  notes       String?
+
+  person   Person  @relation(fields: [personId], references: [id])
+  faction  Faction @relation(fields: [factionId], references: [id])
+
+  @@index([personId, factionId])
+  @@unique([personId, factionId, joinedAt]) // allows re-joining later
+}
+
+/** Feelings about factions regardless of membership */
+model FactionOpinion {
+  id        String   @id @default(cuid())
+  personId  String
+  factionId String
+  score     Int      // -100..100
+  reason    String?
+  updatedAt DateTime @updatedAt
+
+  person  Person  @relation(fields:[personId], references:[id])
+  faction Faction @relation(fields:[factionId], references:[id])
+
+  @@unique([personId, factionId], name: "personId_factionId")
 }
