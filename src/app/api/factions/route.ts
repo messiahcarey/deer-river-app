@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server'
+qimport { NextResponse } from 'next/server'
 import { PrismaClient } from '@prisma/client'
 
 export async function GET() {
@@ -33,16 +33,11 @@ export async function GET() {
 
     const factions = await prismaWithEnv.faction.findMany({
       include: {
-        memberships: {
-          where: { leftAt: null },
-          include: {
-            person: {
-              select: {
-                id: true,
-                name: true,
-                species: true
-              }
-            }
+        members: {
+          select: {
+            id: true,
+            name: true,
+            species: true
           }
         }
       },
