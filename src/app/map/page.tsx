@@ -57,7 +57,7 @@ export default function MapPage() {
           y: 50,
           capacity: 8,
           residents: [
-            { id: '1', name: 'Mayor Eleanor Brightwater', species: 'Human', occupation: 'Mayor' }
+            { id: '1', name: 'Mayor Eleanor Brightwater', species: 'Human', age: 45, occupation: 'Mayor', faction: { id: '1', name: 'Town Council', color: '#3B82F6' } }
           ],
           workers: []
         },
@@ -72,7 +72,7 @@ export default function MapPage() {
           capacity: 50,
           residents: [],
           workers: [
-            { id: '1', name: 'Mayor Eleanor Brightwater', species: 'Human', occupation: 'Mayor' }
+            { id: '1', name: 'Mayor Eleanor Brightwater', species: 'Human', age: 45, occupation: 'Mayor', faction: { id: '1', name: 'Town Council', color: '#3B82F6' } }
           ]
         },
         {
@@ -85,10 +85,10 @@ export default function MapPage() {
           y: 150,
           capacity: 10,
           residents: [
-            { id: '2', name: 'Thorin Ironbeard', species: 'Dwarf', occupation: 'Master Blacksmith' }
+            { id: '2', name: 'Thorin Ironbeard', species: 'Dwarf', age: 180, occupation: 'Master Blacksmith', faction: { id: '3', name: 'Artisans Union', color: '#F59E0B' } }
           ],
           workers: [
-            { id: '2', name: 'Thorin Ironbeard', species: 'Dwarf', occupation: 'Master Blacksmith' }
+            { id: '2', name: 'Thorin Ironbeard', species: 'Dwarf', age: 180, occupation: 'Master Blacksmith', faction: { id: '3', name: 'Artisans Union', color: '#F59E0B' } }
           ]
         },
         {
@@ -102,7 +102,7 @@ export default function MapPage() {
           capacity: 20,
           residents: [],
           workers: [
-            { id: '3', name: 'Luna Moonwhisper', species: 'Elf', occupation: 'Healer' }
+            { id: '3', name: 'Luna Moonwhisper', species: 'Elf', age: 250, occupation: 'Healer', faction: { id: '2', name: 'Merchants Guild', color: '#10B981' } }
           ]
         },
         {
@@ -115,7 +115,7 @@ export default function MapPage() {
           y: 250,
           capacity: 6,
           residents: [
-            { id: '3', name: 'Luna Moonwhisper', species: 'Elf', occupation: 'Healer' }
+            { id: '3', name: 'Luna Moonwhisper', species: 'Elf', age: 250, occupation: 'Healer', faction: { id: '2', name: 'Merchants Guild', color: '#10B981' } }
           ],
           workers: []
         },
@@ -130,7 +130,7 @@ export default function MapPage() {
           capacity: 30,
           residents: [],
           workers: [
-            { id: '4', name: 'Marcus Goldleaf', species: 'Halfling', occupation: 'Merchant' }
+            { id: '4', name: 'Marcus Goldleaf', species: 'Halfling', age: 35, occupation: 'Merchant', faction: { id: '2', name: 'Merchants Guild', color: '#10B981' } }
           ]
         },
         {
@@ -143,7 +143,7 @@ export default function MapPage() {
           y: 50,
           capacity: 12,
           residents: [
-            { id: '4', name: 'Marcus Goldleaf', species: 'Halfling', occupation: 'Merchant' }
+            { id: '4', name: 'Marcus Goldleaf', species: 'Halfling', age: 35, occupation: 'Merchant', faction: { id: '2', name: 'Merchants Guild', color: '#10B981' } }
           ],
           workers: []
         }
