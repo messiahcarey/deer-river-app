@@ -1,6 +1,110 @@
-import Link from "next/link";
+'use client'
+
+import Link from "next/link"
+import { useState, useEffect } from "react"
+import FactionEditModal from "@/components/FactionEditModal"
+
+interface Faction {
+  id: string
+  name: string
+  motto: string | null
+  description: string | null
+  color: string | null
+  members: Array<{
+    id: string
+    name: string
+    species: string
+  }>
+}
 
 export default function FactionsPage() {
+  const [factions, setFactions] = useState<Faction[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [editingFaction, setEditingFaction] = useState<Faction | null>(null)
+
+  useEffect(() => {
+    fetchFactions()
+  }, [])
+
+  const fetchFactions = async () => {
+    try {
+      setLoading(true)
+      const response = await fetch('/api/factions')
+      const data = await response.json()
+      
+      if (data.success) {
+        setFactions(data.data)
+      } else {
+        setError(data.error || 'Failed to fetch factions')
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Unknown error')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleEditFaction = (faction: Faction) => {
+    setEditingFaction(faction)
+  }
+
+  const handleSaveFaction = async (updatedFaction: Partial<Faction>) => {
+    try {
+      const response = await fetch(`/api/factions/${updatedFaction.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updatedFaction),
+      })
+
+      const data = await response.json()
+      if (data.success) {
+        await fetchFactions() // Refresh the list
+        setEditingFaction(null)
+      } else {
+        throw new Error(data.error || 'Failed to update faction')
+      }
+    } catch (err) {
+      throw err
+    }
+  }
+
+  const handleCreateFaction = async (newFaction: Partial<Faction>) => {
+    try {
+      const response = await fetch('/api/factions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newFaction),
+      })
+
+      const data = await response.json()
+      if (data.success) {
+        await fetchFactions() // Refresh the list
+        setEditingFaction(null)
+      } else {
+        throw new Error(data.error || 'Failed to create faction')
+      }
+    } catch (err) {
+      throw err
+    }
+  }
+
+  const getFactionIcon = (name: string) => {
+    const iconMap: { [key: string]: string } = {
+      'Town Council': '🏛️',
+      'Merchant Guild': '💰',
+      'Artisan Collective': '🔨',
+      'Temple of Light': '⛪',
+      'Agricultural Society': '🌾',
+      'Adventurer\'s Guild': '⚔️',
+    }
+    return iconMap[name] || '🏛️'
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-100">
       <div className="container mx-auto px-4 py-8">
@@ -16,24 +120,167 @@ export default function FactionsPage() {
           </p>
         </header>
 
-        <div className="bg-white rounded-lg shadow-lg p-6">
-          <div className="text-center py-12">
-            <div className="text-6xl mb-4">🏛️</div>
-            <h2 className="text-2xl font-semibold text-gray-800 mb-4">
-              Faction Management
+        <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-2xl font-semibold text-gray-800">
+              Factions ({factions.length})
             </h2>
-            <p className="text-gray-600 mb-6">
-              This page will show all the factions in Deer River, their alliances, 
-              rivalries, and political relationships.
-            </p>
-            <div className="bg-amber-50 p-4 rounded-lg">
-              <p className="text-sm text-amber-700">
-                <strong>Coming Soon:</strong> Faction list, alliance mapping, political relationships, and faction details.
-              </p>
+            <div className="flex gap-4">
+              <button
+                onClick={fetchFactions}
+                className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors"
+              >
+                🔄 Refresh
+              </button>
+              <button
+                onClick={() => setEditingFaction({} as Faction)}
+                className="bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-lg transition-colors"
+              >
+                ➕ New Faction
+              </button>
             </div>
           </div>
+
+          {loading && (
+            <div className="text-center py-8">
+              <div className="text-4xl mb-4">⏳</div>
+              <p className="text-gray-600">Loading factions...</p>
+            </div>
+          )}
+
+          {error && (
+            <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+              <p className="text-red-700">
+                <strong>Error:</strong> {error}
+              </p>
+            </div>
+          )}
+
+          {!loading && !error && factions.length === 0 && (
+            <div className="text-center py-12">
+              <div className="text-6xl mb-4">🏛️</div>
+              <h3 className="text-xl font-semibold text-gray-800 mb-4">
+                No Factions Found
+              </h3>
+              <p className="text-gray-600 mb-6">
+                Create your first faction to get started with political management.
+              </p>
+              <button
+                onClick={() => setEditingFaction({} as Faction)}
+                className="bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-3 rounded-lg transition-colors"
+              >
+                ➕ Create First Faction
+              </button>
+            </div>
+          )}
+
+          {!loading && !error && factions.length > 0 && (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {factions.map((faction) => (
+                <div key={faction.id} className="bg-gray-50 rounded-lg p-6 border border-gray-200 hover:shadow-md transition-shadow">
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="flex items-center space-x-3">
+                      <span className="text-3xl">{getFactionIcon(faction.name)}</span>
+                      <div>
+                        <h3 className="text-xl font-semibold text-gray-800">{faction.name}</h3>
+                        {faction.motto && (
+                          <p className="text-sm text-gray-600 italic">"{faction.motto}"</p>
+                        )}
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => handleEditFaction(faction)}
+                      className="text-blue-600 hover:text-blue-800 text-sm font-medium bg-blue-50 px-2 py-1 rounded"
+                    >
+                      ✏️ Edit
+                    </button>
+                  </div>
+                  
+                  {faction.description && (
+                    <p className="text-gray-700 text-sm mb-4">{faction.description}</p>
+                  )}
+                  
+                  <div className="flex items-center justify-between text-sm">
+                    <div className="flex items-center space-x-2">
+                      <span className="text-gray-600">Members:</span>
+                      <span className="font-medium text-gray-800">{faction.members.length}</span>
+                    </div>
+                    {faction.color && (
+                      <div 
+                        className="w-4 h-4 rounded-full border border-gray-300"
+                        style={{ backgroundColor: faction.color }}
+                        title={`Color: ${faction.color}`}
+                      ></div>
+                    )}
+                  </div>
+                  
+                  {faction.members.length > 0 && (
+                    <div className="mt-3 pt-3 border-t border-gray-200">
+                      <p className="text-xs text-gray-600 mb-2">Key Members:</p>
+                      <div className="flex flex-wrap gap-1">
+                        {faction.members.slice(0, 3).map((member) => (
+                          <span 
+                            key={member.id}
+                            className="text-xs bg-white px-2 py-1 rounded border"
+                          >
+                            {member.name}
+                          </span>
+                        ))}
+                        {faction.members.length > 3 && (
+                          <span className="text-xs text-gray-500">
+                            +{faction.members.length - 3} more
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
         </div>
+
+        {!loading && !error && factions.length > 0 && (
+          <div className="bg-white rounded-lg shadow-lg p-6">
+            <h3 className="text-xl font-semibold text-gray-800 mb-4">
+              Quick Stats
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <div className="bg-blue-50 p-4 rounded-lg text-center">
+                <div className="text-2xl font-bold text-blue-600">{factions.length}</div>
+                <div className="text-sm text-blue-700">Total Factions</div>
+              </div>
+              <div className="bg-green-50 p-4 rounded-lg text-center">
+                <div className="text-2xl font-bold text-green-600">
+                  {factions.reduce((sum, f) => sum + f.members.length, 0)}
+                </div>
+                <div className="text-sm text-green-700">Total Members</div>
+              </div>
+              <div className="bg-purple-50 p-4 rounded-lg text-center">
+                <div className="text-2xl font-bold text-purple-600">
+                  {Math.round(factions.reduce((sum, f) => sum + f.members.length, 0) / factions.length) || 0}
+                </div>
+                <div className="text-sm text-purple-700">Avg Members/Faction</div>
+              </div>
+              <div className="bg-orange-50 p-4 rounded-lg text-center">
+                <div className="text-2xl font-bold text-orange-600">
+                  {factions.filter(f => f.members.length > 0).length}
+                </div>
+                <div className="text-sm text-orange-700">Active Factions</div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Edit/Create Faction Modal */}
+        {editingFaction && (
+          <FactionEditModal
+            faction={editingFaction}
+            onClose={() => setEditingFaction(null)}
+            onSave={editingFaction.id ? handleSaveFaction : handleCreateFaction}
+          />
+        )}
       </div>
     </div>
-  );
+  )
 }
