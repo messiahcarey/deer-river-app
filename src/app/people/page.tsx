@@ -50,8 +50,27 @@ export default function PeoplePage() {
   const fetchPeople = async () => {
     try {
       setLoading(true);
+      const response = await fetch('/api/people');
+      const data = await response.json();
       
-      // Use realistic data directly
+      if (data.success) {
+        setPeople(data.data);
+        setError(null);
+      } else {
+        setError(data.error || 'Failed to fetch people');
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Unknown error');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchPeopleFallback = async () => {
+    try {
+      setLoading(true);
+      
+      // Fallback data if API fails
       const people = [
         {
           id: '1',
@@ -177,7 +196,19 @@ export default function PeoplePage() {
 
   const fetchLocations = async () => {
     try {
-      // Use realistic data directly
+      const response = await fetch('/api/locations');
+      const data = await response.json();
+      if (data.success) {
+        setLocations(data.data);
+      }
+    } catch (err) {
+      console.error('Failed to fetch locations:', err);
+    }
+  };
+
+  const fetchLocationsFallback = async () => {
+    try {
+      // Fallback data if API fails
       const locations = [
         { id: '1', name: 'Mayor\'s Manor', kind: 'residence' },
         { id: '2', name: 'Town Hall', kind: 'government' },
@@ -195,7 +226,19 @@ export default function PeoplePage() {
 
   const fetchFactions = async () => {
     try {
-      // Use realistic data directly
+      const response = await fetch('/api/factions');
+      const data = await response.json();
+      if (data.success) {
+        setFactions(data.data);
+      }
+    } catch (err) {
+      console.error('Failed to fetch factions:', err);
+    }
+  };
+
+  const fetchFactionsFallback = async () => {
+    try {
+      // Fallback data if API fails
       const factions = [
         { id: '1', name: 'Town Council', color: '#3B82F6' },
         { id: '2', name: 'Merchants Guild', color: '#10B981' },
@@ -215,11 +258,21 @@ export default function PeoplePage() {
 
   const handleSavePerson = async (updatedPerson: Partial<Person>) => {
     try {
-      // Update local state directly
-      setPeople(prev => prev.map(p => 
-        p.id === updatedPerson.id ? { ...p, ...updatedPerson } : p
-      ));
-      setEditingPerson(null);
+      const response = await fetch(`/api/people/${updatedPerson.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updatedPerson),
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        await fetchPeople(); // Refresh the list
+        setEditingPerson(null);
+      } else {
+        throw new Error(data.error || 'Failed to update person');
+      }
     } catch (err) {
       throw err;
     }

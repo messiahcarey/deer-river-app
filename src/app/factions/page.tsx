@@ -32,8 +32,27 @@ export default function FactionsPage() {
   const fetchFactions = async () => {
     try {
       setLoading(true)
+      const response = await fetch('/api/factions')
+      const data = await response.json()
       
-      // Use realistic data directly
+      if (data.success) {
+        setFactions(data.data)
+        setError(null)
+      } else {
+        setError(data.error || 'Failed to fetch factions')
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Unknown error')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const fetchFactionsFallback = async () => {
+    try {
+      setLoading(true)
+      
+      // Fallback data if API fails
       const factions = [
         {
           id: '1',

@@ -44,8 +44,27 @@ export default function MapPage() {
   const fetchBuildings = async () => {
     try {
       setLoading(true)
+      const response = await fetch('/api/locations')
+      const data = await response.json()
       
-      // Use realistic data directly
+      if (data.success) {
+        setBuildings(data.data)
+        setError(null)
+      } else {
+        setError(data.error || 'Failed to fetch buildings')
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Unknown error')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const fetchBuildingsFallback = async () => {
+    try {
+      setLoading(true)
+      
+      // Fallback data if API fails
       const buildings = [
         {
           id: '1',
