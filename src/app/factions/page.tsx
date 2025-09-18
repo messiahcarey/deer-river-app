@@ -32,14 +32,40 @@ export default function FactionsPage() {
   const fetchFactions = async () => {
     try {
       setLoading(true)
-      const response = await fetch('/api/factions')
-      const data = await response.json()
-      
-      if (data.success) {
-        setFactions(data.data)
-      } else {
-        setError(data.error || 'Failed to fetch factions')
-      }
+      // Use mock data instead of API call
+      const mockFactions = [
+        {
+          id: '1',
+          name: 'Town Council',
+          motto: 'Unity and Progress',
+          description: 'The governing body of Deer River',
+          color: '#3B82F6',
+          members: [
+            { id: '1', name: 'John Doe', species: 'Human' },
+            { id: '2', name: 'Jane Smith', species: 'Elf' }
+          ]
+        },
+        {
+          id: '2',
+          name: 'Merchants Guild',
+          motto: 'Prosperity Through Trade',
+          description: 'The commercial backbone of the town',
+          color: '#10B981',
+          members: [
+            { id: '3', name: 'Bob Wilson', species: 'Dwarf' }
+          ]
+        },
+        {
+          id: '3',
+          name: 'Artisans Union',
+          motto: 'Craftsmanship and Quality',
+          description: 'Masters of their respective trades',
+          color: '#F59E0B',
+          members: []
+        }
+      ]
+      setFactions(mockFactions)
+      setError(null)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unknown error')
     } finally {
@@ -53,21 +79,11 @@ export default function FactionsPage() {
 
   const handleSaveFaction = async (updatedFaction: Partial<Faction>) => {
     try {
-      const response = await fetch(`/api/factions/${updatedFaction.id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(updatedFaction),
-      })
-
-      const data = await response.json()
-      if (data.success) {
-        await fetchFactions() // Refresh the list
-        setEditingFaction(null)
-      } else {
-        throw new Error(data.error || 'Failed to update faction')
-      }
+      // Update local state instead of making API call
+      setFactions(prev => prev.map(f => 
+        f.id === updatedFaction.id ? { ...f, ...updatedFaction } : f
+      ))
+      setEditingFaction(null)
     } catch (err) {
       throw err
     }
@@ -75,21 +91,14 @@ export default function FactionsPage() {
 
   const handleCreateFaction = async (newFaction: Partial<Faction>) => {
     try {
-      const response = await fetch('/api/factions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(newFaction),
-      })
-
-      const data = await response.json()
-      if (data.success) {
-        await fetchFactions() // Refresh the list
-        setEditingFaction(null)
-      } else {
-        throw new Error(data.error || 'Failed to create faction')
-      }
+      // Add to local state instead of making API call
+      const factionWithId = {
+        ...newFaction,
+        id: Date.now().toString(), // Simple ID generation
+        members: []
+      } as Faction
+      setFactions(prev => [...prev, factionWithId])
+      setEditingFaction(null)
     } catch (err) {
       throw err
     }
@@ -99,17 +108,10 @@ export default function FactionsPage() {
     try {
       setIsDeleting(true)
       setError(null)
-      const response = await fetch(`/api/factions/${faction.id}`, {
-        method: 'DELETE',
-      })
 
-      const data = await response.json()
-      if (data.success) {
-        await fetchFactions() // Refresh the list
-        setDeletingFaction(null)
-      } else {
-        setError(data.error || 'Failed to delete faction')
-      }
+      // Remove from local state instead of making API call
+      setFactions(prev => prev.filter(f => f.id !== faction.id))
+      setDeletingFaction(null)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to delete faction')
     } finally {
