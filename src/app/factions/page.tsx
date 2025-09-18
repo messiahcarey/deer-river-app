@@ -37,7 +37,7 @@ export default function FactionsPage() {
       
       if (data.success) {
         // Add empty members array to each faction if it doesn't exist
-        const factionsWithMembers = data.data.map((faction: any) => ({
+        const factionsWithMembers = data.data.map((faction: { id: string; name: string; motto: string | null; description: string | null; color: string | null; members?: Array<{ id: string; name: string; species: string }> }) => ({
           ...faction,
           members: faction.members || []
         }))
