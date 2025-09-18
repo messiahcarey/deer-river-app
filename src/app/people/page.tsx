@@ -66,133 +66,6 @@ export default function PeoplePage() {
     }
   };
 
-  const fetchPeopleFallback = async () => {
-    try {
-      setLoading(true);
-      
-      // Fallback data if API fails
-      const people = [
-        {
-          id: '1',
-          name: 'Mayor Eleanor Brightwater',
-          species: 'Human',
-          age: 45,
-          occupation: 'Mayor',
-          notes: 'Elected leader of Deer River, known for her diplomatic skills',
-          tags: 'leadership,diplomatic,charismatic',
-          faction: {
-            id: '1',
-            name: 'Town Council',
-            color: '#3B82F6'
-          },
-          livesAt: {
-            id: '1',
-            name: 'Mayor\'s Manor',
-            kind: 'residence'
-          },
-          worksAt: {
-            id: '2',
-            name: 'Town Hall',
-            kind: 'government'
-          },
-          household: {
-            id: '1',
-            name: 'Brightwater Family'
-          }
-        },
-        {
-          id: '2',
-          name: 'Thorin Ironbeard',
-          species: 'Dwarf',
-          age: 180,
-          occupation: 'Master Blacksmith',
-          notes: 'Legendary craftsman, forges the finest weapons and tools',
-          tags: 'skilled,reliable,traditional',
-          faction: {
-            id: '3',
-            name: 'Artisans Union',
-            color: '#F59E0B'
-          },
-          livesAt: {
-            id: '3',
-            name: 'Ironbeard Forge',
-            kind: 'residence'
-          },
-          worksAt: {
-            id: '4',
-            name: 'Ironbeard Forge',
-            kind: 'business'
-          },
-          household: {
-            id: '2',
-            name: 'Ironbeard Clan'
-          }
-        },
-        {
-          id: '3',
-          name: 'Luna Moonwhisper',
-          species: 'Elf',
-          age: 250,
-          occupation: 'Healer',
-          notes: 'Wise healer with deep knowledge of herbs and magic',
-          tags: 'magical,wise,compassionate',
-          faction: {
-            id: '2',
-            name: 'Merchants Guild',
-            color: '#10B981'
-          },
-          livesAt: {
-            id: '5',
-            name: 'Moonwhisper Grove',
-            kind: 'residence'
-          },
-          worksAt: {
-            id: '6',
-            name: 'Healing House',
-            kind: 'business'
-          },
-          household: {
-            id: '3',
-            name: 'Moonwhisper Family'
-          }
-        },
-        {
-          id: '4',
-          name: 'Marcus Goldleaf',
-          species: 'Halfling',
-          age: 35,
-          occupation: 'Merchant',
-          notes: 'Successful trader with connections throughout the region',
-          tags: 'charismatic,wealthy,well-connected',
-          faction: {
-            id: '2',
-            name: 'Merchants Guild',
-            color: '#10B981'
-          },
-          livesAt: {
-            id: '7',
-            name: 'Goldleaf Manor',
-            kind: 'residence'
-          },
-          worksAt: {
-            id: '8',
-            name: 'Goldleaf Trading Post',
-            kind: 'business'
-          },
-          household: {
-            id: '4',
-            name: 'Goldleaf Family'
-          }
-        }
-      ];
-      setPeople(people);
-      setError(null);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Unknown error');
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const fetchLocations = async () => {
     try {
@@ -206,23 +79,6 @@ export default function PeoplePage() {
     }
   };
 
-  const fetchLocationsFallback = async () => {
-    try {
-      // Fallback data if API fails
-      const locations = [
-        { id: '1', name: 'Mayor\'s Manor', kind: 'residence' },
-        { id: '2', name: 'Town Hall', kind: 'government' },
-        { id: '3', name: 'Ironbeard Forge', kind: 'business' },
-        { id: '4', name: 'Healing House', kind: 'business' },
-        { id: '5', name: 'Moonwhisper Grove', kind: 'residence' },
-        { id: '6', name: 'Goldleaf Trading Post', kind: 'business' },
-        { id: '7', name: 'Goldleaf Manor', kind: 'residence' }
-      ];
-      setLocations(locations);
-    } catch (err) {
-      console.error('Failed to fetch locations:', err);
-    }
-  };
 
   const fetchFactions = async () => {
     try {
@@ -236,21 +92,6 @@ export default function PeoplePage() {
     }
   };
 
-  const fetchFactionsFallback = async () => {
-    try {
-      // Fallback data if API fails
-      const factions = [
-        { id: '1', name: 'Town Council', color: '#3B82F6' },
-        { id: '2', name: 'Merchants Guild', color: '#10B981' },
-        { id: '3', name: 'Artisans Union', color: '#F59E0B' },
-        { id: '4', name: 'Guardian Order', color: '#EF4444' },
-        { id: '5', name: 'Scholars Circle', color: '#8B5CF6' }
-      ];
-      setFactions(factions);
-    } catch (err) {
-      console.error('Failed to fetch factions:', err);
-    }
-  };
 
   const handleEditPerson = (person: Person) => {
     setEditingPerson(person);
