@@ -36,7 +36,12 @@ export default function FactionsPage() {
       const data = await response.json()
       
       if (data.success) {
-        setFactions(data.data)
+        // Add empty members array to each faction if it doesn't exist
+        const factionsWithMembers = data.data.map((faction: any) => ({
+          ...faction,
+          members: faction.members || []
+        }))
+        setFactions(factionsWithMembers)
         setError(null)
       } else {
         setError(data.error || 'Failed to fetch factions')
