@@ -22,6 +22,8 @@ export default function FactionsPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [editingFaction, setEditingFaction] = useState<Faction | null>(null)
+  const [deletingFaction, setDeletingFaction] = useState<Faction | null>(null)
+  const [isDeleting, setIsDeleting] = useState(false)
 
   useEffect(() => {
     fetchFactions()
@@ -90,6 +92,28 @@ export default function FactionsPage() {
       }
     } catch (err) {
       throw err
+    }
+  }
+
+  const handleDeleteFaction = async (faction: Faction) => {
+    try {
+      setIsDeleting(true)
+      setError(null)
+      const response = await fetch(`/api/factions/${faction.id}`, {
+        method: 'DELETE',
+      })
+
+      const data = await response.json()
+      if (data.success) {
+        await fetchFactions() // Refresh the list
+        setDeletingFaction(null)
+      } else {
+        setError(data.error || 'Failed to delete faction')
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to delete faction')
+    } finally {
+      setIsDeleting(false)
     }
   }
 
@@ -188,12 +212,20 @@ export default function FactionsPage() {
                         )}
                       </div>
                     </div>
-                    <button
-                      onClick={() => handleEditFaction(faction)}
-                      className="text-blue-600 hover:text-blue-800 text-sm font-medium bg-blue-50 px-2 py-1 rounded"
-                    >
-                      ✏️ Edit
-                    </button>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => handleEditFaction(faction)}
+                        className="text-blue-600 hover:text-blue-800 text-sm font-medium bg-blue-50 px-2 py-1 rounded"
+                      >
+                        ✏️ Edit
+                      </button>
+                      <button
+                        onClick={() => setDeletingFaction(faction)}
+                        className="text-red-600 hover:text-red-800 text-sm font-medium bg-red-50 px-2 py-1 rounded"
+                      >
+                        🗑️ Delete
+                      </button>
+                    </div>
                   </div>
                   
                   {faction.description && (
@@ -279,6 +311,59 @@ export default function FactionsPage() {
             onClose={() => setEditingFaction(null)}
             onSave={editingFaction.id ? handleSaveFaction : handleCreateFaction}
           />
+        )}
+
+        {/* Delete Confirmation Modal */}
+        {deletingFaction && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+            <div className="bg-white rounded-lg shadow-xl max-w-md w-full">
+              <div className="p-6">
+                <div className="flex items-center mb-4">
+                  <div className="text-red-500 text-2xl mr-3">⚠️</div>
+                  <h3 className="text-xl font-semibold text-gray-800">
+                    Delete Faction
+                  </h3>
+                </div>
+                
+                <p className="text-gray-600 mb-6">
+                  Are you sure you want to delete <strong>{deletingFaction.name}</strong>? 
+                  This action cannot be undone and will:
+                </p>
+                
+                <ul className="text-sm text-gray-600 mb-6 list-disc list-inside space-y-1">
+                  <li>Remove all members from this faction</li>
+                  <li>Delete all alliances involving this faction</li>
+                  <li>Permanently delete the faction</li>
+                </ul>
+                
+                {deletingFaction.members.length > 0 && (
+                  <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 mb-6">
+                    <p className="text-sm text-yellow-800">
+                      <strong>Warning:</strong> This faction has {deletingFaction.members.length} member(s). 
+                      They will be removed from the faction but not deleted.
+                    </p>
+                  </div>
+                )}
+                
+                <div className="flex justify-end space-x-3">
+                  <button
+                    onClick={() => setDeletingFaction(null)}
+                    disabled={isDeleting}
+                    className="px-4 py-2 text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={() => handleDeleteFaction(deletingFaction)}
+                    disabled={isDeleting}
+                    className="px-4 py-2 text-white bg-red-600 rounded-md hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {isDeleting ? 'Deleting...' : 'Delete Faction'}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
         )}
       </div>
     </div>
