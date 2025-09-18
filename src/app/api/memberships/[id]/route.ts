@@ -1,0 +1,145 @@
+import { NextRequest, NextResponse } from 'next/server'
+import { PrismaClient } from '@prisma/client'
+
+const prisma = new PrismaClient()
+
+export async function GET(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await params
+
+    const membership = await prisma.personFactionMembership.findUnique({
+      where: { id },
+      include: {
+        faction: true,
+        person: true
+      }
+    })
+
+    if (!membership) {
+      return NextResponse.json(
+        { 
+          ok: false, 
+          data: null, 
+          error: 'Membership not found' 
+        },
+        { status: 404 }
+      )
+    }
+
+    return NextResponse.json({ 
+      ok: true, 
+      data: membership,
+      error: null 
+    })
+  } catch (error: any) {
+    console.error('Error fetching membership:', error)
+    return NextResponse.json(
+      { 
+        ok: false, 
+        data: null, 
+        error: error.message 
+      },
+      { status: 500 }
+    )
+  }
+}
+
+export async function PATCH(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await params
+    const body = await request.json()
+
+    // If setting as primary, remove primary status from other memberships
+    if (body.isPrimary === true) {
+      const membership = await prisma.personFactionMembership.findUnique({
+        where: { id },
+        select: { personId: true }
+      })
+
+      if (membership) {
+        await prisma.personFactionMembership.updateMany({
+          where: {
+            personId: membership.personId,
+            isPrimary: true,
+            leftAt: null,
+            id: { not: id }
+          },
+          data: { isPrimary: false }
+        })
+      }
+    }
+
+    const updatedMembership = await prisma.personFactionMembership.update({
+      where: { id },
+      data: {
+        role: body.role ?? undefined,
+        isPrimary: typeof body.isPrimary === 'boolean' ? body.isPrimary : undefined,
+        alignment: typeof body.alignment === 'number' ? body.alignment : undefined,
+        openness: typeof body.openness === 'number' ? body.openness : undefined,
+        leftAt: body.leftAt === null ? null : (body.leftAt ? new Date(body.leftAt) : undefined),
+        notes: body.notes ?? undefined
+      },
+      include: {
+        faction: true,
+        person: true
+      }
+    })
+
+    return NextResponse.json({ 
+      ok: true, 
+      data: updatedMembership,
+      error: null 
+    })
+  } catch (error: any) {
+    console.error('Error updating membership:', error)
+    return NextResponse.json(
+      { 
+        ok: false, 
+        data: null, 
+        error: error.message 
+      },
+      { status: 500 }
+    )
+  }
+}
+
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await params
+
+    // Soft delete by setting leftAt
+    const membership = await prisma.personFactionMembership.update({
+      where: { id },
+      data: { leftAt: new Date() },
+      include: {
+        faction: true,
+        person: true
+      }
+    })
+
+    return NextResponse.json({ 
+      ok: true, 
+      data: membership,
+      error: null 
+    })
+  } catch (error: any) {
+    console.error('Error deleting membership:', error)
+    return NextResponse.json(
+      { 
+        ok: false, 
+        data: null, 
+        error: error.message 
+      },
+      { status: 500 }
+    )
+  }
+}
