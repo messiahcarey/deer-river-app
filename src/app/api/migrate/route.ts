@@ -100,6 +100,31 @@ export async function POST() {
         UNIQUE("fromPersonId", "toPersonId")
       );`,
       
+      // PersonFactionMembership table (depends on Person and Faction)
+      `CREATE TABLE IF NOT EXISTS "PersonFactionMembership" (
+        "id" TEXT NOT NULL PRIMARY KEY,
+        "personId" TEXT NOT NULL,
+        "factionId" TEXT NOT NULL,
+        "role" TEXT NOT NULL DEFAULT 'member',
+        "isPrimary" BOOLEAN NOT NULL DEFAULT false,
+        "alignment" INTEGER NOT NULL DEFAULT 0,
+        "openness" INTEGER NOT NULL DEFAULT 50,
+        "joinedAt" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        "leftAt" TIMESTAMP,
+        "notes" TEXT
+      );`,
+      
+      // FactionOpinion table (depends on Person and Faction)
+      `CREATE TABLE IF NOT EXISTS "FactionOpinion" (
+        "id" TEXT NOT NULL PRIMARY KEY,
+        "personId" TEXT NOT NULL,
+        "factionId" TEXT NOT NULL,
+        "score" INTEGER NOT NULL,
+        "reason" TEXT,
+        "updatedAt" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        UNIQUE("personId", "factionId")
+      );`,
+      
       // Alliance table (depends on Faction)
       `CREATE TABLE IF NOT EXISTS "Alliance" (
         "id" TEXT NOT NULL PRIMARY KEY,
