@@ -42,6 +42,8 @@ export default function PeoplePage() {
   const [viewingFactions, setViewingFactions] = useState<Person | null>(null);
   const [selectedPeople, setSelectedPeople] = useState<string[]>([]);
   const [showFactionModal, setShowFactionModal] = useState(false);
+  const [sortField, setSortField] = useState<keyof Person | null>(null);
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
   const [locations, setLocations] = useState<Array<{id: string; name: string; kind: string}>>([]);
   const [factions, setFactions] = useState<Array<{id: string; name: string; color: string | null}>>([]);
 
@@ -200,6 +202,61 @@ export default function PeoplePage() {
     }
   };
 
+  const handleSort = (field: keyof Person) => {
+    if (sortField === field) {
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortField(field);
+      setSortDirection('asc');
+    }
+  };
+
+  const getSortedPeople = () => {
+    if (!sortField) return people;
+
+    return [...people].sort((a, b) => {
+      let aValue = a[sortField];
+      let bValue = b[sortField];
+
+      // Handle null/undefined values
+      if (aValue === null || aValue === undefined) aValue = '';
+      if (bValue === null || bValue === undefined) bValue = '';
+
+      // Handle nested objects (faction, livesAt, worksAt)
+      if (sortField === 'faction' && typeof aValue === 'object' && aValue !== null) {
+        aValue = (aValue as any).name || '';
+      }
+      if (sortField === 'faction' && typeof bValue === 'object' && bValue !== null) {
+        bValue = (bValue as any).name || '';
+      }
+      if (sortField === 'livesAt' && typeof aValue === 'object' && aValue !== null) {
+        aValue = (aValue as any).name || '';
+      }
+      if (sortField === 'livesAt' && typeof bValue === 'object' && bValue !== null) {
+        bValue = (bValue as any).name || '';
+      }
+      if (sortField === 'worksAt' && typeof aValue === 'object' && aValue !== null) {
+        aValue = (aValue as any).name || '';
+      }
+      if (sortField === 'worksAt' && typeof bValue === 'object' && bValue !== null) {
+        bValue = (bValue as any).name || '';
+      }
+
+      // Convert to strings for comparison
+      const aStr = String(aValue).toLowerCase();
+      const bStr = String(bValue).toLowerCase();
+
+      if (aStr < bStr) return sortDirection === 'asc' ? -1 : 1;
+      if (aStr > bStr) return sortDirection === 'asc' ? 1 : -1;
+      return 0;
+    });
+  };
+
+  const getSortIcon = (field: keyof Person) => {
+    if (sortField !== field) return '↕️';
+    return sortDirection === 'asc' ? '↑' : '↓';
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-100">
       <div className="container mx-auto px-4 py-8">
@@ -319,19 +376,68 @@ export default function PeoplePage() {
                         className="rounded"
                       />
                     </th>
-                    <th className="px-4 py-3 text-left font-semibold text-gray-700">Name</th>
-                    <th className="px-4 py-3 text-left font-semibold text-gray-700">Species</th>
-                    <th className="px-4 py-3 text-left font-semibold text-gray-700">Age</th>
-                    <th className="px-4 py-3 text-left font-semibold text-gray-700">Occupation</th>
-                    <th className="px-4 py-3 text-left font-semibold text-gray-700">Faction</th>
-                    <th className="px-4 py-3 text-left font-semibold text-gray-700">Lives At</th>
-                            <th className="px-4 py-3 text-left font-semibold text-gray-700">Works At</th>
-                            <th className="px-4 py-3 text-left font-semibold text-gray-700">Status</th>
-                            <th className="px-4 py-3 text-left font-semibold text-gray-700">Actions</th>
+                    <th 
+                      className="px-4 py-3 text-left font-semibold text-gray-700 cursor-pointer hover:bg-gray-100 select-none"
+                      onClick={() => handleSort('name')}
+                    >
+                      <div className="flex items-center gap-1">
+                        Name {getSortIcon('name')}
+                      </div>
+                    </th>
+                    <th 
+                      className="px-4 py-3 text-left font-semibold text-gray-700 cursor-pointer hover:bg-gray-100 select-none"
+                      onClick={() => handleSort('species')}
+                    >
+                      <div className="flex items-center gap-1">
+                        Species {getSortIcon('species')}
+                      </div>
+                    </th>
+                    <th 
+                      className="px-4 py-3 text-left font-semibold text-gray-700 cursor-pointer hover:bg-gray-100 select-none"
+                      onClick={() => handleSort('age')}
+                    >
+                      <div className="flex items-center gap-1">
+                        Age {getSortIcon('age')}
+                      </div>
+                    </th>
+                    <th 
+                      className="px-4 py-3 text-left font-semibold text-gray-700 cursor-pointer hover:bg-gray-100 select-none"
+                      onClick={() => handleSort('occupation')}
+                    >
+                      <div className="flex items-center gap-1">
+                        Occupation {getSortIcon('occupation')}
+                      </div>
+                    </th>
+                    <th 
+                      className="px-4 py-3 text-left font-semibold text-gray-700 cursor-pointer hover:bg-gray-100 select-none"
+                      onClick={() => handleSort('faction')}
+                    >
+                      <div className="flex items-center gap-1">
+                        Faction {getSortIcon('faction')}
+                      </div>
+                    </th>
+                    <th 
+                      className="px-4 py-3 text-left font-semibold text-gray-700 cursor-pointer hover:bg-gray-100 select-none"
+                      onClick={() => handleSort('livesAt')}
+                    >
+                      <div className="flex items-center gap-1">
+                        Lives At {getSortIcon('livesAt')}
+                      </div>
+                    </th>
+                    <th 
+                      className="px-4 py-3 text-left font-semibold text-gray-700 cursor-pointer hover:bg-gray-100 select-none"
+                      onClick={() => handleSort('worksAt')}
+                    >
+                      <div className="flex items-center gap-1">
+                        Works At {getSortIcon('worksAt')}
+                      </div>
+                    </th>
+                    <th className="px-4 py-3 text-left font-semibold text-gray-700">Status</th>
+                    <th className="px-4 py-3 text-left font-semibold text-gray-700">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">
-                  {people.map((person) => (
+                  {getSortedPeople().map((person) => (
                     <tr key={person.id} className={`hover:bg-gray-50 ${selectedPeople.includes(person.id) ? 'bg-blue-50' : ''}`}>
                       <td className="px-4 py-3">
                         <input
