@@ -24,6 +24,7 @@ export default function FactionsPage() {
   const [editingFaction, setEditingFaction] = useState<Faction | null>(null)
   const [deletingFaction, setDeletingFaction] = useState<Faction | null>(null)
   const [isDeleting, setIsDeleting] = useState(false)
+  const [viewingMembers, setViewingMembers] = useState<Faction | null>(null)
 
   useEffect(() => {
     fetchFactions()
@@ -242,9 +243,12 @@ export default function FactionsPage() {
                           </span>
                         ))}
                         {faction.members.length > 3 && (
-                          <span className="text-xs text-gray-500">
+                          <button
+                            onClick={() => setViewingMembers(faction)}
+                            className="text-xs text-blue-600 hover:text-blue-800 hover:underline cursor-pointer"
+                          >
                             +{faction.members.length - 3} more
-                          </span>
+                          </button>
                         )}
                       </div>
                     </div>
@@ -342,6 +346,74 @@ export default function FactionsPage() {
                     className="px-4 py-2 text-white bg-red-600 rounded-md hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {isDeleting ? 'Deleting...' : 'Delete Faction'}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Members Modal */}
+        {viewingMembers && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+            <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[80vh] overflow-hidden">
+              <div className="p-6">
+                <div className="flex items-center justify-between mb-6">
+                  <div className="flex items-center space-x-3">
+                    <span className="text-3xl">{getFactionIcon(viewingMembers.name)}</span>
+                    <div>
+                      <h3 className="text-2xl font-semibold text-gray-800">
+                        {viewingMembers.name} Members
+                      </h3>
+                      <p className="text-gray-600">
+                        {viewingMembers.members.length} member{viewingMembers.members.length !== 1 ? 's' : ''}
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => setViewingMembers(null)}
+                    className="text-gray-400 hover:text-gray-600 text-2xl"
+                  >
+                    ✕
+                  </button>
+                </div>
+                
+                <div className="max-h-96 overflow-y-auto">
+                  {viewingMembers.members.length === 0 ? (
+                    <div className="text-center py-8">
+                      <div className="text-4xl mb-4">👥</div>
+                      <p className="text-gray-600">No members in this faction</p>
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      {viewingMembers.members.map((member) => (
+                        <div
+                          key={member.id}
+                          className="bg-gray-50 rounded-lg p-4 border border-gray-200 hover:bg-gray-100 transition-colors"
+                        >
+                          <div className="flex items-center space-x-3">
+                            <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                              <span className="text-blue-600 font-semibold">
+                                {member.name.charAt(0).toUpperCase()}
+                              </span>
+                            </div>
+                            <div>
+                              <h4 className="font-medium text-gray-800">{member.name}</h4>
+                              <p className="text-sm text-gray-600 capitalize">{member.species}</p>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+                
+                <div className="mt-6 pt-4 border-t border-gray-200">
+                  <button
+                    onClick={() => setViewingMembers(null)}
+                    className="w-full px-4 py-2 text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 transition-colors"
+                  >
+                    Close
                   </button>
                 </div>
               </div>
