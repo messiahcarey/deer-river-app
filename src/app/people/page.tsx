@@ -252,12 +252,12 @@ export default function PeoplePage() {
       
       // Handle memberships array (sort by primary faction name)
       if (sortField === 'memberships' && Array.isArray(aValue)) {
-        const primaryMembership = aValue.find((m: any) => m.isPrimary);
-        aValue = primaryMembership ? primaryMembership.faction.name : (aValue.length > 0 ? aValue[0].faction.name : '');
+        const primaryMembership = aValue.find((m: { isPrimary: boolean; faction: { name: string } }) => m.isPrimary);
+        aValue = primaryMembership ? primaryMembership.faction.name : (aValue.length > 0 ? (aValue[0] as { faction: { name: string } }).faction.name : '');
       }
       if (sortField === 'memberships' && Array.isArray(bValue)) {
-        const primaryMembership = bValue.find((m: any) => m.isPrimary);
-        bValue = primaryMembership ? primaryMembership.faction.name : (bValue.length > 0 ? bValue[0].faction.name : '');
+        const primaryMembership = bValue.find((m: { isPrimary: boolean; faction: { name: string } }) => m.isPrimary);
+        bValue = primaryMembership ? primaryMembership.faction.name : (bValue.length > 0 ? (bValue[0] as { faction: { name: string } }).faction.name : '');
       }
       
       // Handle tags field (convert to display text)
