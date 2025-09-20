@@ -87,7 +87,6 @@ model Location {
   x         Float?
   y         Float?
   address   String?
-  capacity  Int?
   notes     String?
 
   residents Person[]   @relation("LivesAt")
