@@ -422,7 +422,7 @@ export default function PeoplePage() {
               <table className="w-full text-sm">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th className="px-4 py-3 text-left font-semibold text-gray-700 w-12">
+                    <th className="px-4 py-3 text-center font-semibold text-gray-700 w-12">
                       <input
                         type="checkbox"
                         checked={selectedPeople.length === people.length && people.length > 0}
