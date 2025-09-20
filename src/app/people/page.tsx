@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import PersonEditModal from "@/components/PersonEditModal";
 import FactionMembershipPanel from "@/components/FactionMembershipPanel";
+import BulkFactionAssigner from "@/components/BulkFactionAssigner";
 
 interface Person {
   id: string;
@@ -40,6 +41,7 @@ export default function PeoplePage() {
   const [error, setError] = useState<string | null>(null);
   const [editingPerson, setEditingPerson] = useState<Person | null>(null);
   const [viewingFactions, setViewingFactions] = useState<Person | null>(null);
+  const [showBulkAssigner, setShowBulkAssigner] = useState(false);
   const [locations, setLocations] = useState<Array<{id: string; name: string; kind: string}>>([]);
   const [factions, setFactions] = useState<Array<{id: string; name: string; color: string | null}>>([]);
 
@@ -147,6 +149,12 @@ export default function PeoplePage() {
                 className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors"
               >
                 🔄 Refresh
+              </button>
+              <button
+                onClick={() => setShowBulkAssigner(true)}
+                className="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-lg transition-colors"
+              >
+                🏛️ Bulk Assign Factions
               </button>
               <Link 
                 href="/import" 
@@ -341,6 +349,11 @@ export default function PeoplePage() {
               </div>
             </div>
           </div>
+        )}
+
+        {/* Bulk Faction Assigner Modal */}
+        {showBulkAssigner && (
+          <BulkFactionAssigner onClose={() => setShowBulkAssigner(false)} />
         )}
       </div>
     </div>
