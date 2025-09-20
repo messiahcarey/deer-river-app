@@ -74,6 +74,26 @@ export async function GET() {
             name: true,
           },
         },
+        memberships: {
+          where: {
+            leftAt: null, // Only active memberships
+          },
+          select: {
+            id: true,
+            role: true,
+            isPrimary: true,
+            faction: {
+              select: {
+                id: true,
+                name: true,
+                color: true,
+              },
+            },
+          },
+          orderBy: {
+            isPrimary: 'desc', // Primary membership first
+          },
+        },
       },
       orderBy: {
         name: 'asc'

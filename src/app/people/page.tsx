@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import PersonEditModal from "@/components/PersonEditModal";
-import FactionMembershipPanel from "@/components/FactionMembershipPanel";
 
 interface Person {
   id: string;
@@ -32,6 +31,16 @@ interface Person {
     id: string;
     name: string | null;
   } | null;
+  memberships?: {
+    id: string;
+    faction: {
+      id: string;
+      name: string;
+      color: string | null;
+    };
+    role: string;
+    isPrimary: boolean;
+  }[];
 }
 
 export default function PeoplePage() {
@@ -39,7 +48,6 @@ export default function PeoplePage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [editingPerson, setEditingPerson] = useState<Person | null>(null);
-  const [viewingFactions, setViewingFactions] = useState<Person | null>(null);
   const [selectedPeople, setSelectedPeople] = useState<string[]>([]);
   const [showFactionModal, setShowFactionModal] = useState(false);
   const [sortField, setSortField] = useState<keyof Person | null>(null);
@@ -433,6 +441,7 @@ export default function PeoplePage() {
                       </div>
                     </th>
                     <th className="px-4 py-3 text-left font-semibold text-gray-700">Status</th>
+                    <th className="px-4 py-3 text-left font-semibold text-gray-700">Faction</th>
                     <th className="px-4 py-3 text-left font-semibold text-gray-700">Actions</th>
                   </tr>
                 </thead>
@@ -489,6 +498,28 @@ export default function PeoplePage() {
                                   {person.tags === 'present' ? 'Present' : 'Absent'}
                                 </span>
                               </td>
+                              <td className="px-4 py-3 text-gray-700">
+                                {person.memberships && person.memberships.length > 0 ? (
+                                  <div className="space-y-1">
+                                    {person.memberships.map((membership) => (
+                                      <div key={membership.id} className="flex items-center gap-2">
+                                        <span 
+                                          className="w-3 h-3 rounded-full"
+                                          style={{ backgroundColor: membership.faction.color || '#6b7280' }}
+                                        ></span>
+                                        <span className="text-sm">
+                                          {membership.faction.name}
+                                          {membership.isPrimary && (
+                                            <span className="ml-1 text-xs text-gray-500">(Primary)</span>
+                                          )}
+                                        </span>
+                                      </div>
+                                    ))}
+                                  </div>
+                                ) : (
+                                  <span className="text-gray-400 text-sm">No faction</span>
+                                )}
+                              </td>
                               <td className="px-4 py-3">
                                 <div className="flex space-x-2">
                                   <button
@@ -496,12 +527,6 @@ export default function PeoplePage() {
                                     className="text-blue-600 hover:text-blue-800 text-sm font-medium bg-blue-50 px-2 py-1 rounded"
                                   >
                                     ✏️ Edit
-                                  </button>
-                                  <button
-                                    onClick={() => setViewingFactions(person)}
-                                    className="text-purple-600 hover:text-purple-800 text-sm font-medium bg-purple-50 px-2 py-1 rounded"
-                                  >
-                                    🏛️ Factions
                                   </button>
                                 </div>
                               </td>
@@ -556,30 +581,6 @@ export default function PeoplePage() {
           />
         )}
 
-        {/* Faction Relationships Modal */}
-        {viewingFactions && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-lg w-full max-w-4xl max-h-[90vh] overflow-y-auto">
-              <div className="p-6">
-                <div className="flex justify-between items-center mb-6">
-                  <h2 className="text-2xl font-bold text-gray-800">
-                    Faction Relationships - {viewingFactions.name}
-                  </h2>
-                  <button
-                    onClick={() => setViewingFactions(null)}
-                    className="text-gray-500 hover:text-gray-700 text-2xl"
-                  >
-                    ×
-                  </button>
-                </div>
-                <FactionMembershipPanel 
-                  personId={viewingFactions.id} 
-                  personName={viewingFactions.name}
-                />
-              </div>
-            </div>
-          </div>
-        )}
 
         {/* Faction Selection Modal */}
         {showFactionModal && (
