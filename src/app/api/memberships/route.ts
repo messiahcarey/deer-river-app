@@ -1,16 +1,36 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { PrismaClient } from '@prisma/client'
 
-const prisma = new PrismaClient()
-
 export async function GET(request: NextRequest) {
   try {
+    // Check DATABASE_URL first
+    const dbUrl = process.env.DATABASE_URL?.trim()
+    if (!dbUrl || (!dbUrl.startsWith('postgresql://') && !dbUrl.startsWith('postgres://'))) {
+      return NextResponse.json({
+        ok: false,
+        data: null,
+        error: `Invalid DATABASE_URL format: ${dbUrl}`,
+        timestamp: new Date().toISOString()
+      }, { status: 500 })
+    }
+
+    // Create Prisma client with explicit environment variable
+    const prismaWithEnv = new PrismaClient({
+      datasources: {
+        db: {
+          url: dbUrl
+        }
+      }
+    })
+
+    await prismaWithEnv.$connect()
+
     const { searchParams } = new URL(request.url)
     const personId = searchParams.get('personId')
     const factionId = searchParams.get('factionId')
     const active = searchParams.get('active')
 
-    const memberships = await prisma.personFactionMembership.findMany({
+    const memberships = await prismaWithEnv.personFactionMembership.findMany({
       where: {
         personId: personId || undefined,
         factionId: factionId || undefined,
@@ -25,6 +45,8 @@ export async function GET(request: NextRequest) {
         { joinedAt: 'desc' }
       ]
     })
+
+    await prismaWithEnv.$disconnect()
 
     return NextResponse.json({ 
       ok: true, 
@@ -46,6 +68,17 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    // Check DATABASE_URL first
+    const dbUrl = process.env.DATABASE_URL?.trim()
+    if (!dbUrl || (!dbUrl.startsWith('postgresql://') && !dbUrl.startsWith('postgres://'))) {
+      return NextResponse.json({
+        ok: false,
+        data: null,
+        error: `Invalid DATABASE_URL format: ${dbUrl}`,
+        timestamp: new Date().toISOString()
+      }, { status: 500 })
+    }
+
     const body = await request.json()
     
     // Validate required fields
@@ -60,10 +93,21 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Create Prisma client with explicit environment variable
+    const prismaWithEnv = new PrismaClient({
+      datasources: {
+        db: {
+          url: dbUrl
+        }
+      }
+    })
+
+    await prismaWithEnv.$connect()
+
     // Check if person and faction exist
     const [person, faction] = await Promise.all([
-      prisma.person.findUnique({ where: { id: body.personId } }),
-      prisma.faction.findUnique({ where: { id: body.factionId } })
+      prismaWithEnv.person.findUnique({ where: { id: body.personId } }),
+      prismaWithEnv.faction.findUnique({ where: { id: body.factionId } })
     ])
 
     if (!person) {
@@ -90,7 +134,7 @@ export async function POST(request: NextRequest) {
 
     // If this is set as primary, remove primary status from other memberships
     if (body.isPrimary) {
-      await prisma.personFactionMembership.updateMany({
+      await prismaWithEnv.personFactionMembership.updateMany({
         where: {
           personId: body.personId,
           isPrimary: true,
@@ -100,7 +144,7 @@ export async function POST(request: NextRequest) {
       })
     }
 
-    const membership = await prisma.personFactionMembership.create({
+    const membership = await prismaWithEnv.personFactionMembership.create({
       data: {
         personId: body.personId,
         factionId: body.factionId,
@@ -115,6 +159,8 @@ export async function POST(request: NextRequest) {
         person: true
       }
     })
+
+    await prismaWithEnv.$disconnect()
 
     return NextResponse.json({ 
       ok: true, 
