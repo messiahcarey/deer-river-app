@@ -114,10 +114,32 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    // Check DATABASE_URL first
+    const dbUrl = process.env.DATABASE_URL?.trim()
+    if (!dbUrl || (!dbUrl.startsWith('postgresql://') && !dbUrl.startsWith('postgres://'))) {
+      return NextResponse.json({
+        ok: false,
+        data: null,
+        error: `Invalid DATABASE_URL format: ${dbUrl}`,
+        timestamp: new Date().toISOString()
+      }, { status: 500 })
+    }
+
+    // Create Prisma client with explicit environment variable
+    const prismaWithEnv = new PrismaClient({
+      datasources: {
+        db: {
+          url: dbUrl
+        }
+      }
+    })
+
+    await prismaWithEnv.$connect()
+
     const { id } = await params
 
     // Soft delete by setting leftAt
-    const membership = await prisma.personFactionMembership.update({
+    const membership = await prismaWithEnv.personFactionMembership.update({
       where: { id },
       data: { leftAt: new Date() },
       include: {
@@ -125,6 +147,8 @@ export async function DELETE(
         person: true
       }
     })
+
+    await prismaWithEnv.$disconnect()
 
     return NextResponse.json({ 
       ok: true, 

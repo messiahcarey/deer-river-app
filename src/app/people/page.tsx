@@ -133,12 +133,28 @@ export default function PeoplePage() {
     }
   };
 
-  const handlePersonSelect = (personId: string) => {
-    setSelectedPeople(prev => 
-      prev.includes(personId) 
-        ? prev.filter(id => id !== personId)
-        : [...prev, personId]
-    );
+  const handlePersonSelect = (personId: string, event?: React.ChangeEvent<HTMLInputElement>) => {
+    if (event?.nativeEvent instanceof MouseEvent && event.nativeEvent.shiftKey && selectedPeople.length > 0) {
+      // Shift-click: select range from last selected to current
+      const currentIndex = people.findIndex(p => p.id === personId);
+      const lastSelectedIndex = people.findIndex(p => p.id === selectedPeople[selectedPeople.length - 1]);
+      
+      const start = Math.min(currentIndex, lastSelectedIndex);
+      const end = Math.max(currentIndex, lastSelectedIndex);
+      
+      const rangeIds = people.slice(start, end + 1).map(p => p.id);
+      setSelectedPeople(prev => {
+        const newSelection = new Set([...prev, ...rangeIds]);
+        return Array.from(newSelection);
+      });
+    } else {
+      // Normal click: toggle single selection
+      setSelectedPeople(prev => 
+        prev.includes(personId) 
+          ? prev.filter(id => id !== personId)
+          : [...prev, personId]
+      );
+    }
   };
 
   const handleSelectAll = () => {
@@ -166,6 +182,20 @@ export default function PeoplePage() {
 
       for (const personId of selectedPeople) {
         try {
+          // First, remove all existing memberships for this person
+          const membershipsResponse = await fetch(`/api/memberships?personId=${personId}`);
+          const membershipsData = await membershipsResponse.json();
+          
+          if (membershipsData.ok && membershipsData.data) {
+            // Remove all existing memberships
+            for (const membership of membershipsData.data) {
+              await fetch(`/api/memberships/${membership.id}`, {
+                method: 'DELETE',
+              });
+            }
+          }
+
+          // Then assign the new faction
           const response = await fetch('/api/memberships', {
             method: 'POST',
             headers: {
@@ -464,7 +494,7 @@ export default function PeoplePage() {
                         Faction {getSortIcon('memberships')}
                       </div>
                     </th>
-                    <th className="px-4 py-3 text-left font-semibold text-gray-700">Actions</th>
+                    <th className="px-4 py-3 text-center font-semibold text-gray-700">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">
@@ -474,7 +504,7 @@ export default function PeoplePage() {
                         <input
                           type="checkbox"
                           checked={selectedPeople.includes(person.id)}
-                          onChange={() => handlePersonSelect(person.id)}
+                          onChange={(e) => handlePersonSelect(person.id, e)}
                           className="rounded"
                         />
                       </td>
