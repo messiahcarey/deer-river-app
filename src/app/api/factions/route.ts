@@ -32,6 +32,22 @@ export async function GET() {
     await prismaWithEnv.$connect()
 
     const factions = await prismaWithEnv.faction.findMany({
+      include: {
+        memberships: {
+          where: {
+            leftAt: null, // Only active memberships
+          },
+          include: {
+            person: {
+              select: {
+                id: true,
+                name: true,
+                species: true,
+              }
+            }
+          }
+        }
+      },
       orderBy: {
         name: 'asc'
       }
@@ -39,10 +55,24 @@ export async function GET() {
 
     await prismaWithEnv.$disconnect()
 
+    // Transform the data to match the expected format
+    const transformedFactions = factions.map(faction => ({
+      id: faction.id,
+      name: faction.name,
+      motto: faction.motto,
+      description: faction.description,
+      color: faction.color,
+      members: faction.memberships.map(membership => ({
+        id: membership.person.id,
+        name: membership.person.name,
+        species: membership.person.species,
+      }))
+    }))
+
     return NextResponse.json({
       success: true,
-      data: factions,
-      count: factions.length,
+      data: transformedFactions,
+      count: transformedFactions.length,
       timestamp: new Date().toISOString()
     }, {
       headers: {
