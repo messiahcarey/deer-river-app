@@ -422,7 +422,7 @@ export default function PeoplePage() {
               <table className="w-full text-sm">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th className="px-4 py-3 text-center font-semibold text-gray-700 w-12">
+                    <th className="px-4 py-3 text-center font-semibold text-gray-700 w-12 border-2 border-yellow-500">
                       <input
                         type="checkbox"
                         checked={selectedPeople.length === people.length && people.length > 0}
@@ -494,13 +494,13 @@ export default function PeoplePage() {
                         Faction {getSortIcon('memberships')}
                       </div>
                     </th>
-                    <th className="px-4 py-3 text-center font-semibold text-gray-700">Actions</th>
+                    <th className="px-4 py-3 text-center font-semibold text-gray-700 border-2 border-red-500">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">
                   {getSortedPeople().map((person) => (
                     <tr key={person.id} className={`hover:bg-gray-50 ${selectedPeople.includes(person.id) ? 'bg-blue-50' : ''}`}>
-                      <td className="px-4 py-3">
+                      <td className="px-4 py-3 text-center border-2 border-yellow-500">
                         <input
                           type="checkbox"
                           checked={selectedPeople.includes(person.id)}
@@ -572,11 +572,11 @@ export default function PeoplePage() {
                                   <span className="text-gray-400 text-sm">No faction</span>
                                 )}
                               </td>
-                              <td className="px-4 py-3 text-center">
+                              <td className="px-4 py-3 text-center border-2 border-blue-500">
                                 <div className="flex justify-center space-x-2">
                                   <button
                                     onClick={() => handleEditPerson(person)}
-                                    className="text-blue-600 hover:text-blue-800 text-sm font-medium bg-blue-50 px-2 py-1 rounded"
+                                    className="text-blue-600 hover:text-blue-800 text-sm font-medium bg-blue-50 px-2 py-1 rounded border-2 border-green-500"
                                   >
                                     ✏️ Edit
                                   </button>
