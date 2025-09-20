@@ -249,6 +249,22 @@ export default function PeoplePage() {
       if (sortField === 'worksAt' && typeof bValue === 'object' && bValue !== null) {
         bValue = (bValue as { name?: string }).name || '';
       }
+      
+      // Handle memberships array (sort by primary faction name)
+      if (sortField === 'memberships' && Array.isArray(aValue)) {
+        const primaryMembership = aValue.find((m: any) => m.isPrimary);
+        aValue = primaryMembership ? primaryMembership.faction.name : (aValue.length > 0 ? aValue[0].faction.name : '');
+      }
+      if (sortField === 'memberships' && Array.isArray(bValue)) {
+        const primaryMembership = bValue.find((m: any) => m.isPrimary);
+        bValue = primaryMembership ? primaryMembership.faction.name : (bValue.length > 0 ? bValue[0].faction.name : '');
+      }
+      
+      // Handle tags field (convert to display text)
+      if (sortField === 'tags') {
+        aValue = aValue === 'present' ? 'Present' : 'Absent';
+        bValue = bValue === 'present' ? 'Present' : 'Absent';
+      }
 
       // Convert to strings for comparison
       const aStr = String(aValue).toLowerCase();
@@ -418,14 +434,6 @@ export default function PeoplePage() {
                     </th>
                     <th 
                       className="px-4 py-3 text-left font-semibold text-gray-700 cursor-pointer hover:bg-gray-100 select-none"
-                      onClick={() => handleSort('faction')}
-                    >
-                      <div className="flex items-center gap-1">
-                        Faction {getSortIcon('faction')}
-                      </div>
-                    </th>
-                    <th 
-                      className="px-4 py-3 text-left font-semibold text-gray-700 cursor-pointer hover:bg-gray-100 select-none"
                       onClick={() => handleSort('livesAt')}
                     >
                       <div className="flex items-center gap-1">
@@ -440,8 +448,22 @@ export default function PeoplePage() {
                         Works At {getSortIcon('worksAt')}
                       </div>
                     </th>
-                    <th className="px-4 py-3 text-left font-semibold text-gray-700">Status</th>
-                    <th className="px-4 py-3 text-left font-semibold text-gray-700">Faction</th>
+                    <th 
+                      className="px-4 py-3 text-left font-semibold text-gray-700 cursor-pointer hover:bg-gray-100 select-none"
+                      onClick={() => handleSort('tags')}
+                    >
+                      <div className="flex items-center gap-1">
+                        Status {getSortIcon('tags')}
+                      </div>
+                    </th>
+                    <th 
+                      className="px-4 py-3 text-left font-semibold text-gray-700 cursor-pointer hover:bg-gray-100 select-none"
+                      onClick={() => handleSort('memberships')}
+                    >
+                      <div className="flex items-center gap-1">
+                        Faction {getSortIcon('memberships')}
+                      </div>
+                    </th>
                     <th className="px-4 py-3 text-left font-semibold text-gray-700">Actions</th>
                   </tr>
                 </thead>
