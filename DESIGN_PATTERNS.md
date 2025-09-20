@@ -144,3 +144,74 @@ if (sortField === 'tags') {
 
 ### Example Implementation
 See `src/app/people/page.tsx` for a complete implementation of this pattern.
+
+## Faction Display Pattern
+
+### Overview
+When displaying faction memberships in tables, show all active memberships with proper visual indicators and primary status.
+
+### Implementation Pattern
+
+#### 1. Data Structure
+```typescript
+interface Person {
+  memberships?: {
+    id: string;
+    faction: {
+      id: string;
+      name: string;
+      color: string | null;
+    };
+    role: string;
+    isPrimary: boolean;
+  }[];
+}
+```
+
+#### 2. Display Logic
+```tsx
+{person.memberships && person.memberships.length > 0 ? (
+  <div className="space-y-1">
+    {person.memberships.map((membership) => (
+      <div key={membership.id} className="flex items-center gap-2">
+        <span 
+          className="w-3 h-3 rounded-full"
+          style={{ backgroundColor: membership.faction.color || '#6b7280' }}
+        ></span>
+        <span className="text-sm">
+          {membership.faction.name}
+          {membership.isPrimary && (
+            <span className="ml-1 text-xs text-gray-500">(Primary)</span>
+          )}
+        </span>
+      </div>
+    ))}
+  </div>
+) : (
+  <span className="text-gray-400 text-sm">No faction</span>
+)}
+```
+
+#### 3. Visual Design
+- **Color indicators**: Small colored dots matching faction colors
+- **Primary status**: "(Primary)" label for main faction
+- **Multiple factions**: Stacked vertically with spacing
+- **No faction state**: Gray "No faction" text
+- **Consistent spacing**: `space-y-1` for vertical spacing
+
+#### 4. Key Features
+- **Shows all memberships**: Displays every active faction membership
+- **Primary indication**: Clear visual indicator for primary faction
+- **Color coding**: Faction colors for quick identification
+- **Handles empty state**: Graceful fallback when no factions
+- **No duplicates**: Each membership shown exactly once
+
+### Usage Guidelines
+1. **Always show all memberships** - don't hide secondary factions
+2. **Use color indicators** - helps with quick visual identification
+3. **Mark primary clearly** - users need to know which is main faction
+4. **Handle empty state** - provide clear feedback when no factions
+5. **Consistent styling** - use same pattern across all faction displays
+
+### Example Implementation
+See `src/app/people/page.tsx` for a complete implementation of this pattern.
