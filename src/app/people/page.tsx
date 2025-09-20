@@ -224,22 +224,22 @@ export default function PeoplePage() {
 
       // Handle nested objects (faction, livesAt, worksAt)
       if (sortField === 'faction' && typeof aValue === 'object' && aValue !== null) {
-        aValue = (aValue as any).name || '';
+        aValue = (aValue as { name?: string }).name || '';
       }
       if (sortField === 'faction' && typeof bValue === 'object' && bValue !== null) {
-        bValue = (bValue as any).name || '';
+        bValue = (bValue as { name?: string }).name || '';
       }
       if (sortField === 'livesAt' && typeof aValue === 'object' && aValue !== null) {
-        aValue = (aValue as any).name || '';
+        aValue = (aValue as { name?: string }).name || '';
       }
       if (sortField === 'livesAt' && typeof bValue === 'object' && bValue !== null) {
-        bValue = (bValue as any).name || '';
+        bValue = (bValue as { name?: string }).name || '';
       }
       if (sortField === 'worksAt' && typeof aValue === 'object' && aValue !== null) {
-        aValue = (aValue as any).name || '';
+        aValue = (aValue as { name?: string }).name || '';
       }
       if (sortField === 'worksAt' && typeof bValue === 'object' && bValue !== null) {
-        bValue = (bValue as any).name || '';
+        bValue = (bValue as { name?: string }).name || '';
       }
 
       // Convert to strings for comparison
