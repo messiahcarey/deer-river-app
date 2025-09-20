@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import PersonEditModal from "@/components/PersonEditModal";
+import FactionMembershipPanel from "@/components/FactionMembershipPanel";
 
 interface Person {
   id: string;
@@ -38,6 +39,7 @@ export default function PeoplePage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [editingPerson, setEditingPerson] = useState<Person | null>(null);
+  const [viewingFactions, setViewingFactions] = useState<Person | null>(null);
   const [locations, setLocations] = useState<Array<{id: string; name: string; kind: string}>>([]);
   const [factions, setFactions] = useState<Array<{id: string; name: string; color: string | null}>>([]);
 
@@ -250,12 +252,20 @@ export default function PeoplePage() {
                                 </span>
                               </td>
                               <td className="px-4 py-3">
-                                <button
-                                  onClick={() => handleEditPerson(person)}
-                                  className="text-blue-600 hover:text-blue-800 text-sm font-medium bg-blue-50 px-2 py-1 rounded"
-                                >
-                                  ✏️ Edit
-                                </button>
+                                <div className="flex space-x-2">
+                                  <button
+                                    onClick={() => handleEditPerson(person)}
+                                    className="text-blue-600 hover:text-blue-800 text-sm font-medium bg-blue-50 px-2 py-1 rounded"
+                                  >
+                                    ✏️ Edit
+                                  </button>
+                                  <button
+                                    onClick={() => setViewingFactions(person)}
+                                    className="text-purple-600 hover:text-purple-800 text-sm font-medium bg-purple-50 px-2 py-1 rounded"
+                                  >
+                                    🏛️ Factions
+                                  </button>
+                                </div>
                               </td>
                     </tr>
                   ))}
@@ -306,6 +316,31 @@ export default function PeoplePage() {
             onClose={() => setEditingPerson(null)}
             onSave={handleSavePerson}
           />
+        )}
+
+        {/* Faction Relationships Modal */}
+        {viewingFactions && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-lg w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+              <div className="p-6">
+                <div className="flex justify-between items-center mb-6">
+                  <h2 className="text-2xl font-bold text-gray-800">
+                    Faction Relationships - {viewingFactions.name}
+                  </h2>
+                  <button
+                    onClick={() => setViewingFactions(null)}
+                    className="text-gray-500 hover:text-gray-700 text-2xl"
+                  >
+                    ×
+                  </button>
+                </div>
+                <FactionMembershipPanel 
+                  personId={viewingFactions.id} 
+                  personName={viewingFactions.name}
+                />
+              </div>
+            </div>
+          </div>
         )}
       </div>
     </div>
