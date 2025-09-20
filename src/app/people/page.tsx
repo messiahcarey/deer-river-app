@@ -572,8 +572,8 @@ export default function PeoplePage() {
                                   <span className="text-gray-400 text-sm">No faction</span>
                                 )}
                               </td>
-                              <td className="px-4 py-3">
-                                <div className="flex space-x-2">
+                              <td className="px-4 py-3 text-center">
+                                <div className="flex justify-center space-x-2">
                                   <button
                                     onClick={() => handleEditPerson(person)}
                                     className="text-blue-600 hover:text-blue-800 text-sm font-medium bg-blue-50 px-2 py-1 rounded"
