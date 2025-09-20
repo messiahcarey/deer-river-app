@@ -4,7 +4,6 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import PersonEditModal from "@/components/PersonEditModal";
 import FactionMembershipPanel from "@/components/FactionMembershipPanel";
-import BulkFactionAssigner from "@/components/BulkFactionAssigner";
 
 interface Person {
   id: string;
@@ -41,7 +40,8 @@ export default function PeoplePage() {
   const [error, setError] = useState<string | null>(null);
   const [editingPerson, setEditingPerson] = useState<Person | null>(null);
   const [viewingFactions, setViewingFactions] = useState<Person | null>(null);
-  const [showBulkAssigner, setShowBulkAssigner] = useState(false);
+  const [selectedPeople, setSelectedPeople] = useState<string[]>([]);
+  const [showFactionModal, setShowFactionModal] = useState(false);
   const [locations, setLocations] = useState<Array<{id: string; name: string; kind: string}>>([]);
   const [factions, setFactions] = useState<Array<{id: string; name: string; color: string | null}>>([]);
 
@@ -123,6 +123,83 @@ export default function PeoplePage() {
     }
   };
 
+  const handlePersonSelect = (personId: string) => {
+    setSelectedPeople(prev => 
+      prev.includes(personId) 
+        ? prev.filter(id => id !== personId)
+        : [...prev, personId]
+    );
+  };
+
+  const handleSelectAll = () => {
+    setSelectedPeople(people.map(p => p.id));
+  };
+
+  const handleDeselectAll = () => {
+    setSelectedPeople([]);
+  };
+
+  const handleBulkFactionChange = () => {
+    if (selectedPeople.length === 0) {
+      alert('Please select at least one person');
+      return;
+    }
+    setShowFactionModal(true);
+  };
+
+  const handleFactionAssignment = async (factionId: string) => {
+    if (!factionId || selectedPeople.length === 0) return;
+
+    try {
+      let successCount = 0;
+      let failedCount = 0;
+
+      for (const personId of selectedPeople) {
+        try {
+          const response = await fetch('/api/memberships', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              personId,
+              factionId,
+              role: 'member',
+              isPrimary: true,
+              alignment: 75,
+              openness: 60,
+              notes: 'Bulk assigned via UI'
+            })
+          });
+
+          const data = await response.json();
+          if (data.ok) {
+            successCount++;
+          } else {
+            failedCount++;
+            console.error(`Failed to assign ${personId}:`, data.error);
+          }
+        } catch (error) {
+          failedCount++;
+          console.error(`Error assigning ${personId}:`, error);
+        }
+
+        // Small delay to avoid overwhelming the API
+        await new Promise(resolve => setTimeout(resolve, 100));
+      }
+
+      alert(`Faction assignment complete!\n✅ Successful: ${successCount}\n❌ Failed: ${failedCount}`);
+      
+      // Refresh data and close modal
+      await fetchPeople();
+      setShowFactionModal(false);
+      setSelectedPeople([]);
+    } catch (error) {
+      console.error('Error in bulk faction assignment:', error);
+      alert('Failed to assign factions. Please try again.');
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-100">
       <div className="container mx-auto px-4 py-8">
@@ -143,18 +220,49 @@ export default function PeoplePage() {
             <h2 className="text-2xl font-semibold text-gray-800">
               Residents ({people.length})
             </h2>
-            <div className="flex gap-4">
+            <div className="flex gap-4 items-center">
+              <div className="flex gap-2">
+                <button
+                  onClick={handleSelectAll}
+                  className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded text-sm"
+                >
+                  Select All
+                </button>
+                <button
+                  onClick={handleDeselectAll}
+                  className="bg-gray-500 hover:bg-gray-600 text-white px-3 py-2 rounded text-sm"
+                >
+                  Deselect All
+                </button>
+              </div>
+              
+              {selectedPeople.length > 0 && (
+                <div className="flex gap-2">
+                  <span className="text-sm text-gray-600">
+                    {selectedPeople.length} selected
+                  </span>
+                  <div className="relative">
+                    <select
+                      onChange={(e) => {
+                        if (e.target.value === 'change-faction') {
+                          handleBulkFactionChange();
+                          e.target.value = '';
+                        }
+                      }}
+                      className="bg-purple-500 hover:bg-purple-600 text-white px-3 py-2 rounded text-sm appearance-none pr-8"
+                    >
+                      <option value="">Actions...</option>
+                      <option value="change-faction">Change Faction</option>
+                    </select>
+                  </div>
+                </div>
+              )}
+
               <button
                 onClick={fetchPeople}
                 className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors"
               >
                 🔄 Refresh
-              </button>
-              <button
-                onClick={() => setShowBulkAssigner(true)}
-                className="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-lg transition-colors"
-              >
-                🏛️ Bulk Assign Factions
               </button>
               <Link 
                 href="/import" 
@@ -203,6 +311,14 @@ export default function PeoplePage() {
               <table className="w-full text-sm">
                 <thead className="bg-gray-50">
                   <tr>
+                    <th className="px-4 py-3 text-left font-semibold text-gray-700 w-12">
+                      <input
+                        type="checkbox"
+                        checked={selectedPeople.length === people.length && people.length > 0}
+                        onChange={(e) => e.target.checked ? handleSelectAll() : handleDeselectAll()}
+                        className="rounded"
+                      />
+                    </th>
                     <th className="px-4 py-3 text-left font-semibold text-gray-700">Name</th>
                     <th className="px-4 py-3 text-left font-semibold text-gray-700">Species</th>
                     <th className="px-4 py-3 text-left font-semibold text-gray-700">Age</th>
@@ -216,7 +332,15 @@ export default function PeoplePage() {
                 </thead>
                 <tbody className="divide-y divide-gray-200">
                   {people.map((person) => (
-                    <tr key={person.id} className="hover:bg-gray-50">
+                    <tr key={person.id} className={`hover:bg-gray-50 ${selectedPeople.includes(person.id) ? 'bg-blue-50' : ''}`}>
+                      <td className="px-4 py-3">
+                        <input
+                          type="checkbox"
+                          checked={selectedPeople.includes(person.id)}
+                          onChange={() => handlePersonSelect(person.id)}
+                          className="rounded"
+                        />
+                      </td>
                       <td className="px-4 py-3 font-medium text-gray-900">
                         {person.name}
                       </td>
@@ -351,9 +475,74 @@ export default function PeoplePage() {
           </div>
         )}
 
-        {/* Bulk Faction Assigner Modal */}
-        {showBulkAssigner && (
-          <BulkFactionAssigner onClose={() => setShowBulkAssigner(false)} />
+        {/* Faction Selection Modal */}
+        {showFactionModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-lg w-full max-w-md">
+              <div className="p-6">
+                <div className="flex justify-between items-center mb-6">
+                  <h2 className="text-xl font-bold text-gray-800">
+                    Change Faction
+                  </h2>
+                  <button
+                    onClick={() => setShowFactionModal(false)}
+                    className="text-gray-500 hover:text-gray-700 text-2xl"
+                  >
+                    ×
+                  </button>
+                </div>
+                
+                <div className="mb-4">
+                  <p className="text-gray-600 mb-4">
+                    Assigning {selectedPeople.length} selected people to a faction:
+                  </p>
+                  <div className="text-sm text-gray-500 mb-4 max-h-32 overflow-y-auto">
+                    {people
+                      .filter(p => selectedPeople.includes(p.id))
+                      .map(p => p.name)
+                      .join(', ')}
+                  </div>
+                </div>
+
+                <div className="mb-6">
+                  <label className="block text-sm font-medium mb-2">Select Faction</label>
+                  <select
+                    id="faction-select"
+                    className="w-full border rounded px-3 py-2"
+                  >
+                    <option value="">Choose a faction...</option>
+                    {factions.map(faction => (
+                      <option key={faction.id} value={faction.id}>
+                        {faction.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="flex justify-end gap-3">
+                  <button
+                    onClick={() => setShowFactionModal(false)}
+                    className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={() => {
+                      const select = document.getElementById('faction-select') as HTMLSelectElement;
+                      if (select.value) {
+                        handleFactionAssignment(select.value);
+                      } else {
+                        alert('Please select a faction');
+                      }
+                    }}
+                    className="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700"
+                  >
+                    Assign Faction
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
         )}
       </div>
     </div>
