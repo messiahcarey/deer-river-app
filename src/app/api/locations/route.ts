@@ -38,7 +38,6 @@ export async function GET() {
       select: {
         id: true,
         name: true,
-        type: true,
         description: true,
         x: true,
         y: true,
@@ -135,7 +134,6 @@ export async function POST(request: Request) {
     const location = await prismaWithEnv.location.create({
       data: {
         name,
-        type: kind || 'Unknown',
         description: address || null,
         x: x ? parseFloat(x) : null,
         y: y ? parseFloat(y) : null

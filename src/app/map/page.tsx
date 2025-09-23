@@ -21,7 +21,6 @@ interface Person {
 interface Building {
   id: string
   name: string
-  type: string
   description: string | null
   x: number | null
   y: number | null
@@ -246,7 +245,7 @@ Market Stall,Business,"Temporary market stall or trading post",70,60,2,"Open-air
                     <tr key={building.id} className="hover:bg-gray-50">
                       <td className="px-4 py-3">
                         <div className="flex items-center space-x-2">
-                          <span className="text-lg">{getKindIcon(building.type)}</span>
+                          <span className="text-lg">🏢</span>
                           <div>
                             <div className="font-medium text-gray-900">{building.name}</div>
                             {building.description && (
@@ -256,8 +255,8 @@ Market Stall,Business,"Temporary market stall or trading post",70,60,2,"Open-air
                         </div>
                       </td>
                       <td className="px-4 py-3">
-                        <span className={`px-2 py-1 rounded text-xs font-medium ${getKindColor(building.type)}`}>
-                          {building.type}
+                        <span className="px-2 py-1 rounded text-xs font-medium bg-blue-100 text-blue-800">
+                          Building
                         </span>
                       </td>
                       <td className="px-4 py-3 text-gray-700">
@@ -323,7 +322,7 @@ Market Stall,Business,"Temporary market stall or trading post",70,60,2,"Open-air
               </div>
               <div className="bg-orange-50 p-4 rounded-lg text-center">
                 <div className="text-2xl font-bold text-orange-600">
-                  {new Set(buildings.map(b => b.type)).size}
+                  {buildings.length}
                 </div>
                 <div className="text-sm text-orange-700">Building Types</div>
               </div>
