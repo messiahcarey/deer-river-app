@@ -20,12 +20,10 @@ interface Person {
   livesAt: {
     id: string;
     name: string;
-    kind: string;
   } | null;
   worksAt: {
     id: string;
     name: string;
-    kind: string;
   } | null;
   household: {
     id: string;
