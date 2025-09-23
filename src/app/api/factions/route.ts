@@ -59,9 +59,9 @@ export async function GET() {
     const transformedFactions = factions.map(faction => ({
       id: faction.id,
       name: faction.name,
-      motto: faction.motto,
+      motto: faction.motto || null, // Temporarily handle missing field
       description: faction.description,
-      color: faction.color,
+      color: faction.color || null, // Temporarily handle missing field
       members: faction.memberships.map(membership => ({
         id: membership.person.id,
         name: membership.person.name,
