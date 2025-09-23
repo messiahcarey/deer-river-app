@@ -1,20 +1,20 @@
 generator client {
   provider = "prisma-client-js"
   engineType = "binary"
-  binaryTargets = ["native", "rhel-openssl-1.0.x"]
+  binaryTargets = ["native"]
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
 model Person {
-  id           String   @id @default(cuid())
-  name         String
-  species      String
-  age          Int?
-  occupation   String?
+  id       String @id @default(cuid())
+  name     String
+  species  String
+  age      Int?
+  occupation String?
   householdId  String?
   household    Household? @relation(fields: [householdId], references: [id])
   livesAtId    String
@@ -33,105 +33,83 @@ model Person {
   factionOpinions FactionOpinion[]
 }
 
-model Opinion {
-  id           String  @id @default(cuid())
-  fromPersonId String
-  toPersonId   String
-  score        Int
-  reason       String?
-  updatedAt    DateTime @updatedAt
-
-  fromPerson Person @relation("From", fields: [fromPersonId], references: [id])
-  toPerson   Person @relation("To", fields: [toPersonId], references: [id])
-
-  @@unique([fromPersonId, toPersonId])
-}
-
 model Faction {
-  id          String   @id @default(cuid())
-  name        String   @unique
-  motto       String?
+  id          String @id @default(cuid())
+  name        String
   description String?
-  color       String?
-  alliancesA  Alliance[] @relation("A")
-  alliancesB  Alliance[] @relation("B")
-  resourceEntries TownResourceLedger[]
+  alignment   String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
   
   // New relationship models
   memberships PersonFactionMembership[]
   opinions   FactionOpinion[]
 }
 
-model Alliance {
-  id         String  @id @default(cuid())
-  factionAId String
-  factionBId String
-  type       String
-  stance     String
-  notes      String?
-  startedAt  DateTime?
-
-  factionA Faction @relation("A", fields: [factionAId], references: [id])
-  factionB Faction @relation("B", fields: [factionBId], references: [id])
-
-  @@unique([factionAId, factionBId])
+model Household {
+  id          String @id @default(cuid())
+  name        String
+  description String?
+  members     Person[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 model Location {
-  id        String    @id @default(cuid())
-  name      String
-  kind      String
-  parentId  String?
-  parent    Location? @relation("Parent", fields: [parentId], references: [id])
-  children  Location[] @relation("Parent")
-  x         Float?
-  y         Float?
-  address   String?
-  notes     String?
-
-  residents Person[]   @relation("LivesAt")
-  workers   Person[]   @relation("WorksAt")
-  households Household[]
-  events    EventLog[]
+  id          String @id @default(cuid())
+  name        String
+  type        String
+  description String?
+  x           Float?
+  y           Float?
+  residents   Person[] @relation("LivesAt")
+  workers     Person[] @relation("WorksAt")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
-model Household {
-  id         String   @id @default(cuid())
-  name       String?
-  locationId String
-  location   Location @relation(fields: [locationId], references: [id])
-  members    Person[]
-  notes      String?
+model Opinion {
+  id        String @id @default(cuid())
+  fromId    String
+  from      Person @relation("From", fields: [fromId], references: [id])
+  toId      String
+  to        Person @relation("To", fields: [toId], references: [id])
+  score     Int
+  notes     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([fromId, toId])
 }
 
 model ResourceCategory {
-  id    String @id @default(cuid())
-  name  String @unique
-  unit  String
-  notes String?
-  entries TownResourceLedger[]
+  id          String @id @default(cuid())
+  name        String
+  description String?
+  unit        String
+  ledgerEntries TownResourceLedger[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 model TownResourceLedger {
-  id                String   @id @default(cuid())
-  date              DateTime
-  resourceCategoryId String
-  resourceCategory   ResourceCategory @relation(fields: [resourceCategoryId], references: [id])
-  delta             Float
-  reason            String
-  sourcePersonId    String?
-  sourcePerson      Person?  @relation(fields: [sourcePersonId], references: [id])
-  sourceFactionId   String?
-  sourceFaction     Faction? @relation(fields: [sourceFactionId], references: [id])
+  id          String @id @default(cuid())
+  categoryId  String
+  category    ResourceCategory @relation(fields: [categoryId], references: [id])
+  amount      Float
+  change      Float
+  reason      String?
+  personId    String?
+  person      Person? @relation(fields: [personId], references: [id])
+  createdAt   DateTime @default(now())
 }
 
 model EventLog {
-  id       String   @id @default(cuid())
-  date     DateTime
-  title    String
-  details  String?
-  locationId String?
-  location Location? @relation(fields: [locationId], references: [id])
+  id        String @id @default(cuid())
+  event     String
+  details   String?
+  personId  String?
+  createdAt DateTime @default(now())
 }
 
 /** One row per person↔faction relationship */

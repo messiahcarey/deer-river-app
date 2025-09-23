@@ -73,14 +73,27 @@ export default function FactionsPage() {
 
   const handleCreateFaction = async (newFaction: Partial<Faction>) => {
     try {
-      // Add to local state instead of making API call
-      const factionWithId = {
-        ...newFaction,
-        id: Date.now().toString(), // Simple ID generation
-        members: []
-      } as Faction
-      setFactions(prev => [...prev, factionWithId])
-      setEditingFaction(null)
+      const response = await fetch('/api/factions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newFaction),
+      })
+
+      const data = await response.json()
+
+      if (data.success) {
+        // Add the new faction to local state
+        const factionWithMembers = {
+          ...data.data,
+          members: []
+        }
+        setFactions(prev => [...prev, factionWithMembers])
+        setEditingFaction(null)
+      } else {
+        throw new Error(data.error || 'Failed to create faction')
+      }
     } catch (err) {
       throw err
     }
