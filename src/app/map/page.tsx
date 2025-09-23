@@ -122,39 +122,6 @@ Market Stall,Business,"Temporary market stall or trading post",70,60,2,"Open-air
     }
   }
 
-  const getKindIcon = (kind: string) => {
-    switch (kind.toLowerCase()) {
-      case 'business':
-        return '🏪'
-      case 'residential':
-        return '🏠'
-      case 'military':
-        return '🏰'
-      case 'dock':
-        return '⚓'
-      case 'infrastructure':
-        return '🏗️'
-      default:
-        return '📍'
-    }
-  }
-
-  const getKindColor = (kind: string) => {
-    switch (kind.toLowerCase()) {
-      case 'business':
-        return 'bg-blue-100 text-blue-800'
-      case 'residential':
-        return 'bg-green-100 text-green-800'
-      case 'military':
-        return 'bg-red-100 text-red-800'
-      case 'dock':
-        return 'bg-cyan-100 text-cyan-800'
-      case 'infrastructure':
-        return 'bg-yellow-100 text-yellow-800'
-      default:
-        return 'bg-gray-100 text-gray-800'
-    }
-  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-100">
