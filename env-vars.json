@@ -1,5 +1,0 @@
-{
-  "DATABASE_URL": "postgresql://postgres:NewSecurePassword123!@database-1.chdfwf16ku5o.us-east-1.rds.amazonaws.com:5432/postgres",
-  "NEXTAUTH_SECRET": "NewRandomSecretKey456!",
-  "NEXTAUTH_URL": "https://d25mi5h1ems0sj.amplifyapp.com"
-}
