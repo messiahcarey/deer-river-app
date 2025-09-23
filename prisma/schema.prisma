@@ -35,11 +35,10 @@ model Person {
 
 model Faction {
   id          String @id @default(cuid())
-  name        String
+  name        String @unique
+  motto       String?
   description String?
-  alignment   String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  color       String?
   
   // New relationship models
   memberships PersonFactionMembership[]
