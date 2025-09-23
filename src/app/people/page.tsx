@@ -133,12 +133,28 @@ export default function PeoplePage() {
     }
   };
 
-  const handlePersonSelect = (personId: string) => {
-    setSelectedPeople(prev => 
-      prev.includes(personId) 
-        ? prev.filter(id => id !== personId)
-        : [...prev, personId]
-    );
+  const handlePersonSelect = (personId: string, event?: React.ChangeEvent<HTMLInputElement>) => {
+    if (event?.nativeEvent instanceof MouseEvent && event.nativeEvent.shiftKey && selectedPeople.length > 0) {
+      // Shift-click: select range from last selected to current
+      const currentIndex = people.findIndex(p => p.id === personId);
+      const lastSelectedIndex = people.findIndex(p => p.id === selectedPeople[selectedPeople.length - 1]);
+      
+      const start = Math.min(currentIndex, lastSelectedIndex);
+      const end = Math.max(currentIndex, lastSelectedIndex);
+      
+      const rangeIds = people.slice(start, end + 1).map(p => p.id);
+      setSelectedPeople(prev => {
+        const newSelection = new Set([...prev, ...rangeIds]);
+        return Array.from(newSelection);
+      });
+    } else {
+      // Normal click: toggle single selection
+      setSelectedPeople(prev => 
+        prev.includes(personId) 
+          ? prev.filter(id => id !== personId)
+          : [...prev, personId]
+      );
+    }
   };
 
   const handleSelectAll = () => {
@@ -166,6 +182,20 @@ export default function PeoplePage() {
 
       for (const personId of selectedPeople) {
         try {
+          // First, remove all existing memberships for this person
+          const membershipsResponse = await fetch(`/api/memberships?personId=${personId}`);
+          const membershipsData = await membershipsResponse.json();
+          
+          if (membershipsData.ok && membershipsData.data) {
+            // Remove all existing memberships
+            for (const membership of membershipsData.data) {
+              await fetch(`/api/memberships/${membership.id}`, {
+                method: 'DELETE',
+              });
+            }
+          }
+
+          // Then assign the new faction
           const response = await fetch('/api/memberships', {
             method: 'POST',
             headers: {
@@ -252,12 +282,12 @@ export default function PeoplePage() {
       
       // Handle memberships array (sort by primary faction name)
       if (sortField === 'memberships' && Array.isArray(aValue)) {
-        const primaryMembership = aValue.find((m: any) => m.isPrimary);
-        aValue = primaryMembership ? primaryMembership.faction.name : (aValue.length > 0 ? aValue[0].faction.name : '');
+        const primaryMembership = aValue.find((m: { isPrimary: boolean; faction: { name: string } }) => m.isPrimary);
+        aValue = primaryMembership ? primaryMembership.faction.name : (aValue.length > 0 ? (aValue[0] as { faction: { name: string } }).faction.name : '');
       }
       if (sortField === 'memberships' && Array.isArray(bValue)) {
-        const primaryMembership = bValue.find((m: any) => m.isPrimary);
-        bValue = primaryMembership ? primaryMembership.faction.name : (bValue.length > 0 ? bValue[0].faction.name : '');
+        const primaryMembership = bValue.find((m: { isPrimary: boolean; faction: { name: string } }) => m.isPrimary);
+        bValue = primaryMembership ? primaryMembership.faction.name : (bValue.length > 0 ? (bValue[0] as { faction: { name: string } }).faction.name : '');
       }
       
       // Handle tags field (convert to display text)
@@ -392,7 +422,7 @@ export default function PeoplePage() {
               <table className="w-full text-sm">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th className="px-4 py-3 text-left font-semibold text-gray-700 w-12">
+                    <th className="px-4 py-3 text-center font-semibold text-gray-700 w-12">
                       <input
                         type="checkbox"
                         checked={selectedPeople.length === people.length && people.length > 0}
@@ -464,17 +494,17 @@ export default function PeoplePage() {
                         Faction {getSortIcon('memberships')}
                       </div>
                     </th>
-                    <th className="px-4 py-3 text-left font-semibold text-gray-700">Actions</th>
+                    <th className="px-4 py-3 text-center font-semibold text-gray-700">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">
                   {getSortedPeople().map((person) => (
                     <tr key={person.id} className={`hover:bg-gray-50 ${selectedPeople.includes(person.id) ? 'bg-blue-50' : ''}`}>
-                      <td className="px-4 py-3">
+                      <td className="px-4 py-3 text-center">
                         <input
                           type="checkbox"
                           checked={selectedPeople.includes(person.id)}
-                          onChange={() => handlePersonSelect(person.id)}
+                          onChange={(e) => handlePersonSelect(person.id, e)}
                           className="rounded"
                         />
                       </td>
@@ -542,8 +572,8 @@ export default function PeoplePage() {
                                   <span className="text-gray-400 text-sm">No faction</span>
                                 )}
                               </td>
-                              <td className="px-4 py-3">
-                                <div className="flex space-x-2">
+                              <td className="px-4 py-3 text-center">
+                                <div className="flex justify-center space-x-2">
                                   <button
                                     onClick={() => handleEditPerson(person)}
                                     className="text-blue-600 hover:text-blue-800 text-sm font-medium bg-blue-50 px-2 py-1 rounded"
