@@ -5,8 +5,8 @@ import { useState } from 'react'
 interface Location {
   id: string
   name: string
-  kind: string
-  address: string | null
+  type: string
+  description: string | null
   x: number | null
   y: number | null
   notes: string | null
@@ -45,8 +45,8 @@ export default function InteractiveMap({
 }: InteractiveMapProps) {
   const [hoveredLocation, setHoveredLocation] = useState<string | null>(null)
 
-  const getLocationIcon = (kind: string) => {
-    switch (kind.toLowerCase()) {
+  const getLocationIcon = (type: string) => {
+    switch (type.toLowerCase()) {
       case 'business':
         return '🏪'
       case 'residential':
@@ -60,8 +60,8 @@ export default function InteractiveMap({
     }
   }
 
-  const getLocationColor = (kind: string) => {
-    switch (kind.toLowerCase()) {
+  const getLocationColor = (type: string) => {
+    switch (type.toLowerCase()) {
       case 'business':
         return 'bg-blue-500'
       case 'residential':
@@ -75,8 +75,8 @@ export default function InteractiveMap({
     }
   }
 
-  const getLocationSize = (kind: string) => {
-    switch (kind.toLowerCase()) {
+  const getLocationSize = (type: string) => {
+    switch (type.toLowerCase()) {
       case 'business':
         return 'w-8 h-8'
       case 'residential':
@@ -148,12 +148,12 @@ export default function InteractiveMap({
           >
             {/* Location Marker */}
             <div
-              className={`${getLocationSize(location.kind)} ${getLocationColor(location.kind)} rounded-full flex items-center justify-center text-white font-bold shadow-lg border-2 border-white ${
+              className={`${getLocationSize(location.type)} ${getLocationColor(location.type)} rounded-full flex items-center justify-center text-white font-bold shadow-lg border-2 border-white ${
                 isSelected ? 'ring-4 ring-yellow-400 ring-opacity-50' : ''
               } ${isHovered ? 'scale-110' : 'hover:scale-105'}`}
             >
               <span className="text-xs">
-                {getLocationIcon(location.kind)}
+                {getLocationIcon(location.type)}
               </span>
             </div>
 

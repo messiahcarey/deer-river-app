@@ -21,12 +21,10 @@ interface Person {
 interface Building {
   id: string
   name: string
-  kind: string
-  address: string | null
-  notes: string | null
+  type: string
+  description: string | null
   x: number | null
   y: number | null
-  capacity: number | null
   residents: Person[]
   workers: Person[]
 }
@@ -248,25 +246,25 @@ Market Stall,Business,"Temporary market stall or trading post",70,60,2,"Open-air
                     <tr key={building.id} className="hover:bg-gray-50">
                       <td className="px-4 py-3">
                         <div className="flex items-center space-x-2">
-                          <span className="text-lg">{getKindIcon(building.kind)}</span>
+                          <span className="text-lg">{getKindIcon(building.type)}</span>
                           <div>
                             <div className="font-medium text-gray-900">{building.name}</div>
-                            {building.notes && (
-                              <div className="text-xs text-gray-500 truncate w-48">{building.notes}</div>
+                            {building.description && (
+                              <div className="text-xs text-gray-500 truncate w-48">{building.description}</div>
                             )}
                           </div>
                         </div>
                       </td>
                       <td className="px-4 py-3">
-                        <span className={`px-2 py-1 rounded text-xs font-medium ${getKindColor(building.kind)}`}>
-                          {building.kind}
+                        <span className={`px-2 py-1 rounded text-xs font-medium ${getKindColor(building.type)}`}>
+                          {building.type}
                         </span>
                       </td>
                       <td className="px-4 py-3 text-gray-700">
-                        {building.address || 'N/A'}
+                        {building.description || 'N/A'}
                       </td>
                       <td className="px-4 py-3 text-gray-700">
-                        {building.capacity || 'N/A'}
+                        N/A
                       </td>
                       <td className="px-4 py-3 text-gray-700">
                         {building.residents.length > 0 ? (
@@ -325,7 +323,7 @@ Market Stall,Business,"Temporary market stall or trading post",70,60,2,"Open-air
               </div>
               <div className="bg-orange-50 p-4 rounded-lg text-center">
                 <div className="text-2xl font-bold text-orange-600">
-                  {new Set(buildings.map(b => b.kind)).size}
+                  {new Set(buildings.map(b => b.type)).size}
                 </div>
                 <div className="text-sm text-orange-700">Building Types</div>
               </div>

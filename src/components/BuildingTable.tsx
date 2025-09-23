@@ -19,12 +19,10 @@ interface Person {
 interface Building {
   id: string
   name: string
-  kind: string
-  address: string | null
-  notes: string | null
+  type: string
+  description: string | null
   x: number | null
   y: number | null
-  capacity: number | null
   residents: Person[]
   workers: Person[]
 }
@@ -43,10 +41,9 @@ export default function BuildingTable({ buildings, loading, error, onRefresh }: 
   const [searchTerm, setSearchTerm] = useState('')
 
   const filteredBuildings = buildings.filter(building => {
-    const matchesKind = filterKind === 'all' || building.kind.toLowerCase() === filterKind.toLowerCase()
+    const matchesKind = filterKind === 'all' || building.type.toLowerCase() === filterKind.toLowerCase()
     const matchesSearch = building.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         building.address?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         building.notes?.toLowerCase().includes(searchTerm.toLowerCase())
+                         building.description?.toLowerCase().includes(searchTerm.toLowerCase())
     return matchesKind && matchesSearch
   })
 
@@ -217,22 +214,22 @@ export default function BuildingTable({ buildings, loading, error, onRefresh }: 
                 <tr key={building.id} className="hover:bg-gray-50">
                   <td className="px-4 py-3">
                     <div className="flex items-center space-x-2">
-                      <span className="text-lg">{getKindIcon(building.kind)}</span>
+                      <span className="text-lg">{getKindIcon(building.type)}</span>
                       <div>
                         <div className="font-medium text-gray-900">{building.name}</div>
-                        {building.notes && (
-                          <div className="text-xs text-gray-500">{building.notes}</div>
+                        {building.description && (
+                          <div className="text-xs text-gray-500">{building.description}</div>
                         )}
                       </div>
                     </div>
                   </td>
                   <td className="px-4 py-3">
-                    <span className={`px-2 py-1 rounded text-xs font-medium ${getKindColor(building.kind)}`}>
-                      {building.kind}
+                    <span className={`px-2 py-1 rounded text-xs font-medium ${getKindColor(building.type)}`}>
+                      {building.type}
                     </span>
                   </td>
                   <td className="px-4 py-3 text-gray-700">
-                    {building.address || 'No description'}
+                    {building.description || 'No description'}
                   </td>
                   <td className="px-4 py-3">
                     <div className="space-y-1">
@@ -326,10 +323,10 @@ export default function BuildingTable({ buildings, loading, error, onRefresh }: 
               .map((building) => (
                 <div key={building.id} className="bg-white p-4 rounded-lg border border-yellow-200">
                   <div className="flex items-center space-x-2 mb-2">
-                    <span className="text-lg">{getKindIcon(building.kind)}</span>
+                    <span className="text-lg">{getKindIcon(building.type)}</span>
                     <h4 className="font-medium text-gray-800">{building.name}</h4>
                   </div>
-                  <p className="text-sm text-gray-600 mb-2">{building.address || 'No description'}</p>
+                  <p className="text-sm text-gray-600 mb-2">{building.description || 'No description'}</p>
                   <div className="text-xs text-yellow-600">
                     No residents or workers assigned
                   </div>
@@ -356,10 +353,10 @@ export default function BuildingTable({ buildings, loading, error, onRefresh }: 
               <div className="flex justify-between items-start mb-4">
                 <div>
                   <h3 className="text-2xl font-semibold text-gray-800 flex items-center space-x-2">
-                    <span className="text-2xl">{getKindIcon(selectedBuilding.kind)}</span>
+                    <span className="text-2xl">{getKindIcon(selectedBuilding.type)}</span>
                     <span>{selectedBuilding.name}</span>
                   </h3>
-                  <p className="text-gray-600 capitalize">{selectedBuilding.kind}</p>
+                  <p className="text-gray-600 capitalize">{selectedBuilding.type}</p>
                 </div>
                 <button
                   onClick={() => setSelectedBuilding(null)}
@@ -369,17 +366,10 @@ export default function BuildingTable({ buildings, loading, error, onRefresh }: 
                 </button>
               </div>
 
-              {selectedBuilding.address && (
+              {selectedBuilding.description && (
                 <div className="mb-4">
                   <h4 className="font-medium text-gray-700 mb-1">Description</h4>
-                  <p className="text-gray-600">{selectedBuilding.address}</p>
-                </div>
-              )}
-
-              {selectedBuilding.notes && (
-                <div className="mb-4">
-                  <h4 className="font-medium text-gray-700 mb-1">Notes</h4>
-                  <p className="text-gray-600">{selectedBuilding.notes}</p>
+                  <p className="text-gray-600">{selectedBuilding.description}</p>
                 </div>
               )}
 

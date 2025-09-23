@@ -5,12 +5,10 @@ import { useState, useEffect } from 'react'
 interface Building {
   id: string
   name: string
-  kind: string
-  address: string | null
-  notes: string | null
+  type: string
+  description: string | null
   x: number | null
   y: number | null
-  capacity: number | null
 }
 
 interface BuildingEditModalProps {
@@ -87,11 +85,11 @@ export default function BuildingEditModal({ building, onClose, onSave }: Buildin
               />
             </div>
             <div>
-              <label htmlFor="kind" className="block text-sm font-medium text-gray-700">Building Type</label>
+              <label htmlFor="type" className="block text-sm font-medium text-gray-700">Building Type</label>
               <select
-                id="kind"
-                name="kind"
-                value={formData.kind || ''}
+                id="type"
+                name="type"
+                value={formData.type || ''}
                 onChange={handleChange}
                 className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
                 required
@@ -102,12 +100,12 @@ export default function BuildingEditModal({ building, onClose, onSave }: Buildin
               </select>
             </div>
             <div>
-              <label htmlFor="address" className="block text-sm font-medium text-gray-700">Address</label>
+              <label htmlFor="description" className="block text-sm font-medium text-gray-700">Address</label>
               <input
                 type="text"
-                id="address"
-                name="address"
-                value={formData.address || ''}
+                id="description"
+                name="description"
+                value={formData.description || ''}
                 onChange={handleChange}
                 className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
               />
