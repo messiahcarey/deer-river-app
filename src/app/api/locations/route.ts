@@ -133,7 +133,6 @@ export async function POST(request: Request) {
     const location = await prismaWithEnv.location.create({
       data: {
         name,
-        description: address || null,
         x: x ? parseFloat(x) : null,
         y: y ? parseFloat(y) : null
       },

@@ -186,10 +186,10 @@ async function createBasicLocations(prisma: PrismaClient) {
 
 async function createBasicFactions(prisma: PrismaClient) {
   const factionData = [
-    { name: 'Town Council', description: 'Governing body of Deer River', color: '#4A90E2' },
-    { name: 'Guard', description: 'Town guard and security', color: '#E24A4A' },
-    { name: 'Merchants', description: 'Business owners and traders', color: '#4AE24A' },
-    { name: 'Refugees', description: 'Displaced people seeking shelter', color: '#E2E24A' }
+    { name: 'Town Council', color: '#4A90E2' },
+    { name: 'Guard', color: '#E24A4A' },
+    { name: 'Merchants', color: '#4AE24A' },
+    { name: 'Refugees', color: '#E2E24A' }
   ]
 
   const factions: Record<string, { id: string }> = {}
