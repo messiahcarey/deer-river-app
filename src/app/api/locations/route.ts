@@ -100,7 +100,7 @@ export async function POST(request: Request) {
     console.log('Creating new location...')
 
     const body = await request.json()
-    const { name, address, x, y } = body
+    const { name, x, y } = body
 
     // Ensure the URL starts with the correct protocol
     const dbUrl = process.env.DATABASE_URL?.trim()
