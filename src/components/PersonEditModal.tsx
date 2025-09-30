@@ -198,23 +198,8 @@ export default function PersonEditModal({ person, locations, factions, onClose, 
         onLocationCreated()
       }
 
-      // Immediately save the person with the new home
-      if (person) {
-        const updatedPerson = {
-          ...person,
-          name: formData.name,
-          species: formData.species,
-          age: formData.age ? parseInt(formData.age) : null,
-          occupation: formData.occupation || null,
-          notes: formData.notes || null,
-          tags: formData.tags,
-          factionIds: formData.factionIds,
-          livesAtId: createData.data.id, // Use the new home ID directly
-          worksAtId: formData.worksAtId || null
-        }
-
-        await onSave(updatedPerson)
-      }
+      // Auto-save the person with the new home (keeps modal open)
+      await autoSave()
 
     } catch (err) {
       console.error('Failed to create home:', err)
