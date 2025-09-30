@@ -61,11 +61,25 @@ export default function FactionsPage() {
 
   const handleSaveFaction = async (updatedFaction: Partial<Faction>) => {
     try {
-      // Update local state instead of making API call
-      setFactions(prev => prev.map(f => 
-        f.id === updatedFaction.id ? { ...f, ...updatedFaction } : f
-      ))
-      setEditingFaction(null)
+      const response = await fetch('/api/factions', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updatedFaction),
+      })
+
+      const data = await response.json()
+
+      if (data.success) {
+        // Update local state with the response data
+        setFactions(prev => prev.map(f => 
+          f.id === updatedFaction.id ? { ...f, ...data.data } : f
+        ))
+        setEditingFaction(null)
+      } else {
+        throw new Error(data.error || 'Failed to update faction')
+      }
     } catch (err) {
       throw err
     }
