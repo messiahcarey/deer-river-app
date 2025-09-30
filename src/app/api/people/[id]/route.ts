@@ -78,8 +78,22 @@ export async function PUT(
         householdId: body.householdId
       },
       include: {
-        livesAt: true,
-        worksAt: true,
+        livesAt: {
+          select: {
+            id: true,
+            name: true,
+            x: true,
+            y: true
+          }
+        },
+        worksAt: {
+          select: {
+            id: true,
+            name: true,
+            x: true,
+            y: true
+          }
+        },
         household: true
       }
     })
