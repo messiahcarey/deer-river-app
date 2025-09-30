@@ -19,12 +19,9 @@ interface Person {
 interface Building {
   id: string
   name: string
-  kind: string
-  address: string | null
-  notes: string | null
+  description: string | null
   x: number | null
   y: number | null
-  capacity: number | null
   residents: Person[]
   workers: Person[]
 }
@@ -39,15 +36,12 @@ interface BuildingTableProps {
 export default function BuildingTable({ buildings, loading, error, onRefresh }: BuildingTableProps) {
   const [selectedBuilding, setSelectedBuilding] = useState<Building | null>(null)
   const [editingBuilding, setEditingBuilding] = useState<Building | null>(null)
-  const [filterKind, setFilterKind] = useState<string>('all')
   const [searchTerm, setSearchTerm] = useState('')
 
   const filteredBuildings = buildings.filter(building => {
-    const matchesKind = filterKind === 'all' || building.kind.toLowerCase() === filterKind.toLowerCase()
     const matchesSearch = building.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         building.address?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         building.notes?.toLowerCase().includes(searchTerm.toLowerCase())
-    return matchesKind && matchesSearch
+                         building.description?.toLowerCase().includes(searchTerm.toLowerCase())
+    return matchesSearch
   })
 
   // Sort buildings: those with residents/workers first, then by name
@@ -61,39 +55,6 @@ export default function BuildingTable({ buildings, loading, error, onRefresh }: 
     return a.name.localeCompare(b.name)
   })
 
-  const getKindIcon = (kind: string) => {
-    switch (kind.toLowerCase()) {
-      case 'business':
-        return '🏪'
-      case 'residential':
-        return '🏠'
-      case 'military':
-        return '🏰'
-      case 'dock':
-        return '⚓'
-      case 'infrastructure':
-        return '🏗️'
-      default:
-        return '📍'
-    }
-  }
-
-  const getKindColor = (kind: string) => {
-    switch (kind.toLowerCase()) {
-      case 'business':
-        return 'bg-blue-100 text-blue-800'
-      case 'residential':
-        return 'bg-green-100 text-green-800'
-      case 'military':
-        return 'bg-red-100 text-red-800'
-      case 'dock':
-        return 'bg-cyan-100 text-cyan-800'
-      case 'infrastructure':
-        return 'bg-yellow-100 text-yellow-800'
-      default:
-        return 'bg-gray-100 text-gray-800'
-    }
-  }
 
   const handleEditBuilding = (building: Building) => {
     setEditingBuilding(building)
@@ -178,18 +139,6 @@ export default function BuildingTable({ buildings, loading, error, onRefresh }: 
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
         </div>
-        <select
-          value={filterKind}
-          onChange={(e) => setFilterKind(e.target.value)}
-          className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-        >
-          <option value="all">All Types</option>
-          <option value="business">Business</option>
-          <option value="residential">Residential</option>
-          <option value="military">Military</option>
-          <option value="infrastructure">Infrastructure</option>
-          <option value="dock">Dock</option>
-        </select>
         <button
           onClick={onRefresh}
           className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors"
@@ -217,22 +166,22 @@ export default function BuildingTable({ buildings, loading, error, onRefresh }: 
                 <tr key={building.id} className="hover:bg-gray-50">
                   <td className="px-4 py-3">
                     <div className="flex items-center space-x-2">
-                      <span className="text-lg">{getKindIcon(building.kind)}</span>
+                      <span className="text-lg">🏢</span>
                       <div>
                         <div className="font-medium text-gray-900">{building.name}</div>
-                        {building.notes && (
-                          <div className="text-xs text-gray-500">{building.notes}</div>
+                        {building.description && (
+                          <div className="text-xs text-gray-500">{building.description}</div>
                         )}
                       </div>
                     </div>
                   </td>
                   <td className="px-4 py-3">
-                    <span className={`px-2 py-1 rounded text-xs font-medium ${getKindColor(building.kind)}`}>
-                      {building.kind}
+                    <span className="px-2 py-1 rounded text-xs font-medium bg-blue-100 text-blue-800">
+                      Building
                     </span>
                   </td>
                   <td className="px-4 py-3 text-gray-700">
-                    {building.address || 'No description'}
+                    {building.description || 'No description'}
                   </td>
                   <td className="px-4 py-3">
                     <div className="space-y-1">
@@ -301,8 +250,8 @@ export default function BuildingTable({ buildings, loading, error, onRefresh }: 
               No Buildings Found
             </h3>
             <p className="text-gray-600">
-              {searchTerm || filterKind !== 'all' 
-                ? 'Try adjusting your search or filter criteria.'
+              {searchTerm 
+                ? 'Try adjusting your search criteria.'
                 : 'Import some building data to get started.'
               }
             </p>
@@ -326,10 +275,10 @@ export default function BuildingTable({ buildings, loading, error, onRefresh }: 
               .map((building) => (
                 <div key={building.id} className="bg-white p-4 rounded-lg border border-yellow-200">
                   <div className="flex items-center space-x-2 mb-2">
-                    <span className="text-lg">{getKindIcon(building.kind)}</span>
+                    <span className="text-lg">🏢</span>
                     <h4 className="font-medium text-gray-800">{building.name}</h4>
                   </div>
-                  <p className="text-sm text-gray-600 mb-2">{building.address || 'No description'}</p>
+                  <p className="text-sm text-gray-600 mb-2">{building.description || 'No description'}</p>
                   <div className="text-xs text-yellow-600">
                     No residents or workers assigned
                   </div>
@@ -356,10 +305,10 @@ export default function BuildingTable({ buildings, loading, error, onRefresh }: 
               <div className="flex justify-between items-start mb-4">
                 <div>
                   <h3 className="text-2xl font-semibold text-gray-800 flex items-center space-x-2">
-                    <span className="text-2xl">{getKindIcon(selectedBuilding.kind)}</span>
+                    <span className="text-2xl">🏢</span>
                     <span>{selectedBuilding.name}</span>
                   </h3>
-                  <p className="text-gray-600 capitalize">{selectedBuilding.kind}</p>
+                  <p className="text-gray-600">Building</p>
                 </div>
                 <button
                   onClick={() => setSelectedBuilding(null)}
@@ -369,17 +318,10 @@ export default function BuildingTable({ buildings, loading, error, onRefresh }: 
                 </button>
               </div>
 
-              {selectedBuilding.address && (
+              {selectedBuilding.description && (
                 <div className="mb-4">
                   <h4 className="font-medium text-gray-700 mb-1">Description</h4>
-                  <p className="text-gray-600">{selectedBuilding.address}</p>
-                </div>
-              )}
-
-              {selectedBuilding.notes && (
-                <div className="mb-4">
-                  <h4 className="font-medium text-gray-700 mb-1">Notes</h4>
-                  <p className="text-gray-600">{selectedBuilding.notes}</p>
+                  <p className="text-gray-600">{selectedBuilding.description}</p>
                 </div>
               )}
 

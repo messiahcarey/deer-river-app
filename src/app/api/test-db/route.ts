@@ -4,16 +4,24 @@ import { PrismaClient } from '@prisma/client'
 export async function GET() {
   try {
     console.log('Testing database connection...')
-    console.log('DATABASE_URL:', process.env.DATABASE_URL ? 'Set' : 'Not set')
-    console.log('DATABASE_URL value:', process.env.DATABASE_URL)
-    console.log('All env vars:', Object.keys(process.env).filter(key => key.includes('DATABASE')))
-    
-    // Ensure the URL is set
+
+    // Ensure the URL starts with the correct protocol
     const dbUrl = process.env.DATABASE_URL?.trim()
-    if (!dbUrl) {
-      throw new Error(`DATABASE_URL not set`)
+    if (!dbUrl || (!dbUrl.startsWith('postgresql://') && !dbUrl.startsWith('postgres://'))) {
+      return NextResponse.json({
+        success: false,
+        error: `Invalid DATABASE_URL format: ${dbUrl}`,
+        timestamp: new Date().toISOString()
+      }, {
+        status: 500,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+          'Access-Control-Allow-Headers': 'Content-Type',
+        }
+      })
     }
-    
+
     // Create Prisma client with explicit environment variable
     const prismaWithEnv = new PrismaClient({
       datasources: {
@@ -22,53 +30,60 @@ export async function GET() {
         }
       }
     })
-    
-    // Test database connection
+
     await prismaWithEnv.$connect()
-    
-    // Try a simple query
-    const result = await prismaWithEnv.$queryRaw`SELECT 1 as test`
-    console.log('Database query result:', result)
-    
+
+    // Test basic queries
+    const locationCount = await prismaWithEnv.location.count()
+    const personCount = await prismaWithEnv.person.count()
+    const factionCount = await prismaWithEnv.faction.count()
+
+    // Get a sample person with their location
+    const samplePerson = await prismaWithEnv.person.findFirst({
+      select: {
+        id: true,
+        name: true,
+        livesAt: {
+          select: {
+            id: true,
+            name: true,
+          }
+        }
+      }
+    })
+
     await prismaWithEnv.$disconnect()
-    
-    return NextResponse.json({ 
-      success: true, 
-      message: 'Database connection successful',
-      queryResult: result,
+
+    return NextResponse.json({
+      success: true,
+      data: {
+        locationCount,
+        personCount,
+        factionCount,
+        samplePerson,
+        databaseUrl: dbUrl.substring(0, 20) + '...' // Only show first 20 chars for security
+      },
       timestamp: new Date().toISOString()
     }, {
       headers: {
         'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
+        'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
         'Access-Control-Allow-Headers': 'Content-Type',
       }
     })
   } catch (error) {
-    console.error('Database connection failed:', error)
-    return NextResponse.json({ 
-      success: false, 
+    console.error('Database test failed:', error)
+    return NextResponse.json({
+      success: false,
       error: error instanceof Error ? error.message : 'Unknown error',
-      errorType: error instanceof Error ? error.constructor.name : 'Unknown',
       timestamp: new Date().toISOString()
-    }, { 
+    }, {
       status: 500,
       headers: {
         'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
+        'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
         'Access-Control-Allow-Headers': 'Content-Type',
       }
     })
   }
-}
-
-export async function OPTIONS() {
-  return new NextResponse(null, {
-    status: 200,
-    headers: {
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type',
-    },
-  })
 }

@@ -20,12 +20,10 @@ interface Person {
   livesAt: {
     id: string;
     name: string;
-    kind: string;
   } | null;
   worksAt: {
     id: string;
     name: string;
-    kind: string;
   } | null;
   household: {
     id: string;
@@ -68,6 +66,8 @@ export default function PeoplePage() {
       const data = await response.json();
       
       if (data.success) {
+        console.log('People data received:', data.data);
+        console.log('First person livesAt:', data.data[0]?.livesAt);
         setPeople(data.data);
         setError(null);
       } else {
@@ -113,20 +113,40 @@ export default function PeoplePage() {
 
   const handleSavePerson = async (updatedPerson: Partial<Person>) => {
     try {
-      const response = await fetch(`/api/people/${updatedPerson.id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(updatedPerson),
-      });
+      if (updatedPerson.id) {
+        // Update existing person
+        const response = await fetch(`/api/people/${updatedPerson.id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(updatedPerson),
+        });
 
-      const data = await response.json();
-      if (data.success) {
-        await fetchPeople(); // Refresh the list
-        setEditingPerson(null);
+        const data = await response.json();
+        if (data.success) {
+          await fetchPeople(); // Refresh the list
+          setEditingPerson(null);
+        } else {
+          throw new Error(data.error || 'Failed to update person');
+        }
       } else {
-        throw new Error(data.error || 'Failed to update person');
+        // Create new person
+        const response = await fetch('/api/people', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(updatedPerson),
+        });
+
+        const data = await response.json();
+        if (data.success) {
+          await fetchPeople(); // Refresh the list
+          setEditingPerson(null);
+        } else {
+          throw new Error(data.error || 'Failed to create person');
+        }
       }
     } catch (err) {
       throw err;
@@ -375,9 +395,15 @@ export default function PeoplePage() {
               >
                 🔄 Refresh
               </button>
+              <button
+                onClick={() => setEditingPerson({} as Person)}
+                className="bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-lg transition-colors"
+              >
+                ➕ New Person
+              </button>
               <Link 
                 href="/import" 
-                className="bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-lg transition-colors"
+                className="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-lg transition-colors"
               >
                 📊 Import CSV
               </Link>
@@ -520,23 +546,11 @@ export default function PeoplePage() {
                       <td className="px-4 py-3 text-gray-700">
                         {person.occupation || 'None'}
                       </td>
-                      <td className="px-4 py-3">
-                        {person.faction ? (
-                          <span 
-                            className="px-2 py-1 rounded text-xs font-medium"
-                            style={{ 
-                              backgroundColor: person.faction.color ? `${person.faction.color}20` : '#f3f4f6',
-                              color: person.faction.color || '#374151'
-                            }}
-                          >
-                            {person.faction.name}
-                          </span>
-                        ) : (
-                          <span className="text-gray-400">None</span>
-                        )}
-                      </td>
                       <td className="px-4 py-3 text-gray-700">
-                        {person.livesAt?.name || 'Unknown'}
+                        {(() => {
+                          console.log('Rendering livesAt for', person.name, ':', person.livesAt);
+                          return person.livesAt?.name || 'Unknown';
+                        })()}
                       </td>
                       <td className="px-4 py-3 text-gray-700">
                         {person.worksAt?.name || 'None'}

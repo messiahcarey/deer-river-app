@@ -5,11 +5,9 @@ import { useState } from 'react'
 interface Location {
   id: string
   name: string
-  kind: string
-  address: string | null
+  description: string | null
   x: number | null
   y: number | null
-  notes: string | null
   residents: Array<{
     id: string
     name: string
@@ -45,50 +43,6 @@ export default function InteractiveMap({
 }: InteractiveMapProps) {
   const [hoveredLocation, setHoveredLocation] = useState<string | null>(null)
 
-  const getLocationIcon = (kind: string) => {
-    switch (kind.toLowerCase()) {
-      case 'business':
-        return '🏪'
-      case 'residential':
-        return '🏠'
-      case 'military':
-        return '🏰'
-      case 'dock':
-        return '⚓'
-      default:
-        return '📍'
-    }
-  }
-
-  const getLocationColor = (kind: string) => {
-    switch (kind.toLowerCase()) {
-      case 'business':
-        return 'bg-blue-500'
-      case 'residential':
-        return 'bg-green-500'
-      case 'military':
-        return 'bg-red-500'
-      case 'dock':
-        return 'bg-cyan-500'
-      default:
-        return 'bg-gray-500'
-    }
-  }
-
-  const getLocationSize = (kind: string) => {
-    switch (kind.toLowerCase()) {
-      case 'business':
-        return 'w-8 h-8'
-      case 'residential':
-        return 'w-6 h-6'
-      case 'military':
-        return 'w-10 h-10'
-      case 'dock':
-        return 'w-7 h-7'
-      default:
-        return 'w-6 h-6'
-    }
-  }
 
   return (
     <div className="relative w-full h-full bg-gradient-to-br from-green-100 to-green-200 rounded-lg overflow-hidden">
@@ -148,12 +102,12 @@ export default function InteractiveMap({
           >
             {/* Location Marker */}
             <div
-              className={`${getLocationSize(location.kind)} ${getLocationColor(location.kind)} rounded-full flex items-center justify-center text-white font-bold shadow-lg border-2 border-white ${
+              className={`w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold shadow-lg border-2 border-white ${
                 isSelected ? 'ring-4 ring-yellow-400 ring-opacity-50' : ''
               } ${isHovered ? 'scale-110' : 'hover:scale-105'}`}
             >
               <span className="text-xs">
-                {getLocationIcon(location.kind)}
+                📍
               </span>
             </div>
 

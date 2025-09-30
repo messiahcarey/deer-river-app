@@ -21,12 +21,9 @@ interface Person {
 interface Building {
   id: string
   name: string
-  kind: string
-  address: string | null
-  notes: string | null
+  description: string | null
   x: number | null
   y: number | null
-  capacity: number | null
   residents: Person[]
   workers: Person[]
 }
@@ -67,11 +64,41 @@ export default function MapPage() {
 
   const handleSaveBuilding = async (updatedBuilding: Partial<Building>) => {
     try {
-      // Update local state instead of making API call
-      setBuildings(prev => prev.map(b => 
-        b.id === updatedBuilding.id ? { ...b, ...updatedBuilding } : b
-      ))
-      setEditingBuilding(null)
+      if (updatedBuilding.id) {
+        // Update existing building
+        const response = await fetch(`/api/locations/${updatedBuilding.id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(updatedBuilding),
+        });
+
+        const data = await response.json();
+        if (data.success) {
+          await fetchBuildings(); // Refresh the list
+          setEditingBuilding(null);
+        } else {
+          throw new Error(data.error || 'Failed to update building');
+        }
+      } else {
+        // Create new building
+        const response = await fetch('/api/locations', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(updatedBuilding),
+        });
+
+        const data = await response.json();
+        if (data.success) {
+          await fetchBuildings(); // Refresh the list
+          setEditingBuilding(null);
+        } else {
+          throw new Error(data.error || 'Failed to create building');
+        }
+      }
     } catch (err) {
       throw err
     }
@@ -125,39 +152,6 @@ Market Stall,Business,"Temporary market stall or trading post",70,60,2,"Open-air
     }
   }
 
-  const getKindIcon = (kind: string) => {
-    switch (kind.toLowerCase()) {
-      case 'business':
-        return '🏪'
-      case 'residential':
-        return '🏠'
-      case 'military':
-        return '🏰'
-      case 'dock':
-        return '⚓'
-      case 'infrastructure':
-        return '🏗️'
-      default:
-        return '📍'
-    }
-  }
-
-  const getKindColor = (kind: string) => {
-    switch (kind.toLowerCase()) {
-      case 'business':
-        return 'bg-blue-100 text-blue-800'
-      case 'residential':
-        return 'bg-green-100 text-green-800'
-      case 'military':
-        return 'bg-red-100 text-red-800'
-      case 'dock':
-        return 'bg-cyan-100 text-cyan-800'
-      case 'infrastructure':
-        return 'bg-yellow-100 text-yellow-800'
-      default:
-        return 'bg-gray-100 text-gray-800'
-    }
-  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-100">
@@ -187,8 +181,14 @@ Market Stall,Business,"Temporary market stall or trading post",70,60,2,"Open-air
                 🔄 Refresh
               </button>
               <button
-                onClick={handleImportLocations}
+                onClick={() => setEditingBuilding({} as Building)}
                 className="bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-lg transition-colors"
+              >
+                ➕ New Building
+              </button>
+              <button
+                onClick={handleImportLocations}
+                className="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-lg transition-colors"
               >
                 📊 Import All Locations
               </button>
@@ -248,25 +248,25 @@ Market Stall,Business,"Temporary market stall or trading post",70,60,2,"Open-air
                     <tr key={building.id} className="hover:bg-gray-50">
                       <td className="px-4 py-3">
                         <div className="flex items-center space-x-2">
-                          <span className="text-lg">{getKindIcon(building.kind)}</span>
+                          <span className="text-lg">🏢</span>
                           <div>
                             <div className="font-medium text-gray-900">{building.name}</div>
-                            {building.notes && (
-                              <div className="text-xs text-gray-500 truncate w-48">{building.notes}</div>
+                            {building.description && (
+                              <div className="text-xs text-gray-500 truncate w-48">{building.description}</div>
                             )}
                           </div>
                         </div>
                       </td>
                       <td className="px-4 py-3">
-                        <span className={`px-2 py-1 rounded text-xs font-medium ${getKindColor(building.kind)}`}>
-                          {building.kind}
+                        <span className="px-2 py-1 rounded text-xs font-medium bg-blue-100 text-blue-800">
+                          Building
                         </span>
                       </td>
                       <td className="px-4 py-3 text-gray-700">
-                        {building.address || 'N/A'}
+                        {building.description || 'N/A'}
                       </td>
                       <td className="px-4 py-3 text-gray-700">
-                        {building.capacity || 'N/A'}
+                        N/A
                       </td>
                       <td className="px-4 py-3 text-gray-700">
                         {building.residents.length > 0 ? (
@@ -325,7 +325,7 @@ Market Stall,Business,"Temporary market stall or trading post",70,60,2,"Open-air
               </div>
               <div className="bg-orange-50 p-4 rounded-lg text-center">
                 <div className="text-2xl font-bold text-orange-600">
-                  {new Set(buildings.map(b => b.kind)).size}
+                  {buildings.length}
                 </div>
                 <div className="text-sm text-orange-700">Building Types</div>
               </div>

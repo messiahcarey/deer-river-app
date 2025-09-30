@@ -157,12 +157,12 @@ export async function POST(request: Request) {
 
 async function createBasicLocations(prisma: PrismaClient) {
   const locationData = [
-    { name: 'Deer River', kind: 'Town', address: 'Main settlement', notes: 'The main town of Deer River' },
-    { name: 'Rusty Pike Inn', kind: 'Business', address: 'Main street', notes: 'Tavern and inn run by Rurik Copperpot' },
-    { name: 'Forge of Fortune', kind: 'Business', address: 'Blacksmith district', notes: 'Blacksmith shop run by Oswin Finch' },
-    { name: 'River\'s Edge Goods', kind: 'Business', address: 'Market square', notes: 'General goods shop run by Torrin' },
-    { name: 'Ironclad Armory', kind: 'Business', address: 'Armor district', notes: 'Armor shop run by Eamon Hargrove' },
-    { name: 'Marina', kind: 'Dock', address: 'Lustrous Run', notes: 'Ferry dock managed by Valenna Moondancer' }
+    { name: 'Deer River', type: 'Town', address: 'Main settlement', notes: 'The main town of Deer River' },
+    { name: 'Rusty Pike Inn', type: 'Business', address: 'Main street', notes: 'Tavern and inn run by Rurik Copperpot' },
+    { name: 'Forge of Fortune', type: 'Business', address: 'Blacksmith district', notes: 'Blacksmith shop run by Oswin Finch' },
+    { name: 'River\'s Edge Goods', type: 'Business', address: 'Market square', notes: 'General goods shop run by Torrin' },
+    { name: 'Ironclad Armory', type: 'Business', address: 'Armor district', notes: 'Armor shop run by Eamon Hargrove' },
+    { name: 'Marina', type: 'Dock', address: 'Lustrous Run', notes: 'Ferry dock managed by Valenna Moondancer' }
   ]
 
   const locations: Record<string, { id: string }> = {}
@@ -186,10 +186,10 @@ async function createBasicLocations(prisma: PrismaClient) {
 
 async function createBasicFactions(prisma: PrismaClient) {
   const factionData = [
-    { name: 'Town Council', description: 'Governing body of Deer River', color: '#4A90E2' },
-    { name: 'Guard', description: 'Town guard and security', color: '#E24A4A' },
-    { name: 'Merchants', description: 'Business owners and traders', color: '#4AE24A' },
-    { name: 'Refugees', description: 'Displaced people seeking shelter', color: '#E2E24A' }
+    { name: 'Town Council', color: '#4A90E2' },
+    { name: 'Guard', color: '#E24A4A' },
+    { name: 'Merchants', color: '#4AE24A' },
+    { name: 'Refugees', color: '#E2E24A' }
   ]
 
   const factions: Record<string, { id: string }> = {}

@@ -38,9 +38,6 @@ export async function GET() {
       select: {
         id: true,
         name: true,
-        kind: true,
-        address: true,
-        notes: true,
         x: true,
         y: true,
         residents: {
@@ -103,7 +100,7 @@ export async function POST(request: Request) {
     console.log('Creating new location...')
 
     const body = await request.json()
-    const { name, kind, address, x, y, notes } = body
+    const { name, x, y } = body
 
     // Ensure the URL starts with the correct protocol
     const dbUrl = process.env.DATABASE_URL?.trim()
@@ -136,11 +133,8 @@ export async function POST(request: Request) {
     const location = await prismaWithEnv.location.create({
       data: {
         name,
-        kind: kind || 'Unknown',
-        address: address || null,
         x: x ? parseFloat(x) : null,
-        y: y ? parseFloat(y) : null,
-        notes: notes || null
+        y: y ? parseFloat(y) : null
       },
       include: {
         residents: true,

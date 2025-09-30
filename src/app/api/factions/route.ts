@@ -59,9 +59,8 @@ export async function GET() {
     const transformedFactions = factions.map(faction => ({
       id: faction.id,
       name: faction.name,
-      motto: faction.motto,
-      description: faction.description,
-      color: faction.color,
+      motto: faction.motto || null, // Temporarily handle missing field
+      color: faction.color || null, // Temporarily handle missing field
       members: faction.memberships.map(membership => ({
         id: membership.person.id,
         name: membership.person.name,
@@ -103,7 +102,7 @@ export async function POST(request: Request) {
     console.log('Creating new faction...')
 
     const body = await request.json()
-    const { name, motto, description, color } = body
+    const { name, motto, color } = body
 
     const dbUrl = process.env.DATABASE_URL?.trim()
     if (!dbUrl || (!dbUrl.startsWith('postgresql://') && !dbUrl.startsWith('postgres://'))) {
@@ -135,7 +134,6 @@ export async function POST(request: Request) {
       data: {
         name,
         motto: motto || null,
-        description: description || null,
         color: color || null
       }
     })

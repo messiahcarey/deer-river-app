@@ -18,12 +18,10 @@ interface Person {
   livesAt: {
     id: string
     name: string
-    kind: string
   } | null
   worksAt: {
     id: string
     name: string
-    kind: string
   } | null
   household: {
     id: string
@@ -34,7 +32,6 @@ interface Person {
 interface Location {
   id: string
   name: string
-  kind: string
 }
 
 interface Faction {
@@ -235,7 +232,7 @@ export default function PersonEditModal({ person, locations, factions, onClose, 
                   <option value="">Select Location</option>
                   {locations.map((location) => (
                     <option key={location.id} value={location.id}>
-                      {location.name} ({location.kind})
+                      {location.name}
                     </option>
                   ))}
                 </select>
@@ -253,7 +250,7 @@ export default function PersonEditModal({ person, locations, factions, onClose, 
                   <option value="">No Workplace</option>
                   {locations.map((location) => (
                     <option key={location.id} value={location.id}>
-                      {location.name} ({location.kind})
+                      {location.name}
                     </option>
                   ))}
                 </select>

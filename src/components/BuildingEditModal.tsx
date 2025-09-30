@@ -5,12 +5,9 @@ import { useState, useEffect } from 'react'
 interface Building {
   id: string
   name: string
-  kind: string
-  address: string | null
-  notes: string | null
+  description: string | null
   x: number | null
   y: number | null
-  capacity: number | null
 }
 
 interface BuildingEditModalProps {
@@ -50,13 +47,6 @@ export default function BuildingEditModal({ building, onClose, onSave }: Buildin
     }
   }
 
-  const buildingTypes = [
-    'Business',
-    'Residential', 
-    'Military',
-    'Infrastructure',
-    'Dock'
-  ]
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
@@ -87,38 +77,12 @@ export default function BuildingEditModal({ building, onClose, onSave }: Buildin
               />
             </div>
             <div>
-              <label htmlFor="kind" className="block text-sm font-medium text-gray-700">Building Type</label>
-              <select
-                id="kind"
-                name="kind"
-                value={formData.kind || ''}
-                onChange={handleChange}
-                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
-                required
-              >
-                {buildingTypes.map(type => (
-                  <option key={type} value={type}>{type}</option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label htmlFor="address" className="block text-sm font-medium text-gray-700">Address</label>
+              <label htmlFor="description" className="block text-sm font-medium text-gray-700">Address</label>
               <input
                 type="text"
-                id="address"
-                name="address"
-                value={formData.address || ''}
-                onChange={handleChange}
-                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
-              />
-            </div>
-            <div>
-              <label htmlFor="capacity" className="block text-sm font-medium text-gray-700">Capacity</label>
-              <input
-                type="number"
-                id="capacity"
-                name="capacity"
-                value={formData.capacity || ''}
+                id="description"
+                name="description"
+                value={formData.description || ''}
                 onChange={handleChange}
                 className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
               />
@@ -145,17 +109,6 @@ export default function BuildingEditModal({ building, onClose, onSave }: Buildin
                 className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
               />
             </div>
-          </div>
-          <div className="mb-4">
-            <label htmlFor="notes" className="block text-sm font-medium text-gray-700">Description/Notes</label>
-            <textarea
-              id="notes"
-              name="notes"
-              value={formData.notes || ''}
-              onChange={handleChange}
-              rows={3}
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
-            ></textarea>
           </div>
           <div className="flex justify-end space-x-3">
             <button
