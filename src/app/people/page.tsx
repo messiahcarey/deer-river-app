@@ -52,12 +52,12 @@ export default function PeoplePage() {
   // Filter states
   const [filters, setFilters] = useState({
     name: '',
-    species: '',
-    occupation: '',
-    tags: '',
-    livesAt: '',
-    worksAt: '',
-    faction: ''
+    species: [] as string[],
+    occupation: [] as string[],
+    tags: [] as string[],
+    livesAt: [] as string[],
+    worksAt: [] as string[],
+    faction: [] as string[]
   });
   const [showFilters, setShowFilters] = useState(false);
 
@@ -98,6 +98,15 @@ export default function PeoplePage() {
       )
     )].sort();
     return factionNames;
+  };
+
+  // Check if people have no faction or no workplace
+  const hasPeopleWithNoFaction = () => {
+    return people.some(person => !person.memberships || person.memberships.length === 0);
+  };
+
+  const hasPeopleWithNoWorkplace = () => {
+    return people.some(person => !person.worksAt);
   };
 
   const fetchPeople = async () => {
@@ -328,22 +337,39 @@ export default function PeoplePage() {
   };
 
   // Filter functions
-  const handleFilterChange = (field: keyof typeof filters, value: string) => {
+  const handleFilterChange = (field: keyof typeof filters, value: string | string[]) => {
     setFilters(prev => ({
       ...prev,
       [field]: value
     }));
   };
 
+  const handleMultiSelectChange = (field: keyof typeof filters, value: string, checked: boolean) => {
+    setFilters(prev => {
+      const currentValues = prev[field] as string[];
+      if (checked) {
+        return {
+          ...prev,
+          [field]: [...currentValues, value]
+        };
+      } else {
+        return {
+          ...prev,
+          [field]: currentValues.filter(v => v !== value)
+        };
+      }
+    });
+  };
+
   const clearFilters = () => {
     setFilters({
       name: '',
-      species: '',
-      occupation: '',
-      tags: '',
-      livesAt: '',
-      worksAt: '',
-      faction: ''
+      species: [],
+      occupation: [],
+      tags: [],
+      livesAt: [],
+      worksAt: [],
+      faction: []
     });
   };
 
@@ -357,42 +383,48 @@ export default function PeoplePage() {
       );
     }
 
-    if (filters.species) {
+    if (filters.species.length > 0) {
       filtered = filtered.filter(person => 
-        person.species.toLowerCase().includes(filters.species.toLowerCase())
+        filters.species.includes(person.species)
       );
     }
 
-    if (filters.occupation) {
+    if (filters.occupation.length > 0) {
       filtered = filtered.filter(person => 
-        person.occupation?.toLowerCase().includes(filters.occupation.toLowerCase()) || false
+        person.occupation && filters.occupation.includes(person.occupation)
       );
     }
 
-    if (filters.tags) {
+    if (filters.tags.length > 0) {
       filtered = filtered.filter(person => 
-        person.tags.toLowerCase().includes(filters.tags.toLowerCase())
+        filters.tags.includes(person.tags)
       );
     }
 
-    if (filters.livesAt) {
+    if (filters.livesAt.length > 0) {
       filtered = filtered.filter(person => 
-        person.livesAt?.name.toLowerCase().includes(filters.livesAt.toLowerCase()) || false
+        person.livesAt && filters.livesAt.includes(person.livesAt.name)
       );
     }
 
-    if (filters.worksAt) {
-      filtered = filtered.filter(person => 
-        person.worksAt?.name.toLowerCase().includes(filters.worksAt.toLowerCase()) || false
-      );
+    if (filters.worksAt.length > 0) {
+      filtered = filtered.filter(person => {
+        if (filters.worksAt.includes('None')) {
+          return !person.worksAt;
+        }
+        return person.worksAt && filters.worksAt.includes(person.worksAt.name);
+      });
     }
 
-    if (filters.faction) {
-      filtered = filtered.filter(person => 
-        person.memberships?.some(membership => 
-          membership.faction.name.toLowerCase().includes(filters.faction.toLowerCase())
-        ) || false
-      );
+    if (filters.faction.length > 0) {
+      filtered = filtered.filter(person => {
+        if (filters.faction.includes('None')) {
+          return !person.memberships || person.memberships.length === 0;
+        }
+        return person.memberships?.some(membership => 
+          filters.faction.includes(membership.faction.name)
+        );
+      });
     }
 
     return filtered;
@@ -492,88 +524,128 @@ export default function PeoplePage() {
                 />
               </div>
               
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Species</label>
-                <select
-                  value={filters.species}
-                  onChange={(e) => handleFilterChange('species', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="">All Species</option>
-                  {getUniqueSpecies().map(species => (
-                    <option key={species} value={species}>{species}</option>
-                  ))}
-                </select>
-              </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Species</label>
+            <div className="max-h-32 overflow-y-auto border border-gray-300 rounded-md p-2 space-y-1">
+              {getUniqueSpecies().map(species => (
+                <label key={species} className="flex items-center space-x-2 cursor-pointer hover:bg-gray-50 p-1 rounded">
+                  <input
+                    type="checkbox"
+                    checked={filters.species.includes(species)}
+                    onChange={(e) => handleMultiSelectChange('species', species, e.target.checked)}
+                    className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
+                  />
+                  <span className="text-sm text-gray-700">{species}</span>
+                </label>
+              ))}
+            </div>
+          </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Occupation</label>
-                <select
-                  value={filters.occupation}
-                  onChange={(e) => handleFilterChange('occupation', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="">All Occupations</option>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Occupation</label>
+                <div className="max-h-32 overflow-y-auto border border-gray-300 rounded-md p-2 space-y-1">
                   {getUniqueOccupations().map(occupation => (
-                    <option key={occupation} value={occupation}>{occupation}</option>
+                    <label key={occupation} className="flex items-center space-x-2 cursor-pointer hover:bg-gray-50 p-1 rounded">
+                      <input
+                        type="checkbox"
+                        checked={filters.occupation.includes(occupation)}
+                        onChange={(e) => handleMultiSelectChange('occupation', occupation, e.target.checked)}
+                        className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
+                      />
+                      <span className="text-sm text-gray-700">{occupation}</span>
+                    </label>
                   ))}
-                </select>
+                </div>
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Tags</label>
-                <select
-                  value={filters.tags}
-                  onChange={(e) => handleFilterChange('tags', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="">All Tags</option>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Tags</label>
+                <div className="max-h-32 overflow-y-auto border border-gray-300 rounded-md p-2 space-y-1">
                   {getUniqueTags().map(tag => (
-                    <option key={tag} value={tag}>{tag}</option>
+                    <label key={tag} className="flex items-center space-x-2 cursor-pointer hover:bg-gray-50 p-1 rounded">
+                      <input
+                        type="checkbox"
+                        checked={filters.tags.includes(tag)}
+                        onChange={(e) => handleMultiSelectChange('tags', tag, e.target.checked)}
+                        className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
+                      />
+                      <span className="text-sm text-gray-700">{tag}</span>
+                    </label>
                   ))}
-                </select>
+                </div>
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Lives At</label>
-                <select
-                  value={filters.livesAt}
-                  onChange={(e) => handleFilterChange('livesAt', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="">All Locations</option>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Lives At</label>
+                <div className="max-h-32 overflow-y-auto border border-gray-300 rounded-md p-2 space-y-1">
                   {getUniqueLocations().map(location => (
-                    <option key={location} value={location}>{location}</option>
+                    <label key={location} className="flex items-center space-x-2 cursor-pointer hover:bg-gray-50 p-1 rounded">
+                      <input
+                        type="checkbox"
+                        checked={filters.livesAt.includes(location)}
+                        onChange={(e) => handleMultiSelectChange('livesAt', location, e.target.checked)}
+                        className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
+                      />
+                      <span className="text-sm text-gray-700">{location}</span>
+                    </label>
                   ))}
-                </select>
+                </div>
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Works At</label>
-                <select
-                  value={filters.worksAt}
-                  onChange={(e) => handleFilterChange('worksAt', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="">All Workplaces</option>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Works At</label>
+                <div className="max-h-32 overflow-y-auto border border-gray-300 rounded-md p-2 space-y-1">
+                  {hasPeopleWithNoWorkplace() && (
+                    <label className="flex items-center space-x-2 cursor-pointer hover:bg-gray-50 p-1 rounded">
+                      <input
+                        type="checkbox"
+                        checked={filters.worksAt.includes('None')}
+                        onChange={(e) => handleMultiSelectChange('worksAt', 'None', e.target.checked)}
+                        className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
+                      />
+                      <span className="text-sm text-gray-700 font-medium">None (No workplace)</span>
+                    </label>
+                  )}
                   {getUniqueLocations().map(location => (
-                    <option key={location} value={location}>{location}</option>
+                    <label key={location} className="flex items-center space-x-2 cursor-pointer hover:bg-gray-50 p-1 rounded">
+                      <input
+                        type="checkbox"
+                        checked={filters.worksAt.includes(location)}
+                        onChange={(e) => handleMultiSelectChange('worksAt', location, e.target.checked)}
+                        className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
+                      />
+                      <span className="text-sm text-gray-700">{location}</span>
+                    </label>
                   ))}
-                </select>
+                </div>
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Faction</label>
-                <select
-                  value={filters.faction}
-                  onChange={(e) => handleFilterChange('faction', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="">All Factions</option>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Faction</label>
+                <div className="max-h-32 overflow-y-auto border border-gray-300 rounded-md p-2 space-y-1">
+                  {hasPeopleWithNoFaction() && (
+                    <label className="flex items-center space-x-2 cursor-pointer hover:bg-gray-50 p-1 rounded">
+                      <input
+                        type="checkbox"
+                        checked={filters.faction.includes('None')}
+                        onChange={(e) => handleMultiSelectChange('faction', 'None', e.target.checked)}
+                        className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
+                      />
+                      <span className="text-sm text-gray-700 font-medium">None (No faction)</span>
+                    </label>
+                  )}
                   {getUniqueFactions().map(faction => (
-                    <option key={faction} value={faction}>{faction}</option>
+                    <label key={faction} className="flex items-center space-x-2 cursor-pointer hover:bg-gray-50 p-1 rounded">
+                      <input
+                        type="checkbox"
+                        checked={filters.faction.includes(faction)}
+                        onChange={(e) => handleMultiSelectChange('faction', faction, e.target.checked)}
+                        className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
+                      />
+                      <span className="text-sm text-gray-700">{faction}</span>
+                    </label>
                   ))}
-                </select>
+                </div>
               </div>
             </div>
           )}
