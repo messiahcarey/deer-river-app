@@ -57,7 +57,6 @@ model Household {
 model Location {
   id          String @id @default(cuid())
   name        String
-  description String?
   x           Float?
   y           Float?
   residents   Person[] @relation("LivesAt")
