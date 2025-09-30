@@ -100,6 +100,30 @@ export default function PersonEditModal({ person, locations, factions, onClose, 
     }))
   }
 
+  const autoSave = async () => {
+    if (!person) return
+
+    try {
+      const updatedPerson = {
+        ...person,
+        name: formData.name,
+        species: formData.species,
+        age: formData.age ? parseInt(formData.age) : null,
+        occupation: formData.occupation || null,
+        notes: formData.notes || null,
+        tags: formData.tags,
+        factionIds: formData.factionIds,
+        livesAtId: formData.livesAtId,
+        worksAtId: formData.worksAtId || null
+      }
+
+      await onSave(updatedPerson)
+    } catch (err) {
+      console.error('Auto-save failed:', err)
+      // Don't show error to user for auto-save, just log it
+    }
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!person) return
@@ -154,7 +178,10 @@ export default function PersonEditModal({ person, locations, factions, onClose, 
                 <>
                   <button
                     type="button"
-                    onClick={() => onNavigate(currentIndex - 1)}
+                    onClick={async () => {
+                      await autoSave()
+                      onNavigate(currentIndex - 1)
+                    }}
                     disabled={currentIndex === 0}
                     className="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 disabled:bg-gray-50 disabled:text-gray-400 disabled:cursor-not-allowed rounded transition-colors"
                   >
@@ -162,7 +189,10 @@ export default function PersonEditModal({ person, locations, factions, onClose, 
                   </button>
                   <button
                     type="button"
-                    onClick={() => onNavigate(currentIndex + 1)}
+                    onClick={async () => {
+                      await autoSave()
+                      onNavigate(currentIndex + 1)
+                    }}
                     disabled={currentIndex === allPeople.length - 1}
                     className="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 disabled:bg-gray-50 disabled:text-gray-400 disabled:cursor-not-allowed rounded transition-colors"
                   >
