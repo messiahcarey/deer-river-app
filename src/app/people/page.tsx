@@ -67,6 +67,39 @@ export default function PeoplePage() {
     fetchFactions();
   }, []);
 
+  // Extract unique values for filter options
+  const getUniqueSpecies = () => {
+    const species = [...new Set(people.map(person => person.species))].filter(Boolean).sort();
+    return species;
+  };
+
+  const getUniqueOccupations = () => {
+    const occupations = [...new Set(people.map(person => person.occupation))].filter(Boolean).sort();
+    return occupations;
+  };
+
+  const getUniqueTags = () => {
+    const tags = [...new Set(people.map(person => person.tags))].filter(Boolean).sort();
+    return tags;
+  };
+
+  const getUniqueLocations = () => {
+    const locations = [...new Set([
+      ...people.map(person => person.livesAt?.name).filter(Boolean),
+      ...people.map(person => person.worksAt?.name).filter(Boolean)
+    ])].sort();
+    return locations;
+  };
+
+  const getUniqueFactions = () => {
+    const factionNames = [...new Set(
+      people.flatMap(person => 
+        person.memberships?.map(membership => membership.faction.name) || []
+      )
+    )].sort();
+    return factionNames;
+  };
+
   const fetchPeople = async () => {
     try {
       setLoading(true);
@@ -461,68 +494,86 @@ export default function PeoplePage() {
               
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Species</label>
-                <input
-                  type="text"
+                <select
                   value={filters.species}
                   onChange={(e) => handleFilterChange('species', e.target.value)}
-                  placeholder="Filter by species..."
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
+                >
+                  <option value="">All Species</option>
+                  {getUniqueSpecies().map(species => (
+                    <option key={species} value={species}>{species}</option>
+                  ))}
+                </select>
               </div>
               
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Occupation</label>
-                <input
-                  type="text"
+                <select
                   value={filters.occupation}
                   onChange={(e) => handleFilterChange('occupation', e.target.value)}
-                  placeholder="Filter by occupation..."
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
+                >
+                  <option value="">All Occupations</option>
+                  {getUniqueOccupations().map(occupation => (
+                    <option key={occupation} value={occupation}>{occupation}</option>
+                  ))}
+                </select>
               </div>
               
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Tags</label>
-                <input
-                  type="text"
+                <select
                   value={filters.tags}
                   onChange={(e) => handleFilterChange('tags', e.target.value)}
-                  placeholder="Filter by tags..."
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
+                >
+                  <option value="">All Tags</option>
+                  {getUniqueTags().map(tag => (
+                    <option key={tag} value={tag}>{tag}</option>
+                  ))}
+                </select>
               </div>
               
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Lives At</label>
-                <input
-                  type="text"
+                <select
                   value={filters.livesAt}
                   onChange={(e) => handleFilterChange('livesAt', e.target.value)}
-                  placeholder="Filter by residence..."
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
+                >
+                  <option value="">All Locations</option>
+                  {getUniqueLocations().map(location => (
+                    <option key={location} value={location}>{location}</option>
+                  ))}
+                </select>
               </div>
               
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Works At</label>
-                <input
-                  type="text"
+                <select
                   value={filters.worksAt}
                   onChange={(e) => handleFilterChange('worksAt', e.target.value)}
-                  placeholder="Filter by workplace..."
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
+                >
+                  <option value="">All Workplaces</option>
+                  {getUniqueLocations().map(location => (
+                    <option key={location} value={location}>{location}</option>
+                  ))}
+                </select>
               </div>
               
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Faction</label>
-                <input
-                  type="text"
+                <select
                   value={filters.faction}
                   onChange={(e) => handleFilterChange('faction', e.target.value)}
-                  placeholder="Filter by faction..."
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
+                >
+                  <option value="">All Factions</option>
+                  {getUniqueFactions().map(faction => (
+                    <option key={faction} value={faction}>{faction}</option>
+                  ))}
+                </select>
               </div>
             </div>
           )}
