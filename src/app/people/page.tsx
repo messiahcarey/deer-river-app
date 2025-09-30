@@ -288,56 +288,6 @@ export default function PeoplePage() {
     }
   };
 
-  const getSortedPeople = () => {
-    if (!sortField) return people;
-
-    return [...people].sort((a, b) => {
-      let aValue = a[sortField];
-      let bValue = b[sortField];
-
-      // Handle null/undefined values
-      if (aValue === null || aValue === undefined) aValue = '';
-      if (bValue === null || bValue === undefined) bValue = '';
-
-      // Handle nested objects (livesAt, worksAt)
-      if (sortField === 'livesAt' && typeof aValue === 'object' && aValue !== null) {
-        aValue = (aValue as { name?: string }).name || '';
-      }
-      if (sortField === 'livesAt' && typeof bValue === 'object' && bValue !== null) {
-        bValue = (bValue as { name?: string }).name || '';
-      }
-      if (sortField === 'worksAt' && typeof aValue === 'object' && aValue !== null) {
-        aValue = (aValue as { name?: string }).name || '';
-      }
-      if (sortField === 'worksAt' && typeof bValue === 'object' && bValue !== null) {
-        bValue = (bValue as { name?: string }).name || '';
-      }
-      
-      // Handle memberships array (sort by primary faction name)
-      if (sortField === 'memberships' && Array.isArray(aValue)) {
-        const primaryMembership = aValue.find((m: { isPrimary: boolean; faction: { name: string } }) => m.isPrimary);
-        aValue = primaryMembership ? primaryMembership.faction.name : (aValue.length > 0 ? (aValue[0] as { faction: { name: string } }).faction.name : '');
-      }
-      if (sortField === 'memberships' && Array.isArray(bValue)) {
-        const primaryMembership = bValue.find((m: { isPrimary: boolean; faction: { name: string } }) => m.isPrimary);
-        bValue = primaryMembership ? primaryMembership.faction.name : (bValue.length > 0 ? (bValue[0] as { faction: { name: string } }).faction.name : '');
-      }
-      
-      // Handle tags field (convert to display text)
-      if (sortField === 'tags') {
-        aValue = aValue === 'present' ? 'Present' : 'Absent';
-        bValue = bValue === 'present' ? 'Present' : 'Absent';
-      }
-
-      // Convert to strings for comparison
-      const aStr = String(aValue).toLowerCase();
-      const bStr = String(bValue).toLowerCase();
-
-      if (aStr < bStr) return sortDirection === 'asc' ? -1 : 1;
-      if (aStr > bStr) return sortDirection === 'asc' ? 1 : -1;
-      return 0;
-    });
-  };
 
   const getSortIcon = (field: keyof Person) => {
     if (sortField !== field) return '↕️';
