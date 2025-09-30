@@ -46,9 +46,13 @@ interface PersonEditModalProps {
   factions: Faction[]
   onClose: () => void
   onSave: (updatedPerson: Partial<Person>) => Promise<void>
+  // Navigation props
+  allPeople?: Person[]
+  currentIndex?: number
+  onNavigate?: (index: number) => void
 }
 
-export default function PersonEditModal({ person, locations, factions, onClose, onSave }: PersonEditModalProps) {
+export default function PersonEditModal({ person, locations, factions, onClose, onSave, allPeople, currentIndex, onNavigate }: PersonEditModalProps) {
   const [formData, setFormData] = useState({
     name: '',
     species: '',
@@ -116,15 +120,47 @@ export default function PersonEditModal({ person, locations, factions, onClose, 
       <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         <div className="p-6">
           <div className="flex justify-between items-start mb-6">
-            <h2 className="text-2xl font-semibold text-gray-800">
-              Edit Person: {person.name}
-            </h2>
-            <button
-              onClick={onClose}
-              className="text-gray-400 hover:text-gray-600 text-2xl"
-            >
-              ×
-            </button>
+            <div className="flex-1">
+              <h2 className="text-2xl font-semibold text-gray-800">
+                Edit Person: {person.name}
+              </h2>
+              {allPeople && currentIndex !== undefined && (
+                <p className="text-sm text-gray-500 mt-1">
+                  {currentIndex + 1} of {allPeople.length} people
+                </p>
+              )}
+            </div>
+            
+            <div className="flex items-center space-x-2">
+              {/* Navigation buttons */}
+              {allPeople && currentIndex !== undefined && onNavigate && (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => onNavigate(currentIndex - 1)}
+                    disabled={currentIndex === 0}
+                    className="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 disabled:bg-gray-50 disabled:text-gray-400 disabled:cursor-not-allowed rounded transition-colors"
+                  >
+                    ← Previous
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => onNavigate(currentIndex + 1)}
+                    disabled={currentIndex === allPeople.length - 1}
+                    className="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 disabled:bg-gray-50 disabled:text-gray-400 disabled:cursor-not-allowed rounded transition-colors"
+                  >
+                    Next →
+                  </button>
+                </>
+              )}
+              
+              <button
+                onClick={onClose}
+                className="text-gray-400 hover:text-gray-600 text-2xl ml-2"
+              >
+                ×
+              </button>
+            </div>
           </div>
 
           {error && (

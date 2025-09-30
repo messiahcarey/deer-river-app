@@ -46,6 +46,7 @@ export default function PeoplePage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [editingPerson, setEditingPerson] = useState<Person | null>(null);
+  const [editingPersonIndex, setEditingPersonIndex] = useState<number | null>(null);
   const [selectedPeople, setSelectedPeople] = useState<string[]>([]);
   const [showFactionModal, setShowFactionModal] = useState(false);
   const [sortField, setSortField] = useState<keyof Person | null>(null);
@@ -108,7 +109,18 @@ export default function PeoplePage() {
 
 
   const handleEditPerson = (person: Person) => {
+    const sortedPeople = getSortedPeople();
+    const index = sortedPeople.findIndex(p => p.id === person.id);
     setEditingPerson(person);
+    setEditingPersonIndex(index);
+  };
+
+  const handleNavigateToPerson = (index: number) => {
+    const sortedPeople = getSortedPeople();
+    if (index >= 0 && index < sortedPeople.length) {
+      setEditingPerson(sortedPeople[index]);
+      setEditingPersonIndex(index);
+    }
   };
 
   const handleSavePerson = async (updatedPerson: Partial<Person>) => {
@@ -642,8 +654,14 @@ export default function PeoplePage() {
             person={editingPerson}
             locations={locations}
             factions={factions}
-            onClose={() => setEditingPerson(null)}
+            onClose={() => {
+              setEditingPerson(null);
+              setEditingPersonIndex(null);
+            }}
             onSave={handleSavePerson}
+            allPeople={getSortedPeople()}
+            currentIndex={editingPersonIndex}
+            onNavigate={handleNavigateToPerson}
           />
         )}
 
