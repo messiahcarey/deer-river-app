@@ -74,7 +74,7 @@ export default function PeoplePage() {
   };
 
   const getUniqueOccupations = () => {
-    const occupations = [...new Set(people.map(person => person.occupation))].filter(Boolean).sort();
+    const occupations = [...new Set(people.map(person => person.occupation))].filter((occ): occ is string => Boolean(occ)).sort();
     return occupations;
   };
 
