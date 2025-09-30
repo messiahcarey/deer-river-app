@@ -66,6 +66,8 @@ export default function PeoplePage() {
       const data = await response.json();
       
       if (data.success) {
+        console.log('People data received:', data.data);
+        console.log('First person livesAt:', data.data[0]?.livesAt);
         setPeople(data.data);
         setError(null);
       } else {
@@ -534,7 +536,10 @@ export default function PeoplePage() {
                         )}
                       </td>
                       <td className="px-4 py-3 text-gray-700">
-                        {person.livesAt?.name || 'Unknown'}
+                        {(() => {
+                          console.log('Rendering livesAt for', person.name, ':', person.livesAt);
+                          return person.livesAt?.name || 'Unknown';
+                        })()}
                       </td>
                       <td className="px-4 py-3 text-gray-700">
                         {person.worksAt?.name || 'None'}
