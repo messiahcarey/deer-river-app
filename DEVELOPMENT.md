@@ -72,7 +72,11 @@ git push origin main
 
 - **Local Development**: Use `npm run dev` for local testing
 - **Database**: Use `/api/db-status` endpoint to check database state
+- **Development**: Changes to `development` branch auto-deploy to Amplify
+  - **URL**: `https://development.d25mi5h1ems0sj.amplifyapp.com`
+  - **Status**: Check AWS Amplify console for build status
 - **Production**: Changes to `main` branch auto-deploy to Amplify
+  - **URL**: `https://d25mi5h1ems0sj.amplifyapp.com`
 
 ## Notes
 
