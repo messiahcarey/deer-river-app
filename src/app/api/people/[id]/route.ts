@@ -35,6 +35,32 @@ export async function PUT(
 
     await prismaWithEnv.$connect()
 
+    // Handle faction membership if factionId is provided
+    if (body.factionId) {
+      // First, remove all existing memberships for this person
+      await prismaWithEnv.personFactionMembership.deleteMany({
+        where: { personId: id }
+      })
+
+      // Then create the new membership
+      await prismaWithEnv.personFactionMembership.create({
+        data: {
+          personId: id,
+          factionId: body.factionId,
+          role: 'member',
+          isPrimary: true,
+          alignment: 75,
+          openness: 60,
+          notes: 'Updated via PersonEditModal'
+        }
+      })
+    } else if (body.factionId === null || body.factionId === '') {
+      // Remove all memberships if no faction selected
+      await prismaWithEnv.personFactionMembership.deleteMany({
+        where: { personId: id }
+      })
+    }
+
     const person = await prismaWithEnv.person.update({
       where: { id },
       data: {
