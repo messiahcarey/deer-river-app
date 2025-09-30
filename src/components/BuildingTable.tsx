@@ -31,9 +31,10 @@ interface BuildingTableProps {
   loading: boolean
   error: string | null
   onRefresh: () => void
+  onDelete?: (buildingId: string) => void
 }
 
-export default function BuildingTable({ buildings, loading, error, onRefresh }: BuildingTableProps) {
+export default function BuildingTable({ buildings, loading, error, onRefresh, onDelete }: BuildingTableProps) {
   const [selectedBuilding, setSelectedBuilding] = useState<Building | null>(null)
   const [editingBuilding, setEditingBuilding] = useState<Building | null>(null)
   const [searchTerm, setSearchTerm] = useState('')
@@ -235,6 +236,14 @@ export default function BuildingTable({ buildings, loading, error, onRefresh }: 
                       >
                         ✏️ Edit
                       </button>
+                      {onDelete && (
+                        <button
+                          onClick={() => onDelete(building.id)}
+                          className="text-red-600 hover:text-red-800 text-xs font-medium bg-red-50 px-2 py-1 rounded"
+                        >
+                          🗑️ Delete
+                        </button>
+                      )}
                     </div>
                   </td>
                 </tr>

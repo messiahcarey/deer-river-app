@@ -104,6 +104,27 @@ export default function MapPage() {
     }
   }
 
+  const handleDeleteBuilding = async (buildingId: string) => {
+    if (!confirm('Are you sure you want to delete this building? This action cannot be undone.')) {
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/locations?id=${buildingId}`, {
+        method: 'DELETE',
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        await fetchBuildings(); // Refresh the list
+      } else {
+        throw new Error(data.error || 'Failed to delete building');
+      }
+    } catch (err) {
+      alert(err instanceof Error ? err.message : 'Failed to delete building');
+    }
+  }
+
   const handleImportLocations = async () => {
     try {
       // Create a CSV file with the location data
@@ -286,12 +307,20 @@ Market Stall,Business,"Temporary market stall or trading post",70,60,2,"Open-air
                         {building.x !== null && building.y !== null ? `${building.x}, ${building.y}` : 'N/A'}
                       </td>
                       <td className="px-4 py-3">
-                        <button
-                          onClick={() => handleEditBuilding(building)}
-                          className="text-blue-600 hover:text-blue-800 text-sm font-medium bg-blue-50 px-2 py-1 rounded"
-                        >
-                          ✏️ Edit
-                        </button>
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => handleEditBuilding(building)}
+                            className="text-blue-600 hover:text-blue-800 text-sm font-medium bg-blue-50 px-2 py-1 rounded"
+                          >
+                            ✏️ Edit
+                          </button>
+                          <button
+                            onClick={() => handleDeleteBuilding(building.id)}
+                            className="text-red-600 hover:text-red-800 text-sm font-medium bg-red-50 px-2 py-1 rounded"
+                          >
+                            🗑️ Delete
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))}
