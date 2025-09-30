@@ -198,8 +198,23 @@ export default function PersonEditModal({ person, locations, factions, onClose, 
         onLocationCreated()
       }
 
-      // Auto-save the person with the new home
-      await autoSave()
+      // Immediately save the person with the new home
+      if (person) {
+        const updatedPerson = {
+          ...person,
+          name: formData.name,
+          species: formData.species,
+          age: formData.age ? parseInt(formData.age) : null,
+          occupation: formData.occupation || null,
+          notes: formData.notes || null,
+          tags: formData.tags,
+          factionIds: formData.factionIds,
+          livesAtId: createData.data.id, // Use the new home ID directly
+          worksAtId: formData.worksAtId || null
+        }
+
+        await onSave(updatedPerson)
+      }
 
     } catch (err) {
       console.error('Failed to create home:', err)
@@ -416,7 +431,7 @@ export default function PersonEditModal({ person, locations, factions, onClose, 
                   <button
                     type="button"
                     onClick={createHome}
-                    className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition-colors focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+                    className="px-3 py-2 bg-green-600 hover:bg-green-700 text-white text-xs font-medium rounded-md transition-colors focus:ring-2 focus:ring-green-500 focus:ring-offset-1 whitespace-nowrap"
                     title="Create a new Private Residence for this person"
                   >
                     🏠 Create Home
