@@ -464,14 +464,6 @@ export default function PeoplePage() {
                     </th>
                     <th 
                       className="px-4 py-3 text-left font-semibold text-gray-700 cursor-pointer hover:bg-gray-100 select-none"
-                      onClick={() => handleSort('faction')}
-                    >
-                      <div className="flex items-center gap-1">
-                        Faction {getSortIcon('faction')}
-                      </div>
-                    </th>
-                    <th 
-                      className="px-4 py-3 text-left font-semibold text-gray-700 cursor-pointer hover:bg-gray-100 select-none"
                       onClick={() => handleSort('livesAt')}
                     >
                       <div className="flex items-center gap-1">
