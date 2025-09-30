@@ -85,8 +85,8 @@ export default function PeoplePage() {
 
   const getUniqueLocations = () => {
     const locations = [...new Set([
-      ...people.map(person => person.livesAt?.name).filter(Boolean),
-      ...people.map(person => person.worksAt?.name).filter(Boolean)
+      ...people.map(person => person.livesAt?.name).filter((name): name is string => Boolean(name)),
+      ...people.map(person => person.worksAt?.name).filter((name): name is string => Boolean(name))
     ])].sort();
     return locations;
   };
