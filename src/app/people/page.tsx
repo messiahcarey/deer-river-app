@@ -660,7 +660,7 @@ export default function PeoplePage() {
             }}
             onSave={handleSavePerson}
             allPeople={getSortedPeople()}
-            currentIndex={editingPersonIndex}
+            currentIndex={editingPersonIndex ?? undefined}
             onNavigate={handleNavigateToPerson}
           />
         )}
