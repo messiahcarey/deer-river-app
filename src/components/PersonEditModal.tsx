@@ -39,6 +39,16 @@ interface Location {
   name: string
 }
 
+interface LocationData {
+  id: string
+  name: string
+  kind: string
+  address: string | null
+  notes: string | null
+  x: number | null
+  y: number | null
+}
+
 interface Faction {
   id: string
   name: string
@@ -137,13 +147,13 @@ export default function PersonEditModal({ person, locations, factions, onClose, 
         throw new Error('Failed to fetch existing locations')
       }
 
-      const existingLocations = data.data || []
+      const existingLocations: LocationData[] = data.data || []
       
       // Find the next available number for "Private Residence"
       let nextNumber = 1
       const existingNumbers = existingLocations
-        .filter((loc: any) => loc.name.startsWith('Private Residence'))
-        .map((loc: any) => {
+        .filter((loc: LocationData) => loc.name.startsWith('Private Residence'))
+        .map((loc: LocationData) => {
           const match = loc.name.match(/Private Residence (\d+)$/)
           return match ? parseInt(match[1]) : 0
         })
