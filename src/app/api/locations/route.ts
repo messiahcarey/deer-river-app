@@ -38,7 +38,7 @@ export async function GET() {
       select: {
         id: true,
         name: true,
-        description: true,
+        // description: true, // Temporarily commented out
         x: true,
         y: true,
         residents: {
@@ -101,7 +101,7 @@ export async function POST(request: Request) {
     console.log('Creating new location...')
 
     const body = await request.json()
-    const { name, description, x, y } = body
+    const { name, /* description, */ x, y } = body
 
     // Ensure the URL starts with the correct protocol
     const dbUrl = process.env.DATABASE_URL?.trim()
@@ -134,7 +134,8 @@ export async function POST(request: Request) {
     const location = await prismaWithEnv.location.create({
       data: {
         name,
-        description: description || null,
+        kind: 'building', // Temporary fix until schema is updated
+        // description: description || null, // Temporarily commented out
         x: x ? parseFloat(x) : null,
         y: y ? parseFloat(y) : null
       },
