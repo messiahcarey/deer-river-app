@@ -42,6 +42,7 @@ export async function POST() {
     const townHall = await prismaWithEnv.location.create({
       data: {
         name: "Town Hall",
+        kind: "building",
         x: 0,
         y: 0,
       }
@@ -50,6 +51,7 @@ export async function POST() {
     const generalStore = await prismaWithEnv.location.create({
       data: {
         name: "General Store",
+        kind: "building",
         x: 10,
         y: 5,
       }
@@ -58,6 +60,7 @@ export async function POST() {
     const blacksmith = await prismaWithEnv.location.create({
       data: {
         name: "Blacksmith",
+        kind: "building",
         x: -5,
         y: 10,
       }
