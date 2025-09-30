@@ -134,6 +134,7 @@ export async function POST(request: Request) {
     const location = await prismaWithEnv.location.create({
       data: {
         name,
+        kind: 'building', // Add required kind field
         // description: description || null, // Temporarily commented out
         x: x ? parseFloat(x) : null,
         y: y ? parseFloat(y) : null
