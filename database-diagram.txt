@@ -1,0 +1,153 @@
+# Deer River Database Schema
+
+## Entity Relationship Diagram
+
+```mermaid
+erDiagram
+    Person {
+        string id PK
+        string name
+        string species
+        int age
+        string occupation
+        string householdId FK
+        string livesAtId FK
+        string worksAtId FK
+        string tags
+        string notes
+    }
+    
+    Faction {
+        string id PK
+        string name UK
+        string motto
+        string description
+        string color
+    }
+    
+    Household {
+        string id PK
+        string name
+        string description
+        datetime createdAt
+        datetime updatedAt
+    }
+    
+    Location {
+        string id PK
+        string name
+        string description
+        float x
+        float y
+        datetime createdAt
+        datetime updatedAt
+    }
+    
+    Opinion {
+        string id PK
+        string fromId FK
+        string toId FK
+        int score
+        string notes
+        datetime createdAt
+        datetime updatedAt
+    }
+    
+    ResourceCategory {
+        string id PK
+        string name
+        string description
+        string unit
+        datetime createdAt
+        datetime updatedAt
+    }
+    
+    TownResourceLedger {
+        string id PK
+        string categoryId FK
+        float amount
+        float change
+        string reason
+        string personId FK
+        datetime createdAt
+    }
+    
+    EventLog {
+        string id PK
+        string event
+        string details
+        string personId FK
+        datetime createdAt
+    }
+    
+    PersonFactionMembership {
+        string id PK
+        string personId FK
+        string factionId FK
+        string role
+        boolean isPrimary
+        datetime joinedAt
+        datetime leftAt
+        int alignment
+        int openness
+        string notes
+    }
+    
+    FactionOpinion {
+        string id PK
+        string personId FK
+        string factionId FK
+        int score
+        string reason
+        datetime updatedAt
+    }
+
+    %% Core Relationships
+    Person ||--o{ Household : "belongs to"
+    Person ||--|| Location : "lives at"
+    Person ||--o| Location : "works at"
+    
+    %% Opinion Relationships
+    Person ||--o{ Opinion : "gives opinion"
+    Person ||--o{ Opinion : "receives opinion"
+    
+    %% Resource Relationships
+    Person ||--o{ TownResourceLedger : "contributes to"
+    ResourceCategory ||--o{ TownResourceLedger : "categorizes"
+    
+    %% Event Relationships
+    Person ||--o{ EventLog : "generates events"
+    
+    %% Faction Relationships
+    Person ||--o{ PersonFactionMembership : "has memberships"
+    Faction ||--o{ PersonFactionMembership : "has members"
+    Person ||--o{ FactionOpinion : "has opinions about"
+    Faction ||--o{ FactionOpinion : "receives opinions"
+```
+
+## Key Relationships
+
+### Core Entities
+- **Person**: Central entity representing residents of Deer River
+- **Location**: Places where people live and work
+- **Household**: Family units that people belong to
+- **Faction**: Political/social groups in the town
+
+### Relationship Models
+- **PersonFactionMembership**: Many-to-many relationship between Person and Faction with additional metadata (role, alignment, etc.)
+- **FactionOpinion**: People's opinions about factions regardless of membership
+- **Opinion**: Direct person-to-person opinions
+
+### Resource Management
+- **ResourceCategory**: Types of resources (food, materials, etc.)
+- **TownResourceLedger**: Tracks resource changes and who contributed
+
+### Event Tracking
+- **EventLog**: Records significant events in the town
+
+## Data Flow
+1. **People** live at and work at **Locations**
+2. **People** belong to **Households** and can have multiple **Faction** memberships
+3. **People** can have opinions about other **People** and about **Factions**
+4. **Resources** are tracked through the ledger system
+5. **Events** are logged for historical tracking
