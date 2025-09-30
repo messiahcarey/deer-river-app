@@ -57,6 +57,7 @@ model Household {
 model Location {
   id          String @id @default(cuid())
   name        String @unique
+  kind        String // Temporary field until schema is properly updated
   description String?
   x           Float?
   y           Float?
