@@ -464,14 +464,6 @@ export default function PeoplePage() {
                     </th>
                     <th 
                       className="px-4 py-3 text-left font-semibold text-gray-700 cursor-pointer hover:bg-gray-100 select-none"
-                      onClick={() => handleSort('faction')}
-                    >
-                      <div className="flex items-center gap-1">
-                        Faction {getSortIcon('faction')}
-                      </div>
-                    </th>
-                    <th 
-                      className="px-4 py-3 text-left font-semibold text-gray-700 cursor-pointer hover:bg-gray-100 select-none"
                       onClick={() => handleSort('livesAt')}
                     >
                       <div className="flex items-center gap-1">
@@ -527,21 +519,6 @@ export default function PeoplePage() {
                       </td>
                       <td className="px-4 py-3 text-gray-700">
                         {person.occupation || 'None'}
-                      </td>
-                      <td className="px-4 py-3">
-                        {person.faction ? (
-                          <span 
-                            className="px-2 py-1 rounded text-xs font-medium"
-                            style={{ 
-                              backgroundColor: person.faction.color ? `${person.faction.color}20` : '#f3f4f6',
-                              color: person.faction.color || '#374151'
-                            }}
-                          >
-                            {person.faction.name}
-                          </span>
-                        ) : (
-                          <span className="text-gray-400">None</span>
-                        )}
                       </td>
                       <td className="px-4 py-3 text-gray-700">
                         {(() => {
