@@ -75,7 +75,7 @@ model Opinion {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@unique([fromId, toId])
+  @@unique([fromId, toId], name: "Opinion_fromPersonId_toPersonId_key")
 }
 
 model ResourceCategory {
