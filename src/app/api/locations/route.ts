@@ -173,12 +173,120 @@ export async function POST(request: Request) {
   }
 }
 
+export async function PUT(request: Request) {
+  try {
+    console.log('Updating location...')
+
+    const body = await request.json()
+    const { id, name, x, y } = body
+
+    if (!id) {
+      return NextResponse.json({
+        success: false,
+        error: 'Location ID is required for update',
+        timestamp: new Date().toISOString()
+      }, {
+        status: 400,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'GET, POST, PUT, OPTIONS',
+          'Access-Control-Allow-Headers': 'Content-Type',
+        }
+      })
+    }
+
+    const dbUrl = process.env.DATABASE_URL?.trim()
+    if (!dbUrl || (!dbUrl.startsWith('postgresql://') && !dbUrl.startsWith('postgres://'))) {
+      return NextResponse.json({
+        success: false,
+        error: `Invalid DATABASE_URL format: ${dbUrl}`,
+        timestamp: new Date().toISOString()
+      }, {
+        status: 500,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'GET, POST, PUT, OPTIONS',
+          'Access-Control-Allow-Headers': 'Content-Type',
+        }
+      })
+    }
+
+    const prismaWithEnv = new PrismaClient({
+      datasources: {
+        db: {
+          url: dbUrl
+        }
+      }
+    })
+
+    await prismaWithEnv.$connect()
+
+    const location = await prismaWithEnv.location.update({
+      where: { id },
+      data: {
+        name,
+        x: x ? parseFloat(x) : null,
+        y: y ? parseFloat(y) : null
+      },
+      include: {
+        residents: {
+          select: {
+            id: true,
+            name: true,
+            species: true,
+            age: true,
+            occupation: true,
+          },
+        },
+        workers: {
+          select: {
+            id: true,
+            name: true,
+            species: true,
+            age: true,
+            occupation: true,
+          },
+        },
+      },
+    })
+
+    await prismaWithEnv.$disconnect()
+
+    return NextResponse.json({
+      success: true,
+      data: location,
+      message: 'Location updated successfully',
+      timestamp: new Date().toISOString()
+    }, {
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, POST, PUT, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type',
+      }
+    })
+  } catch (error) {
+    console.error('Failed to update location:', error)
+    return NextResponse.json({
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error',
+      timestamp: new Date().toISOString()
+    }, {
+      status: 500,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, POST, PUT, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type',
+      }
+    })
+  }
+}
+
 export async function OPTIONS() {
   return new NextResponse(null, {
     status: 200,
     headers: {
       'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+      'Access-Control-Allow-Methods': 'GET, POST, PUT, OPTIONS',
       'Access-Control-Allow-Headers': 'Content-Type',
     },
   })
