@@ -64,11 +64,41 @@ export default function MapPage() {
 
   const handleSaveBuilding = async (updatedBuilding: Partial<Building>) => {
     try {
-      // Update local state instead of making API call
-      setBuildings(prev => prev.map(b => 
-        b.id === updatedBuilding.id ? { ...b, ...updatedBuilding } : b
-      ))
-      setEditingBuilding(null)
+      if (updatedBuilding.id) {
+        // Update existing building
+        const response = await fetch(`/api/locations/${updatedBuilding.id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(updatedBuilding),
+        });
+
+        const data = await response.json();
+        if (data.success) {
+          await fetchBuildings(); // Refresh the list
+          setEditingBuilding(null);
+        } else {
+          throw new Error(data.error || 'Failed to update building');
+        }
+      } else {
+        // Create new building
+        const response = await fetch('/api/locations', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(updatedBuilding),
+        });
+
+        const data = await response.json();
+        if (data.success) {
+          await fetchBuildings(); // Refresh the list
+          setEditingBuilding(null);
+        } else {
+          throw new Error(data.error || 'Failed to create building');
+        }
+      }
     } catch (err) {
       throw err
     }
@@ -151,8 +181,14 @@ Market Stall,Business,"Temporary market stall or trading post",70,60,2,"Open-air
                 🔄 Refresh
               </button>
               <button
-                onClick={handleImportLocations}
+                onClick={() => setEditingBuilding({} as Building)}
                 className="bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-lg transition-colors"
+              >
+                ➕ New Building
+              </button>
+              <button
+                onClick={handleImportLocations}
+                className="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-lg transition-colors"
               >
                 📊 Import All Locations
               </button>

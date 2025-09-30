@@ -113,20 +113,40 @@ export default function PeoplePage() {
 
   const handleSavePerson = async (updatedPerson: Partial<Person>) => {
     try {
-      const response = await fetch(`/api/people/${updatedPerson.id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(updatedPerson),
-      });
+      if (updatedPerson.id) {
+        // Update existing person
+        const response = await fetch(`/api/people/${updatedPerson.id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(updatedPerson),
+        });
 
-      const data = await response.json();
-      if (data.success) {
-        await fetchPeople(); // Refresh the list
-        setEditingPerson(null);
+        const data = await response.json();
+        if (data.success) {
+          await fetchPeople(); // Refresh the list
+          setEditingPerson(null);
+        } else {
+          throw new Error(data.error || 'Failed to update person');
+        }
       } else {
-        throw new Error(data.error || 'Failed to update person');
+        // Create new person
+        const response = await fetch('/api/people', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(updatedPerson),
+        });
+
+        const data = await response.json();
+        if (data.success) {
+          await fetchPeople(); // Refresh the list
+          setEditingPerson(null);
+        } else {
+          throw new Error(data.error || 'Failed to create person');
+        }
       }
     } catch (err) {
       throw err;
@@ -375,9 +395,15 @@ export default function PeoplePage() {
               >
                 🔄 Refresh
               </button>
+              <button
+                onClick={() => setEditingPerson({} as Person)}
+                className="bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-lg transition-colors"
+              >
+                ➕ New Person
+              </button>
               <Link 
                 href="/import" 
-                className="bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-lg transition-colors"
+                className="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-lg transition-colors"
               >
                 📊 Import CSV
               </Link>
