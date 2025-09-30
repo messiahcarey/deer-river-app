@@ -6,7 +6,7 @@ frontend:
         - echo "Installing dependencies..."
         - npm install
         - echo "Pushing database schema changes..."
-        - npx prisma db push
+        - npx prisma db push --accept-data-loss
         - echo "Generating Prisma client..."
         - npx prisma generate
     build:
