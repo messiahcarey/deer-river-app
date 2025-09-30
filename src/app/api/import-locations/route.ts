@@ -94,13 +94,31 @@ export async function POST(request: Request) {
     for (const location of data) {
       if (location.Name && location.Name.trim()) {
         try {
-          const loc = await prismaWithEnv.location.create({
-            data: {
-              name: location.Name,
-              x: location.X ? parseFloat(location.X) : null,
-              y: location.Y ? parseFloat(location.Y) : null
-            }
+          // Check if location already exists
+          const existingLocation = await prismaWithEnv.location.findFirst({
+            where: { name: location.Name }
           })
+          
+          let loc
+          if (existingLocation) {
+            // Update existing location
+            loc = await prismaWithEnv.location.update({
+              where: { id: existingLocation.id },
+              data: {
+                x: location.X ? parseFloat(location.X) : null,
+                y: location.Y ? parseFloat(location.Y) : null
+              }
+            })
+          } else {
+            // Create new location
+            loc = await prismaWithEnv.location.create({
+              data: {
+                name: location.Name,
+                x: location.X ? parseFloat(location.X) : null,
+                y: location.Y ? parseFloat(location.Y) : null
+              }
+            })
+          }
           importedLocations.push(loc)
         } catch (error) {
           errors.push({
