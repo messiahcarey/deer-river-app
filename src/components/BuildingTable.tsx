@@ -19,7 +19,9 @@ interface Person {
 interface Building {
   id: string
   name: string
-  description: string | null
+  kind: string
+  address: string | null
+  notes: string | null
   x: number | null
   y: number | null
   residents: Person[]
@@ -41,7 +43,7 @@ export default function BuildingTable({ buildings, loading, error, onRefresh, on
 
   const filteredBuildings = buildings.filter(building => {
     const matchesSearch = building.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         building.description?.toLowerCase().includes(searchTerm.toLowerCase())
+                         building.address?.toLowerCase().includes(searchTerm.toLowerCase())
     return matchesSearch
   })
 
@@ -170,8 +172,8 @@ export default function BuildingTable({ buildings, loading, error, onRefresh, on
                       <span className="text-lg">🏢</span>
                       <div>
                         <div className="font-medium text-gray-900">{building.name}</div>
-                        {building.description && (
-                          <div className="text-xs text-gray-500">{building.description}</div>
+                        {building.address && (
+                          <div className="text-xs text-gray-500">{building.address}</div>
                         )}
                       </div>
                     </div>
@@ -182,7 +184,7 @@ export default function BuildingTable({ buildings, loading, error, onRefresh, on
                     </span>
                   </td>
                   <td className="px-4 py-3 text-gray-700">
-                    {building.description || 'No description'}
+                    {building.address || 'No address'}
                   </td>
                   <td className="px-4 py-3">
                     <div className="space-y-1">
@@ -287,7 +289,7 @@ export default function BuildingTable({ buildings, loading, error, onRefresh, on
                     <span className="text-lg">🏢</span>
                     <h4 className="font-medium text-gray-800">{building.name}</h4>
                   </div>
-                  <p className="text-sm text-gray-600 mb-2">{building.description || 'No description'}</p>
+                  <p className="text-sm text-gray-600 mb-2">{building.address || 'No address'}</p>
                   <div className="text-xs text-yellow-600">
                     No residents or workers assigned
                   </div>
@@ -327,10 +329,16 @@ export default function BuildingTable({ buildings, loading, error, onRefresh, on
                 </button>
               </div>
 
-              {selectedBuilding.description && (
+              {selectedBuilding.address && (
                 <div className="mb-4">
-                  <h4 className="font-medium text-gray-700 mb-1">Description</h4>
-                  <p className="text-gray-600">{selectedBuilding.description}</p>
+                  <h4 className="font-medium text-gray-700 mb-1">Address</h4>
+                  <p className="text-gray-600">{selectedBuilding.address}</p>
+                </div>
+              )}
+              {selectedBuilding.notes && (
+                <div className="mb-4">
+                  <h4 className="font-medium text-gray-700 mb-1">Notes</h4>
+                  <p className="text-gray-600">{selectedBuilding.notes}</p>
                 </div>
               )}
 

@@ -21,7 +21,9 @@ interface Person {
 interface Building {
   id: string
   name: string
-  description: string | null
+  kind: string
+  address: string | null
+  notes: string | null
   x: number | null
   y: number | null
   residents: Person[]
@@ -272,8 +274,8 @@ Market Stall,Business,"Temporary market stall or trading post",70,60,2,"Open-air
                           <span className="text-lg">🏢</span>
                           <div>
                             <div className="font-medium text-gray-900">{building.name}</div>
-                            {building.description && (
-                              <div className="text-xs text-gray-500 truncate w-48">{building.description}</div>
+                            {building.address && (
+                              <div className="text-xs text-gray-500 truncate w-48">{building.address}</div>
                             )}
                           </div>
                         </div>
@@ -284,7 +286,7 @@ Market Stall,Business,"Temporary market stall or trading post",70,60,2,"Open-air
                         </span>
                       </td>
                       <td className="px-4 py-3 text-gray-700">
-                        {building.description || 'N/A'}
+                        {building.address || 'N/A'}
                       </td>
                       <td className="px-4 py-3 text-gray-700">
                         N/A

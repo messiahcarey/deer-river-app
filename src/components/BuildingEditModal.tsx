@@ -5,7 +5,9 @@ import { useState, useEffect } from 'react'
 interface Building {
   id: string
   name: string
-  description: string | null
+  kind: string
+  address: string | null
+  notes: string | null
   x: number | null
   y: number | null
 }
@@ -77,13 +79,24 @@ export default function BuildingEditModal({ building, onClose, onSave }: Buildin
               />
             </div>
             <div>
-              <label htmlFor="description" className="block text-sm font-medium text-gray-700">Address</label>
+              <label htmlFor="address" className="block text-sm font-medium text-gray-700">Address</label>
               <input
                 type="text"
-                id="description"
-                name="description"
-                value={formData.description || ''}
+                id="address"
+                name="address"
+                value={formData.address || ''}
                 onChange={handleChange}
+                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+              />
+            </div>
+            <div>
+              <label htmlFor="notes" className="block text-sm font-medium text-gray-700">Notes</label>
+              <textarea
+                id="notes"
+                name="notes"
+                value={formData.notes || ''}
+                onChange={handleChange}
+                rows={3}
                 className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
               />
             </div>

@@ -55,14 +55,16 @@ model Household {
 }
 
 model Location {
-  id          String @id @default(cuid())
-  name        String @unique
-  kind        String // Temporary field until schema is properly updated
-  description String?
-  x           Float?
-  y           Float?
-  residents   Person[] @relation("LivesAt")
-  workers     Person[] @relation("WorksAt")
+  id        String @id @default(cuid())
+  name      String @unique
+  kind      String
+  parentId  String?
+  x         Float?
+  y         Float?
+  address   String?
+  notes     String?
+  residents Person[] @relation("LivesAt")
+  workers   Person[] @relation("WorksAt")
 }
 
 model Opinion {
