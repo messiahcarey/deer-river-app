@@ -48,6 +48,18 @@ export default function PeoplePage() {
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
   const [locations, setLocations] = useState<Array<{id: string; name: string; kind: string}>>([]);
   const [factions, setFactions] = useState<Array<{id: string; name: string; color: string | null}>>([]);
+  
+  // Filter states
+  const [filters, setFilters] = useState({
+    name: '',
+    species: '',
+    occupation: '',
+    tags: '',
+    livesAt: '',
+    worksAt: '',
+    faction: ''
+  });
+  const [showFilters, setShowFilters] = useState(false);
 
   useEffect(() => {
     fetchPeople();
@@ -104,14 +116,14 @@ export default function PeoplePage() {
 
 
   const handleEditPerson = (person: Person) => {
-    const sortedPeople = getSortedPeople();
+    const sortedPeople = getFilteredAndSortedPeople();
     const index = sortedPeople.findIndex(p => p.id === person.id);
     setEditingPerson(person);
     setEditingPersonIndex(index);
   };
 
   const handleNavigateToPerson = (index: number) => {
-    const sortedPeople = getSortedPeople();
+    const sortedPeople = getFilteredAndSortedPeople();
     if (index >= 0 && index < sortedPeople.length) {
       setEditingPerson(sortedPeople[index]);
       setEditingPersonIndex(index);
@@ -332,6 +344,123 @@ export default function PeoplePage() {
     return sortDirection === 'asc' ? '↑' : '↓';
   };
 
+  // Filter functions
+  const handleFilterChange = (field: keyof typeof filters, value: string) => {
+    setFilters(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  const clearFilters = () => {
+    setFilters({
+      name: '',
+      species: '',
+      occupation: '',
+      tags: '',
+      livesAt: '',
+      worksAt: '',
+      faction: ''
+    });
+  };
+
+  const getFilteredPeople = () => {
+    let filtered = people;
+
+    // Apply filters
+    if (filters.name) {
+      filtered = filtered.filter(person => 
+        person.name.toLowerCase().includes(filters.name.toLowerCase())
+      );
+    }
+
+    if (filters.species) {
+      filtered = filtered.filter(person => 
+        person.species.toLowerCase().includes(filters.species.toLowerCase())
+      );
+    }
+
+    if (filters.occupation) {
+      filtered = filtered.filter(person => 
+        person.occupation?.toLowerCase().includes(filters.occupation.toLowerCase()) || false
+      );
+    }
+
+    if (filters.tags) {
+      filtered = filtered.filter(person => 
+        person.tags.toLowerCase().includes(filters.tags.toLowerCase())
+      );
+    }
+
+    if (filters.livesAt) {
+      filtered = filtered.filter(person => 
+        person.livesAt?.name.toLowerCase().includes(filters.livesAt.toLowerCase()) || false
+      );
+    }
+
+    if (filters.worksAt) {
+      filtered = filtered.filter(person => 
+        person.worksAt?.name.toLowerCase().includes(filters.worksAt.toLowerCase()) || false
+      );
+    }
+
+    if (filters.faction) {
+      filtered = filtered.filter(person => 
+        person.memberships?.some(membership => 
+          membership.faction.name.toLowerCase().includes(filters.faction.toLowerCase())
+        ) || false
+      );
+    }
+
+    return filtered;
+  };
+
+  const getFilteredAndSortedPeople = () => {
+    const filtered = getFilteredPeople();
+    if (!sortField) return filtered;
+
+    return [...filtered].sort((a, b) => {
+      let aValue = a[sortField];
+      let bValue = b[sortField];
+
+      // Handle null/undefined values
+      if (aValue === null || aValue === undefined) aValue = '';
+      if (bValue === null || bValue === undefined) bValue = '';
+
+      // Handle nested objects (livesAt, worksAt)
+      if (sortField === 'livesAt' && typeof aValue === 'object' && aValue !== null) {
+        aValue = (aValue as { name?: string }).name || '';
+      }
+      if (sortField === 'livesAt' && typeof bValue === 'object' && bValue !== null) {
+        bValue = (bValue as { name?: string }).name || '';
+      }
+      if (sortField === 'worksAt' && typeof aValue === 'object' && aValue !== null) {
+        aValue = (aValue as { name?: string }).name || '';
+      }
+      if (sortField === 'worksAt' && typeof bValue === 'object' && bValue !== null) {
+        bValue = (bValue as { name?: string }).name || '';
+      }
+
+      // Handle memberships array (sort by primary faction name)
+      if (sortField === 'memberships' && Array.isArray(aValue)) {
+        const primaryMembership = aValue.find((m: { isPrimary: boolean; faction: { name: string } }) => m.isPrimary);
+        aValue = primaryMembership ? primaryMembership.faction.name : (aValue.length > 0 ? (aValue[0] as { faction: { name: string } }).faction.name : '');
+      }
+      if (sortField === 'memberships' && Array.isArray(bValue)) {
+        const primaryMembership = bValue.find((m: { isPrimary: boolean; faction: { name: string } }) => m.isPrimary);
+        bValue = primaryMembership ? primaryMembership.faction.name : (bValue.length > 0 ? (bValue[0] as { faction: { name: string } }).faction.name : '');
+      }
+
+      // Convert to strings for comparison
+      const aStr = String(aValue).toLowerCase();
+      const bStr = String(bValue).toLowerCase();
+
+      if (aStr < bStr) return sortDirection === 'asc' ? -1 : 1;
+      if (aStr > bStr) return sortDirection === 'asc' ? 1 : -1;
+      return 0;
+    });
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-100">
       <div className="container mx-auto px-4 py-8">
@@ -347,10 +476,112 @@ export default function PeoplePage() {
           </p>
         </header>
 
+        {/* Filter Controls */}
+        <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-lg font-semibold text-gray-800">🔍 Filters</h3>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setShowFilters(!showFilters)}
+                className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded text-sm"
+              >
+                {showFilters ? 'Hide Filters' : 'Show Filters'}
+              </button>
+              <button
+                onClick={clearFilters}
+                className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded text-sm"
+              >
+                Clear All
+              </button>
+            </div>
+          </div>
+          
+          {showFilters && (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
+                <input
+                  type="text"
+                  value={filters.name}
+                  onChange={(e) => handleFilterChange('name', e.target.value)}
+                  placeholder="Filter by name..."
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Species</label>
+                <input
+                  type="text"
+                  value={filters.species}
+                  onChange={(e) => handleFilterChange('species', e.target.value)}
+                  placeholder="Filter by species..."
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Occupation</label>
+                <input
+                  type="text"
+                  value={filters.occupation}
+                  onChange={(e) => handleFilterChange('occupation', e.target.value)}
+                  placeholder="Filter by occupation..."
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Tags</label>
+                <input
+                  type="text"
+                  value={filters.tags}
+                  onChange={(e) => handleFilterChange('tags', e.target.value)}
+                  placeholder="Filter by tags..."
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Lives At</label>
+                <input
+                  type="text"
+                  value={filters.livesAt}
+                  onChange={(e) => handleFilterChange('livesAt', e.target.value)}
+                  placeholder="Filter by residence..."
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Works At</label>
+                <input
+                  type="text"
+                  value={filters.worksAt}
+                  onChange={(e) => handleFilterChange('worksAt', e.target.value)}
+                  placeholder="Filter by workplace..."
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Faction</label>
+                <input
+                  type="text"
+                  value={filters.faction}
+                  onChange={(e) => handleFilterChange('faction', e.target.value)}
+                  placeholder="Filter by faction..."
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+            </div>
+          )}
+        </div>
+
         <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-2xl font-semibold text-gray-800">
-              Residents ({people.length})
+              Residents ({getFilteredAndSortedPeople().length} of {people.length})
             </h2>
             <div className="flex gap-4 items-center">
               <div className="flex gap-2">
@@ -525,7 +756,7 @@ export default function PeoplePage() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">
-                  {getSortedPeople().map((person) => (
+                  {getFilteredAndSortedPeople().map((person) => (
                     <tr key={person.id} className={`hover:bg-gray-50 ${selectedPeople.includes(person.id) ? 'bg-blue-50' : ''}`}>
                       <td className="px-4 py-3 text-center">
                         <input
@@ -648,7 +879,7 @@ export default function PeoplePage() {
               setEditingPersonIndex(null);
             }}
             onSave={handleSavePerson}
-            allPeople={getSortedPeople()}
+            allPeople={getFilteredAndSortedPeople()}
             currentIndex={editingPersonIndex ?? undefined}
             onNavigate={handleNavigateToPerson}
           />
