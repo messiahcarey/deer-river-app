@@ -55,9 +55,10 @@ interface PersonEditModalProps {
   allPeople?: Person[]
   currentIndex?: number
   onNavigate?: (index: number) => void
+  onLocationCreated?: () => void
 }
 
-export default function PersonEditModal({ person, locations, factions, onClose, onSave, allPeople, currentIndex, onNavigate }: PersonEditModalProps) {
+export default function PersonEditModal({ person, locations, factions, onClose, onSave, allPeople, currentIndex, onNavigate, onLocationCreated }: PersonEditModalProps) {
   const [formData, setFormData] = useState({
     name: '',
     species: '',
@@ -121,6 +122,78 @@ export default function PersonEditModal({ person, locations, factions, onClose, 
     } catch (err) {
       console.error('Auto-save failed:', err)
       // Don't show error to user for auto-save, just log it
+    }
+  }
+
+  const createHome = async () => {
+    if (!person) return
+
+    try {
+      // First, get all existing locations to find the next number
+      const response = await fetch('/api/locations')
+      const data = await response.json()
+      
+      if (!data.success) {
+        throw new Error('Failed to fetch existing locations')
+      }
+
+      const existingLocations = data.data || []
+      
+      // Find the next available number for "Private Residence"
+      let nextNumber = 1
+      const existingNumbers = existingLocations
+        .filter((loc: any) => loc.name.startsWith('Private Residence'))
+        .map((loc: any) => {
+          const match = loc.name.match(/Private Residence (\d+)$/)
+          return match ? parseInt(match[1]) : 0
+        })
+        .sort((a: number, b: number) => b - a)
+
+      if (existingNumbers.length > 0) {
+        nextNumber = existingNumbers[0] + 1
+      }
+
+      const homeName = `Private Residence ${nextNumber}`
+
+      // Create the new home
+      const createResponse = await fetch('/api/locations', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: homeName,
+          kind: 'building',
+          address: `Home of ${person.name}`,
+          notes: `Private residence for ${person.name}`,
+          x: null,
+          y: null
+        })
+      })
+
+      const createData = await createResponse.json()
+      
+      if (!createData.success) {
+        throw new Error(createData.error || 'Failed to create home')
+      }
+
+      // Update the form to select the new home
+      setFormData(prev => ({
+        ...prev,
+        livesAtId: createData.data.id
+      }))
+
+      // Refresh the locations list
+      if (onLocationCreated) {
+        onLocationCreated()
+      }
+
+      // Auto-save the person with the new home
+      await autoSave()
+
+    } catch (err) {
+      console.error('Failed to create home:', err)
+      alert(err instanceof Error ? err.message : 'Failed to create home')
     }
   }
 
@@ -316,19 +389,29 @@ export default function PersonEditModal({ person, locations, factions, onClose, 
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Lives At *
                 </label>
-                <select
-                  value={formData.livesAtId}
-                  onChange={(e) => setFormData({ ...formData, livesAtId: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  required
-                >
-                  <option value="">Select Location</option>
-                  {locations.map((location) => (
-                    <option key={location.id} value={location.id}>
-                      {location.name}
-                    </option>
-                  ))}
-                </select>
+                <div className="flex gap-2">
+                  <select
+                    value={formData.livesAtId}
+                    onChange={(e) => setFormData({ ...formData, livesAtId: e.target.value })}
+                    className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    required
+                  >
+                    <option value="">Select Location</option>
+                    {locations.map((location) => (
+                      <option key={location.id} value={location.id}>
+                        {location.name}
+                      </option>
+                    ))}
+                  </select>
+                  <button
+                    type="button"
+                    onClick={createHome}
+                    className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition-colors focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+                    title="Create a new Private Residence for this person"
+                  >
+                    🏠 Create Home
+                  </button>
+                </div>
               </div>
 
               <div>

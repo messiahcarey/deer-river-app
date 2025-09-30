@@ -955,6 +955,7 @@ export default function PeoplePage() {
             allPeople={getFilteredAndSortedPeople()}
             currentIndex={editingPersonIndex ?? undefined}
             onNavigate={handleNavigateToPerson}
+            onLocationCreated={fetchLocations}
           />
         )}
 
