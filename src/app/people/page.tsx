@@ -12,11 +12,6 @@ interface Person {
   occupation: string | null;
   notes: string | null;
   tags: string;
-  faction: {
-    id: string;
-    name: string;
-    color: string | null;
-  } | null;
   livesAt: {
     id: string;
     name: string;
@@ -292,13 +287,7 @@ export default function PeoplePage() {
       if (aValue === null || aValue === undefined) aValue = '';
       if (bValue === null || bValue === undefined) bValue = '';
 
-      // Handle nested objects (faction, livesAt, worksAt)
-      if (sortField === 'faction' && typeof aValue === 'object' && aValue !== null) {
-        aValue = (aValue as { name?: string }).name || '';
-      }
-      if (sortField === 'faction' && typeof bValue === 'object' && bValue !== null) {
-        bValue = (bValue as { name?: string }).name || '';
-      }
+      // Handle nested objects (livesAt, worksAt)
       if (sortField === 'livesAt' && typeof aValue === 'object' && aValue !== null) {
         aValue = (aValue as { name?: string }).name || '';
       }
@@ -529,7 +518,7 @@ export default function PeoplePage() {
                       onClick={() => handleSort('memberships')}
                     >
                       <div className="flex items-center gap-1">
-                        Faction {getSortIcon('memberships')}
+                        Factions {getSortIcon('memberships')}
                       </div>
                     </th>
                     <th className="px-4 py-3 text-center font-semibold text-gray-700">Actions</th>

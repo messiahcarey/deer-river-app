@@ -10,11 +10,6 @@ interface Person {
   occupation: string | null
   notes: string | null
   tags: string
-  faction: {
-    id: string
-    name: string
-    color: string | null
-  } | null
   livesAt: {
     id: string
     name: string
@@ -27,6 +22,16 @@ interface Person {
     id: string
     name: string | null
   } | null
+  memberships?: {
+    id: string
+    faction: {
+      id: string
+      name: string
+      color: string | null
+    }
+    role: string
+    isPrimary: boolean
+  }[]
 }
 
 interface Location {
@@ -60,7 +65,7 @@ export default function PersonEditModal({ person, locations, factions, onClose, 
     occupation: '',
     notes: '',
     tags: 'present',
-    factionId: '',
+    factionIds: [] as string[],
     livesAtId: '',
     worksAtId: ''
   })
@@ -69,6 +74,9 @@ export default function PersonEditModal({ person, locations, factions, onClose, 
 
   useEffect(() => {
     if (person) {
+      // Extract faction IDs from person's memberships
+      const factionIds = person.memberships?.map(membership => membership.faction.id) || []
+      
       setFormData({
         name: person.name || '',
         species: person.species || '',
@@ -76,12 +84,21 @@ export default function PersonEditModal({ person, locations, factions, onClose, 
         occupation: person.occupation || '',
         notes: person.notes || '',
         tags: person.tags || 'present',
-        factionId: person.faction?.id || '',
+        factionIds: factionIds,
         livesAtId: person.livesAt?.id || '',
         worksAtId: person.worksAt?.id || ''
       })
     }
   }, [person])
+
+  const handleFactionToggle = (factionId: string) => {
+    setFormData(prev => ({
+      ...prev,
+      factionIds: prev.factionIds.includes(factionId)
+        ? prev.factionIds.filter(id => id !== factionId)
+        : [...prev.factionIds, factionId]
+    }))
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -99,7 +116,7 @@ export default function PersonEditModal({ person, locations, factions, onClose, 
         occupation: formData.occupation || null,
         notes: formData.notes || null,
         tags: formData.tags,
-        factionId: formData.factionId || null,
+        factionIds: formData.factionIds,
         livesAtId: formData.livesAtId,
         worksAtId: formData.worksAtId || null
       }
@@ -239,20 +256,30 @@ export default function PersonEditModal({ person, locations, factions, onClose, 
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Faction
+                  Factions
                 </label>
-                <select
-                  value={formData.factionId}
-                  onChange={(e) => setFormData({ ...formData, factionId: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
-                  <option value="">No Faction</option>
+                <div className="space-y-2 max-h-32 overflow-y-auto border border-gray-300 rounded-lg p-3">
                   {factions.map((faction) => (
-                    <option key={faction.id} value={faction.id}>
-                      {faction.name}
-                    </option>
+                    <label key={faction.id} className="flex items-center space-x-2 cursor-pointer hover:bg-gray-50 p-1 rounded">
+                      <input
+                        type="checkbox"
+                        checked={formData.factionIds.includes(faction.id)}
+                        onChange={() => handleFactionToggle(faction.id)}
+                        className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
+                      />
+                      <span className="text-sm text-gray-700 flex items-center">
+                        <div 
+                          className="w-3 h-3 rounded-full mr-2" 
+                          style={{ backgroundColor: faction.color || '#6B7280' }}
+                        />
+                        {faction.name}
+                      </span>
+                    </label>
                   ))}
-                </select>
+                  {factions.length === 0 && (
+                    <p className="text-sm text-gray-500 italic">No factions available</p>
+                  )}
+                </div>
               </div>
 
               <div>
