@@ -304,22 +304,33 @@ const PopulationPyramid: React.FC<{
         </div>
       </div>
       
-      <div className="h-96">
+      <div className="h-[28rem]">
         {chartType === 'pyramid' ? (
           <ResponsiveContainer width="100%" height="100%">
             <RechartsBarChart
               data={chartData}
-              margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+              margin={{ top: 20, right: 30, left: 20, bottom: 80 }}
               barCategoryGap="20%"
             >
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis 
                 dataKey="ageCategory" 
                 type="category"
-                tick={{ fontSize: 12 }}
-                height={60}
-                angle={-45}
+                tick={{ fontSize: 10 }}
+                height={80}
+                angle={-60}
                 textAnchor="end"
+                interval={0}
+                tickFormatter={(value) => {
+                  const labels: Record<string, string> = {
+                    'Young Adult': 'Young',
+                    'Mature': 'Mature',
+                    'Middle Aged': 'Middle',
+                    'Old': 'Old',
+                    'Venerable': 'Venerable'
+                  }
+                  return labels[value] || value
+                }}
               />
               <YAxis 
                 type="number"
