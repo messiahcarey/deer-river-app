@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Dashboard from "@/components/Dashboard";
+import WorkflowTemplates from "@/components/WorkflowTemplates";
 
 export default function Home() {
   return (
@@ -21,6 +22,19 @@ export default function Home() {
         {/* Dashboard */}
         <div className="mb-12">
           <Dashboard />
+        </div>
+
+        {/* Workflow Templates */}
+        <div className="mb-12">
+          <WorkflowTemplates
+            onNewPerson={() => window.location.href = '/people?new=true'}
+            onNewFaction={() => window.location.href = '/factions?new=true'}
+            onNewBuilding={() => window.location.href = '/map?new=true'}
+            onBulkOperation={(operation) => {
+              // This would open bulk operation modals
+              alert(`Bulk operation: ${operation}`)
+            }}
+          />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">

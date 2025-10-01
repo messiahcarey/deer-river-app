@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import PersonEditModal from "@/components/PersonEditModal";
 import PeopleTable from "@/components/PeopleTable";
+import BulkOperations from "@/components/BulkOperations";
 import Breadcrumbs from "@/components/Breadcrumbs";
 
 interface Person {
@@ -491,6 +492,76 @@ export default function PeoplePage() {
             Manage the citizens of Deer River. View their details, relationships, and opinions.
           </p>
         </header>
+
+        {/* Bulk Operations */}
+        <BulkOperations
+          selectedPeople={selectedPeople}
+          people={people}
+          onBulkAssignHousing={async (personIds, locationId) => {
+            // Implement bulk housing assignment
+            for (const personId of personIds) {
+              const response = await fetch(`/api/people/${personId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ livesAtId: locationId })
+              })
+              if (!response.ok) {
+                console.error(`Failed to update person ${personId}`)
+              }
+            }
+            await fetchPeople()
+            setSelectedPeople([])
+            alert(`Assigned ${personIds.length} people to housing`)
+          }}
+          onBulkAssignFaction={async (personIds, factionId) => {
+            // Implement bulk faction assignment
+            for (const personId of personIds) {
+              const response = await fetch(`/api/people/${personId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ factionIds: [factionId] })
+              })
+              if (!response.ok) {
+                console.error(`Failed to update person ${personId}`)
+              }
+            }
+            await fetchPeople()
+            setSelectedPeople([])
+            alert(`Assigned ${personIds.length} people to faction`)
+          }}
+          onBulkUpdateStatus={async (personIds, status) => {
+            // Implement bulk status update
+            for (const personId of personIds) {
+              const response = await fetch(`/api/people/${personId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ tags: status })
+              })
+              if (!response.ok) {
+                console.error(`Failed to update person ${personId}`)
+              }
+            }
+            await fetchPeople()
+            setSelectedPeople([])
+            alert(`Updated status for ${personIds.length} people`)
+          }}
+          onBulkDelete={async (personIds) => {
+            // Implement bulk delete
+            for (const personId of personIds) {
+              const response = await fetch(`/api/people/${personId}`, {
+                method: 'DELETE'
+              })
+              if (!response.ok) {
+                console.error(`Failed to delete person ${personId}`)
+              }
+            }
+            await fetchPeople()
+            setSelectedPeople([])
+            alert(`Deleted ${personIds.length} people`)
+          }}
+          locations={locations}
+          factions={factions}
+        />
 
         {/* Filter Controls */}
         <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
