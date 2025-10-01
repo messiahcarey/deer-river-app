@@ -1,11 +1,22 @@
 import { NextResponse } from 'next/server'
 import { PrismaClient } from '@prisma/client'
 
-const prisma = new PrismaClient()
-
 export async function GET() {
+  const dbUrl = process.env.DATABASE_URL?.trim()
+  if (!dbUrl || (!dbUrl.startsWith('postgresql://') && !dbUrl.startsWith('postgres://'))) {
+    return NextResponse.json({ 
+      success: false, 
+      error: 'Database connection not configured' 
+    }, { status: 500 })
+  }
+
+  const prisma = new PrismaClient({
+    datasources: { db: { url: dbUrl } }
+  })
+
   try {
     console.log('Fetching dashboard data...')
+    await prisma.$connect()
 
     // Get all the data we need for the dashboard
     const [
