@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  output: 'standalone',
+  // Remove standalone output for Amplify compatibility
   serverExternalPackages: ['@prisma/client'],
   images: {
     domains: ['localhost'],
