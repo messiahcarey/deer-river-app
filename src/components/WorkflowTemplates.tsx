@@ -22,7 +22,6 @@ interface WorkflowTemplatesProps {
 }
 
 export default function WorkflowTemplates({
-  onNewPerson,
   onNewFaction,
   onNewBuilding,
   onBulkOperation

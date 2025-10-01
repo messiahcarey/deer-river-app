@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import Link from 'next/link'
 
 interface Faction {
   id: string
@@ -175,7 +174,7 @@ export default function FactionRelationshipDiagram({
 
   useEffect(() => {
     drawDiagram()
-  }, [factions, hoveredFaction, selectedFactionId, zoom, pan])
+  }, [factions, hoveredFaction, selectedFactionId, zoom, pan, drawDiagram])
 
   const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
     if (isDragging) {
@@ -189,12 +188,11 @@ export default function FactionRelationshipDiagram({
       return
     }
 
-    const rect = e.currentTarget.getBoundingClientRect()
-    const x = e.clientX - rect.left
-    const y = e.clientY - rect.top
+    const x = e.clientX - e.currentTarget.offsetLeft
+    const y = e.clientY - e.currentTarget.offsetTop
 
-    const centerX = rect.width / 2
-    const centerY = rect.height / 2
+    const centerX = e.currentTarget.width / 2
+    const centerY = e.currentTarget.height / 2
 
     // Find faction under mouse
     const faction = factions.find((faction, index) => {

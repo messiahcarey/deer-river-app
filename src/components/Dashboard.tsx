@@ -202,7 +202,7 @@ export default function Dashboard() {
         <div className="bg-white rounded-lg shadow p-6">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Faction Distribution</h3>
           <div className="space-y-3">
-            {data.distributions.factions.map((faction, index) => (
+            {data.distributions.factions.map((faction) => (
               <div key={faction.factionId} className="flex items-center justify-between">
                 <div className="flex items-center">
                   <div 
@@ -232,7 +232,7 @@ export default function Dashboard() {
         <div className="bg-white rounded-lg shadow p-6">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Species Distribution</h3>
           <div className="space-y-3">
-            {data.distributions.species.slice(0, 8).map((species, index) => (
+            {data.distributions.species.slice(0, 8).map((species) => (
               <div key={species.species} className="flex items-center justify-between">
                 <span className="text-sm font-medium text-gray-700">{species.species}</span>
                 <div className="flex items-center">

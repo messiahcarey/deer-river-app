@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import PersonEditModal from './PersonEditModal'
 
 interface Person {
   id: string
@@ -51,12 +50,6 @@ export default function PeopleTable({
   onPersonSelect,
   onEditPerson,
   onDeletePerson,
-  onSavePerson,
-  onNavigateToPerson,
-  editingPerson,
-  editingPersonIndex,
-  allPeople,
-  onLocationCreated,
   getSortIcon,
   handleSort
 }: PeopleTableProps) {

@@ -1,6 +1,5 @@
 'use client'
 
-import Link from "next/link"
 import { useState, useEffect } from "react"
 import FactionEditModal from "@/components/FactionEditModal"
 import FactionRelationshipDiagram from "@/components/FactionRelationshipDiagram"

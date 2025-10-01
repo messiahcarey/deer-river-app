@@ -1,10 +1,8 @@
 'use client'
 
-import Link from "next/link"
 import { useState, useEffect } from "react"
 
 import BuildingEditModal from "@/components/BuildingEditModal"
-import BuildingTable from "@/components/BuildingTable"
 import InteractiveMapVisualization from "@/components/InteractiveMapVisualization"
 import Breadcrumbs from "@/components/Breadcrumbs"
 

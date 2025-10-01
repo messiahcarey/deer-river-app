@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import Link from 'next/link'
 
 interface Person {
   id: string
@@ -232,7 +231,7 @@ export default function InteractiveMapVisualization({
 
   useEffect(() => {
     drawMap()
-  }, [buildings, hoveredBuilding, selectedBuildingId, zoom, pan])
+  }, [buildings, hoveredBuilding, selectedBuildingId, zoom, pan, drawMap])
 
   const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
     if (isDragging) {
@@ -246,9 +245,8 @@ export default function InteractiveMapVisualization({
       return
     }
 
-    const rect = e.currentTarget.getBoundingClientRect()
-    const x = e.clientX - rect.left
-    const y = e.clientY - rect.top
+    const x = e.clientX - e.currentTarget.offsetLeft
+    const y = e.clientY - e.currentTarget.offsetTop
 
     // Find building under mouse
     const building = buildings.find((b) => {
