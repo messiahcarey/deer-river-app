@@ -275,7 +275,7 @@ const DemographicsCharts: React.FC<DemographicsChartsProps> = ({ data }) => {
     if (data.speciesDemographics) {
       // New structure: convert speciesDemographics to chart format
       return Object.entries(data.speciesDemographics)
-        .filter(([_, stats]) => stats.total > 0)
+        .filter(([, stats]) => stats.total > 0)
         .map(([species, stats], index) => ({
           label: species.charAt(0).toUpperCase() + species.slice(1),
           value: stats.total,
