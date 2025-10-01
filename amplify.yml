@@ -3,6 +3,8 @@ frontend:
   phases:
     preBuild:
       commands:
+        - nvm install 20
+        - nvm use 20
         - echo "Installing dependencies..."
         - npm install
         - echo "Skipping database schema update for now..."
@@ -29,3 +31,5 @@ frontend:
     paths:
       - node_modules/**/*
       - .next/cache/**/*
+image:
+  buildImage: 'amplify:al2023'
