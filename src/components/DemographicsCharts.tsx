@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 
 interface DemographicsData {
   summary: {
@@ -264,7 +264,7 @@ const DemographicsCharts: React.FC<DemographicsChartsProps> = ({ data }) => {
     color: `hsl(${(index * 137.5 + 120) % 360}, 70%, 50%)`
   }))
 
-  const factionData = data.distributions.factions.map((item, index) => ({
+  const factionData = data.distributions.factions.map((item) => ({
     label: item.factionName,
     value: item.count,
     color: item.color
@@ -286,7 +286,7 @@ const DemographicsCharts: React.FC<DemographicsChartsProps> = ({ data }) => {
           ].map((tab) => (
             <button
               key={tab.id}
-              onClick={() => setActiveTab(tab.id as any)}
+              onClick={() => setActiveTab(tab.id as 'overview' | 'species' | 'occupations' | 'factions')}
               className={`flex-1 flex items-center justify-center px-4 py-2 rounded-md text-sm font-medium transition-colors ${
                 activeTab === tab.id
                   ? 'bg-white text-blue-600 shadow-sm'
