@@ -58,7 +58,11 @@ export async function GET() {
     })
 
     // Calculate species-based demographics
-    const speciesDemographics = getDemographicsBySpecies(people)
+    const peopleForDemographics = people.map(p => ({
+      species: p.species || 'Unknown',
+      age: p.age || undefined
+    }))
+    const speciesDemographics = getDemographicsBySpecies(peopleForDemographics)
 
     // Calculate faction distribution by species
     const factionBySpecies: Record<string, Record<string, number>> = {}

@@ -62,7 +62,20 @@ export async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const dbUrl = process.env.DATABASE_URL?.trim()
+  if (!dbUrl || (!dbUrl.startsWith('postgresql://') && !dbUrl.startsWith('postgres://'))) {
+    return NextResponse.json({ 
+      success: false, 
+      error: 'Database connection not configured' 
+    }, { status: 500 })
+  }
+
+  const prisma = new PrismaClient({
+    datasources: { db: { url: dbUrl } }
+  })
+
   try {
+    await prisma.$connect()
     const { id } = await params
     const body = await request.json()
 
@@ -124,33 +137,25 @@ export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const dbUrl = process.env.DATABASE_URL?.trim()
+  if (!dbUrl || (!dbUrl.startsWith('postgresql://') && !dbUrl.startsWith('postgres://'))) {
+    return NextResponse.json({ 
+      success: false, 
+      error: 'Database connection not configured' 
+    }, { status: 500 })
+  }
+
+  const prisma = new PrismaClient({
+    datasources: { db: { url: dbUrl } }
+  })
+
   try {
-    // Check DATABASE_URL first
-    const dbUrl = process.env.DATABASE_URL?.trim()
-    if (!dbUrl || (!dbUrl.startsWith('postgresql://') && !dbUrl.startsWith('postgres://'))) {
-      return NextResponse.json({
-        ok: false,
-        data: null,
-        error: `Invalid DATABASE_URL format: ${dbUrl}`,
-        timestamp: new Date().toISOString()
-      }, { status: 500 })
-    }
-
-    // Create Prisma client with explicit environment variable
-    const prismaWithEnv = new PrismaClient({
-      datasources: {
-        db: {
-          url: dbUrl
-        }
-      }
-    })
-
-    await prismaWithEnv.$connect()
+    await prisma.$connect()
 
     const { id } = await params
 
     // Soft delete by setting leftAt
-    const membership = await prismaWithEnv.personFactionMembership.update({
+    const membership = await prisma.personFactionMembership.update({
       where: { id },
       data: { leftAt: new Date() },
       include: {

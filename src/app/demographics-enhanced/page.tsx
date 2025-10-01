@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react'
 import Breadcrumbs from '@/components/Breadcrumbs'
-import { SPECIES_DEMOGRAPHICS, getAgeCategory } from '@/lib/demographics'
+// import { SPECIES_DEMOGRAPHICS, getAgeCategory } from '@/lib/demographics'
 
 interface DemographicsData {
   summary: {
@@ -169,7 +169,7 @@ export default function DemographicsEnhancedPage() {
               ].map(tab => (
                 <button
                   key={tab.id}
-                  onClick={() => setActiveTab(tab.id as any)}
+                  onClick={() => setActiveTab(tab.id as 'overview' | 'age' | 'factions' | 'locations' | 'occupations')}
                   className={`flex-1 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
                     activeTab === tab.id
                       ? 'bg-amber-600 text-white'
