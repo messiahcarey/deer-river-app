@@ -249,7 +249,7 @@ const PopulationPyramid: React.FC<{
     if (!data.speciesDemographics) return []
     
     const ageCategories = ['Young Adult', 'Mature', 'Middle Aged', 'Old', 'Venerable']
-    const heatmapData = []
+    const heatmapData: Array<Record<string, string | number>> = []
     
     ageCategories.forEach(ageCategory => {
       const row: Record<string, string | number> = { ageCategory }
@@ -343,7 +343,7 @@ const PopulationPyramid: React.FC<{
               {/* Header with species names */}
               <div className="flex items-center">
                 <div className="w-24 text-xs font-medium text-gray-600">Age Category</div>
-                <div className="flex-1 grid grid-cols-4 gap-1">
+                <div className="flex-1 grid gap-1" style={{ gridTemplateColumns: `repeat(${speciesList.length}, 1fr)` }}>
                   {speciesList.map((species, index) => (
                     <div key={species.name} className="text-xs font-medium text-center text-gray-700">
                       {species.name}
@@ -358,7 +358,7 @@ const PopulationPyramid: React.FC<{
                   <div className="w-24 text-xs text-gray-600 font-medium">
                     {row.ageCategory}
                   </div>
-                  <div className="flex-1 grid grid-cols-4 gap-1">
+                  <div className="flex-1 grid gap-1" style={{ gridTemplateColumns: `repeat(${speciesList.length}, 1fr)` }}>
                     {speciesList.map((species, speciesIndex) => {
                       const count = row[species.name] as number
                       const intensity = maxValue > 0 ? count / maxValue : 0
