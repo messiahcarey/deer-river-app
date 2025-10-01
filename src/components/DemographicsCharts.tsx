@@ -344,7 +344,7 @@ const PopulationPyramid: React.FC<{
               <div className="flex items-center">
                 <div className="w-24 text-xs font-medium text-gray-600">Age Category</div>
                 <div className="flex-1 grid gap-1" style={{ gridTemplateColumns: `repeat(${speciesList.length}, 1fr)` }}>
-                  {speciesList.map((species, index) => (
+                  {speciesList.map((species) => (
                     <div key={species.name} className="text-xs font-medium text-center text-gray-700">
                       {species.name}
                     </div>

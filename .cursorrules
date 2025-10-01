@@ -155,6 +155,13 @@ Every PR must include:
 - **Production Branch**: Manual deployment after testing
 - **Rollback**: Use AWS Amplify console if needed
 
+### 8. Automatic Deploy Monitoring (MANDATORY)
+- **After EVERY push**: Check deploy status with `aws amplify list-jobs --app-id d25mi5h1ems0sj --branch-name development --max-results 2`
+- **If deploy fails**: Immediately check logs with `aws amplify get-job --app-id d25mi5h1ems0sj --branch-name development --job-id <JOB_ID>`
+- **Build log analysis**: Use `curl -s <LOG_URL> | head -50` and `curl -s <LOG_URL> | tail -50` to check errors
+- **Fix and redeploy**: Never leave a failed deploy unattended
+- **Success confirmation**: Always confirm deploy success before moving to next task
+
 ## 🔍 Debugging Guidelines
 
 ### When Issues Arise
