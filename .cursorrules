@@ -28,6 +28,14 @@ npm run build         # Ensure production build works
 
 **Note**: The typecheck script excludes test files to focus on production code quality. Test files have their own validation through Jest.
 
+### 2.1 TypeScript Validation Rules
+- **MANDATORY**: All TypeScript errors MUST be fixed before deployment
+- **Array Types**: Always specify array types explicitly (e.g., `Array<Record<string, string | number>>`)
+- **Dynamic Styling**: When using dynamic CSS (like `gridTemplateColumns`), use inline styles with proper TypeScript casting
+- **Optional Chaining**: Use `?.` and `!` operators carefully - ensure types are properly defined
+- **Record Types**: For dynamic object properties, use `Record<string, T>` instead of `any`
+- **Build Validation**: If `npm run build` fails, fix ALL errors before pushing to any branch
+
 ### 3. Package Management
 - **ALWAYS use `npm ci`** for installs (not `npm install`)
 - This ensures reproducible builds and faster CI/CD
@@ -84,6 +92,15 @@ Every PR must include:
 - **Testing**: New features require tests
 - **Documentation**: Complex logic must be commented
 
+### Common TypeScript Pitfalls to Avoid
+- **Dynamic Arrays**: Always type arrays explicitly (`Array<Record<string, T>>` not `[]`)
+- **CSS-in-JS**: Use inline styles for dynamic values, not template literals in className
+- **Optional Properties**: Use `?.` and `!` carefully, ensure types are defined
+- **Record Types**: Use `Record<string, T>` for dynamic object properties
+- **Grid Layouts**: Use `style={{ gridTemplateColumns: 'repeat(n, 1fr)' }}` for dynamic grids
+- **Type Assertions**: Cast types explicitly (`as number`) when necessary
+- **Build Validation**: Always run `npm run build` before pushing
+
 ### File Organization
 - **Components**: Place in `src/components/`
 - **API Routes**: Place in `src/app/api/`
@@ -104,6 +121,19 @@ Every PR must include:
 - [ ] API endpoints verified
 - [ ] Frontend functionality tested
 - [ ] No console errors in browser
+
+### TypeScript & Build Validation (MANDATORY)
+- [ ] `npm run lint` passes with 0 errors
+- [ ] `npm run typecheck` passes with 0 errors  
+- [ ] `npm run build` completes successfully
+- [ ] All TypeScript types are properly defined
+- [ ] No `any` types in production code
+- [ ] Dynamic CSS uses inline styles with proper typing
+- [ ] Array and object types are explicitly declared
+- [ ] All imports are properly resolved
+- [ ] No missing dependencies in package.json
+
+**CRITICAL**: If ANY step fails, fix the issue before pushing to any branch
 
 ### Amplify Deployment
 - **Development Branch**: Auto-deploys on push
