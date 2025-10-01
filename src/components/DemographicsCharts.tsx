@@ -212,7 +212,9 @@ const PopulationPyramid: React.FC<{
       const chartData: Record<string, string | number> = { ageCategory, total: 0 }
       
       speciesList.forEach(species => {
-        const count = data.speciesDemographics![species.name.toLowerCase()]?.ageCategories[ageCategory] || 0
+        // Try both lowercase and original case for species lookup
+        const speciesKey = species.name.toLowerCase()
+        const count = data.speciesDemographics![speciesKey]?.ageCategories[ageCategory] || 0
         chartData[species.name] = count
         chartData.total = (chartData.total as number) + count
       })
@@ -229,6 +231,11 @@ const PopulationPyramid: React.FC<{
       total: stats.total
     }))
     .sort((a, b) => b.total - a.total)
+
+  // Debug: Log the data structure
+  console.log('Species Demographics Data:', data.speciesDemographics)
+  console.log('Species List:', speciesList)
+  console.log('Chart Data:', chartData)
 
   // Generate colors for species
   const COLORS = [
