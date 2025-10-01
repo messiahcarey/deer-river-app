@@ -304,13 +304,14 @@ const PopulationPyramid: React.FC<{
         </div>
       </div>
       
-      <div className="h-80">
+      <div className="h-96">
         {chartType === 'pyramid' ? (
           <ResponsiveContainer width="100%" height="100%">
             <RechartsBarChart
               data={chartData}
               margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
               layout="horizontal"
+              barCategoryGap="20%"
             >
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis type="number" />
@@ -332,6 +333,7 @@ const PopulationPyramid: React.FC<{
                   stackId="a"
                   fill={COLORS[index % COLORS.length]}
                   name={species.name}
+                  radius={[0, 0, 0, 0]}
                 />
               ))}
             </RechartsBarChart>
@@ -581,15 +583,19 @@ const DemographicsCharts: React.FC<DemographicsChartsProps> = ({ data }) => {
       </div>
 
       {/* Tab Content */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {activeTab === 'overview' && (
           <>
-            <PopulationPyramid data={data} />
-            <PieChart
-              data={speciesData.slice(0, 6)}
-              title="Species Distribution"
-              size={180}
-            />
+            <div className="lg:col-span-2">
+              <PopulationPyramid data={data} />
+            </div>
+            <div className="lg:col-span-1">
+              <PieChart
+                data={speciesData.slice(0, 6)}
+                title="Species Distribution"
+                size={120}
+              />
+            </div>
           </>
         )}
 
