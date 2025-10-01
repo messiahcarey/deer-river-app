@@ -11,6 +11,8 @@ interface DemographicsData {
     peopleWithoutHomes: number
     peopleWithoutWork: number
     peopleWithoutFaction: number
+    totalSpecies?: number
+    speciesWithAgeData?: number
   }
   distributions: {
     factions: Array<{
@@ -28,6 +30,22 @@ interface DemographicsData {
       count: number
     }>
   }
+  // Enhanced species data
+  speciesDemographics?: Record<string, {
+    total: number
+    withAge: number
+    ageCategories: Record<string, number>
+    ageRange?: { min: number; max: number }
+    averageAge?: number
+  }>
+  factionDistribution?: Record<string, Record<string, number>>
+  locationDistribution?: Record<string, Record<string, number>>
+  occupationDistribution?: Record<string, Record<string, number>>
+  speciesDefinitions?: Array<{
+    species: string
+    lifespan: { min: number; max: number }
+    ageCategories: Array<{ name: string; minAge: number; maxAge: number }>
+  }>
 }
 
 interface DemographicsChartsProps {
@@ -252,23 +270,85 @@ const KeyMetrics: React.FC<{
 const DemographicsCharts: React.FC<DemographicsChartsProps> = ({ data }) => {
   const [activeTab, setActiveTab] = useState<'overview' | 'species' | 'occupations' | 'factions'>('overview')
 
-  const speciesData = data.distributions.species.map((item, index) => ({
-    label: item.species,
-    value: item.count,
-    color: `hsl(${(index * 137.5) % 360}, 70%, 50%)`
-  }))
+  // Handle both old and new data structures
+  const getSpeciesData = () => {
+    if (data.speciesDemographics) {
+      // New structure: convert speciesDemographics to chart format
+      return Object.entries(data.speciesDemographics)
+        .filter(([_, stats]) => stats.total > 0)
+        .map(([species, stats], index) => ({
+          label: species.charAt(0).toUpperCase() + species.slice(1),
+          value: stats.total,
+          color: `hsl(${(index * 137.5) % 360}, 70%, 50%)`
+        }))
+    } else if (data.distributions?.species) {
+      // Old structure: use distributions.species
+      return data.distributions.species.map((item, index) => ({
+        label: item.species,
+        value: item.count,
+        color: `hsl(${(index * 137.5) % 360}, 70%, 50%)`
+      }))
+    }
+    return []
+  }
 
-  const occupationData = data.distributions.occupations.map((item, index) => ({
-    label: item.occupation,
-    value: item.count,
-    color: `hsl(${(index * 137.5 + 120) % 360}, 70%, 50%)`
-  }))
+  const getOccupationData = () => {
+    if (data.occupationDistribution) {
+      // New structure: convert occupationDistribution to chart format
+      const occupationCounts: Record<string, number> = {}
+      Object.values(data.occupationDistribution).forEach(speciesOccupations => {
+        Object.entries(speciesOccupations).forEach(([occupation, count]) => {
+          occupationCounts[occupation] = (occupationCounts[occupation] || 0) + count
+        })
+      })
+      return Object.entries(occupationCounts)
+        .map(([occupation, count], index) => ({
+          label: occupation,
+          value: count,
+          color: `hsl(${(index * 137.5 + 120) % 360}, 70%, 50%)`
+        }))
+        .sort((a, b) => b.value - a.value)
+    } else if (data.distributions?.occupations) {
+      // Old structure: use distributions.occupations
+      return data.distributions.occupations.map((item, index) => ({
+        label: item.occupation,
+        value: item.count,
+        color: `hsl(${(index * 137.5 + 120) % 360}, 70%, 50%)`
+      }))
+    }
+    return []
+  }
 
-  const factionData = data.distributions.factions.map((item) => ({
-    label: item.factionName,
-    value: item.count,
-    color: item.color
-  }))
+  const getFactionData = () => {
+    if (data.factionDistribution) {
+      // New structure: convert factionDistribution to chart format
+      const factionCounts: Record<string, number> = {}
+      Object.values(data.factionDistribution).forEach(speciesFactions => {
+        Object.entries(speciesFactions).forEach(([faction, count]) => {
+          factionCounts[faction] = (factionCounts[faction] || 0) + count
+        })
+      })
+      return Object.entries(factionCounts)
+        .map(([faction, count], index) => ({
+          label: faction,
+          value: count,
+          color: `hsl(${(index * 137.5 + 240) % 360}, 70%, 50%)`
+        }))
+        .sort((a, b) => b.value - a.value)
+    } else if (data.distributions?.factions) {
+      // Old structure: use distributions.factions
+      return data.distributions.factions.map((item) => ({
+        label: item.factionName,
+        value: item.count,
+        color: item.color
+      }))
+    }
+    return []
+  }
+
+  const speciesData = getSpeciesData()
+  const occupationData = getOccupationData()
+  const factionData = getFactionData()
 
   return (
     <div className="space-y-6">
