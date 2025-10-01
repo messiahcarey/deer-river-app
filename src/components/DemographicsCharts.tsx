@@ -181,10 +181,11 @@ const BarChart: React.FC<{
   )
 }
 
-// Enhanced Population Pyramid Component with Recharts
+// Enhanced Population Pyramid Component with Recharts and Chart Switcher
 const PopulationPyramid: React.FC<{
   data: DemographicsData
 }> = ({ data }) => {
+  const [chartType, setChartType] = useState<'pyramid' | 'heatmap'>('pyramid')
   // Get age category data with species breakdown
   const getChartData = () => {
     if (!data.speciesDemographics) {
@@ -243,48 +244,168 @@ const PopulationPyramid: React.FC<{
     '#EC4899', '#6366F1', '#EF4444', '#F97316'
   ]
 
+  // Heatmap data preparation
+  const getHeatmapData = () => {
+    if (!data.speciesDemographics) return []
+    
+    const ageCategories = ['Young Adult', 'Mature', 'Middle Aged', 'Old', 'Venerable']
+    const heatmapData = []
+    
+    ageCategories.forEach(ageCategory => {
+      const row: Record<string, string | number> = { ageCategory }
+      let maxCount = 0
+      
+      speciesList.forEach(species => {
+        const speciesKey = species.name.toLowerCase()
+        const count = data.speciesDemographics![speciesKey]?.ageCategories[ageCategory] || 0
+        row[species.name] = count
+        maxCount = Math.max(maxCount, count)
+      })
+      
+      row.maxCount = maxCount
+      heatmapData.push(row)
+    })
+    
+    return heatmapData
+  }
+
+  const heatmapData = getHeatmapData()
+  const maxValue = Math.max(...heatmapData.map(row => row.maxCount as number))
+
   return (
     <div className="bg-white rounded-lg shadow-lg p-6">
-      <h3 className="text-lg font-semibold text-gray-800 mb-4">Population Pyramid by Age Category & Species</h3>
+      <div className="flex justify-between items-center mb-4">
+        <h3 className="text-lg font-semibold text-gray-800">
+          Population Analysis by Age Category & Species
+        </h3>
+        
+        {/* Chart Type Switcher */}
+        <div className="flex bg-gray-100 rounded-lg p-1">
+          <button
+            onClick={() => setChartType('pyramid')}
+            className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
+              chartType === 'pyramid'
+                ? 'bg-white text-blue-600 shadow-sm'
+                : 'text-gray-600 hover:text-gray-900'
+            }`}
+          >
+            📊 Pyramid
+          </button>
+          <button
+            onClick={() => setChartType('heatmap')}
+            className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
+              chartType === 'heatmap'
+                ? 'bg-white text-blue-600 shadow-sm'
+                : 'text-gray-600 hover:text-gray-900'
+            }`}
+          >
+            🔥 Heatmap
+          </button>
+        </div>
+      </div>
       
       <div className="h-80">
-        <ResponsiveContainer width="100%" height="100%">
-          <RechartsBarChart
-            data={chartData}
-            margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-            layout="horizontal"
-          >
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis type="number" />
-            <YAxis 
-              dataKey="ageCategory" 
-              type="category" 
-              width={100}
-              tick={{ fontSize: 12 }}
-            />
-            <Tooltip 
-              formatter={(value, name) => [value, name]}
-              labelFormatter={(label) => `Age Category: ${label}`}
-            />
-            <Legend />
-            {speciesList.map((species, index) => (
-              <Bar
-                key={species.name}
-                dataKey={species.name}
-                stackId="a"
-                fill={COLORS[index % COLORS.length]}
-                name={species.name}
+        {chartType === 'pyramid' ? (
+          <ResponsiveContainer width="100%" height="100%">
+            <RechartsBarChart
+              data={chartData}
+              margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+              layout="horizontal"
+            >
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis type="number" />
+              <YAxis 
+                dataKey="ageCategory" 
+                type="category" 
+                width={100}
+                tick={{ fontSize: 12 }}
               />
-            ))}
-          </RechartsBarChart>
-        </ResponsiveContainer>
+              <Tooltip 
+                formatter={(value, name) => [value, name]}
+                labelFormatter={(label) => `Age Category: ${label}`}
+              />
+              <Legend />
+              {speciesList.map((species, index) => (
+                <Bar
+                  key={species.name}
+                  dataKey={species.name}
+                  stackId="a"
+                  fill={COLORS[index % COLORS.length]}
+                  name={species.name}
+                />
+              ))}
+            </RechartsBarChart>
+          </ResponsiveContainer>
+        ) : (
+          <div className="h-full">
+            {/* Heatmap Visualization */}
+            <div className="grid grid-cols-1 gap-2 h-full">
+              {/* Header with species names */}
+              <div className="flex items-center">
+                <div className="w-24 text-xs font-medium text-gray-600">Age Category</div>
+                <div className="flex-1 grid grid-cols-4 gap-1">
+                  {speciesList.map((species, index) => (
+                    <div key={species.name} className="text-xs font-medium text-center text-gray-700">
+                      {species.name}
+                    </div>
+                  ))}
+                </div>
+              </div>
+              
+              {/* Heatmap rows */}
+              {heatmapData.map((row, rowIndex) => (
+                <div key={rowIndex} className="flex items-center">
+                  <div className="w-24 text-xs text-gray-600 font-medium">
+                    {row.ageCategory}
+                  </div>
+                  <div className="flex-1 grid grid-cols-4 gap-1">
+                    {speciesList.map((species, speciesIndex) => {
+                      const count = row[species.name] as number
+                      const intensity = maxValue > 0 ? count / maxValue : 0
+                      const bgColor = `rgba(59, 130, 246, ${0.2 + intensity * 0.8})`
+                      
+                      return (
+                        <div
+                          key={speciesIndex}
+                          className="h-8 flex items-center justify-center text-xs font-medium rounded"
+                          style={{ backgroundColor: bgColor }}
+                          title={`${species.name}: ${count}`}
+                        >
+                          {count > 0 && count}
+                        </div>
+                      )
+                    })}
+                  </div>
+                </div>
+              ))}
+            </div>
+            
+            {/* Heatmap Legend */}
+            <div className="mt-4 flex items-center justify-center space-x-4">
+              <span className="text-xs text-gray-600">Intensity:</span>
+              <div className="flex items-center space-x-1">
+                <div className="w-4 h-4 rounded" style={{ backgroundColor: 'rgba(59, 130, 246, 0.2)' }}></div>
+                <span className="text-xs text-gray-600">Low</span>
+              </div>
+              <div className="flex items-center space-x-1">
+                <div className="w-4 h-4 rounded" style={{ backgroundColor: 'rgba(59, 130, 246, 0.6)' }}></div>
+                <span className="text-xs text-gray-600">Medium</span>
+              </div>
+              <div className="flex items-center space-x-1">
+                <div className="w-4 h-4 rounded" style={{ backgroundColor: 'rgba(59, 130, 246, 1)' }}></div>
+                <span className="text-xs text-gray-600">High</span>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Summary */}
       <div className="mt-4 text-center text-sm text-gray-600">
         Total Population: {data.summary.totalPeople} | 
         Age Categories: 5 | 
-        Species: {speciesList.length} represented
+        Species: {speciesList.length} represented |
+        View: {chartType === 'pyramid' ? 'Population Pyramid' : 'Heatmap Matrix'}
       </div>
     </div>
   )
