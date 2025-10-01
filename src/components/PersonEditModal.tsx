@@ -424,7 +424,7 @@ export default function PersonEditModal({ person, locations, factions, onClose, 
                     </button>
                   </div>
                   <div className="text-xs text-gray-500 italic">
-                    Click "Create Home" to add a new Private Residence for this person
+                    Click &quot;Create Home&quot; to add a new Private Residence for this person
                   </div>
                 </div>
               </div>
