@@ -173,39 +173,126 @@ const BarChart: React.FC<{
   )
 }
 
-// Population Pyramid Component
+// Enhanced Population Pyramid Component with Species and Age Categories
 const PopulationPyramid: React.FC<{
   data: DemographicsData
 }> = ({ data }) => {
-  // This is a simplified version - in a real app you'd have age/gender data
-  const pyramidData = [
-    { category: 'Adults', count: Math.floor(data.summary.totalPeople * 0.7) },
-    { category: 'Elders', count: Math.floor(data.summary.totalPeople * 0.2) },
-    { category: 'Youth', count: Math.floor(data.summary.totalPeople * 0.1) }
-  ]
+  // Get species data with age categories
+  const getSpeciesPyramidData = () => {
+    if (!data.speciesDemographics) {
+      // Fallback to simplified data if no species demographics available
+      return [
+        { species: 'All', ageCategories: [
+          { name: 'Young Adult', count: Math.floor(data.summary.totalPeople * 0.3) },
+          { name: 'Mature', count: Math.floor(data.summary.totalPeople * 0.4) },
+          { name: 'Middle Aged', count: Math.floor(data.summary.totalPeople * 0.2) },
+          { name: 'Old', count: Math.floor(data.summary.totalPeople * 0.08) },
+          { name: 'Venerable', count: Math.floor(data.summary.totalPeople * 0.02) }
+        ]}
+      ]
+    }
 
-  const maxCount = Math.max(...pyramidData.map(item => item.count))
+    return Object.entries(data.speciesDemographics)
+      .filter(([, stats]) => stats.total > 0)
+      .map(([species, stats]) => ({
+        species: species.charAt(0).toUpperCase() + species.slice(1),
+        ageCategories: [
+          { name: 'Young Adult', count: stats.ageCategories['Young Adult'] || 0 },
+          { name: 'Mature', count: stats.ageCategories['Mature'] || 0 },
+          { name: 'Middle Aged', count: stats.ageCategories['Middle Aged'] || 0 },
+          { name: 'Old', count: stats.ageCategories['Old'] || 0 },
+          { name: 'Venerable', count: stats.ageCategories['Venerable'] || 0 }
+        ]
+      }))
+      .sort((a, b) => {
+        const totalA = a.ageCategories.reduce((sum, cat) => sum + cat.count, 0)
+        const totalB = b.ageCategories.reduce((sum, cat) => sum + cat.count, 0)
+        return totalB - totalA
+      })
+  }
+
+  const pyramidData = getSpeciesPyramidData()
+  const maxCount = Math.max(...pyramidData.map(species => 
+    species.ageCategories.reduce((sum, cat) => sum + cat.count, 0)
+  ))
+
+  // Color scheme for age categories
+  const ageCategoryColors = {
+    'Young Adult': 'from-green-400 to-green-600',
+    'Mature': 'from-blue-400 to-blue-600', 
+    'Middle Aged': 'from-yellow-400 to-yellow-600',
+    'Old': 'from-orange-400 to-orange-600',
+    'Venerable': 'from-red-400 to-red-600'
+  }
 
   return (
     <div className="bg-white rounded-lg shadow-lg p-6">
-      <h3 className="text-lg font-semibold text-gray-800 mb-4">Population Structure</h3>
-      <div className="flex items-end justify-center space-x-4 h-48">
-        {pyramidData.map((item, index) => (
-          <div key={index} className="flex flex-col items-center">
-            <div
-              className="bg-gradient-to-t from-blue-400 to-blue-600 rounded-t-lg w-16 flex items-center justify-center text-white font-medium text-sm"
-              style={{ height: `${(item.count / maxCount) * 150}px` }}
-            >
-              {item.count}
-            </div>
-            <div className="text-xs text-gray-600 mt-2 text-center">
-              {item.category}
-            </div>
+      <h3 className="text-lg font-semibold text-gray-800 mb-4">Population Pyramid by Species & Age</h3>
+      
+      {/* Legend */}
+      <div className="mb-4 flex flex-wrap gap-2 text-xs">
+        {Object.entries(ageCategoryColors).map(([category, color]) => (
+          <div key={category} className="flex items-center">
+            <div className={`w-3 h-3 rounded bg-gradient-to-r ${color} mr-1`}></div>
+            <span className="text-gray-600">{category}</span>
           </div>
         ))}
       </div>
+
+      {/* Pyramid Chart */}
+      <div className="flex items-end justify-center space-x-2 h-64 overflow-x-auto">
+        {pyramidData.map((species, speciesIndex) => {
+          const totalForSpecies = species.ageCategories.reduce((sum, cat) => sum + cat.count, 0)
+          return (
+            <div key={speciesIndex} className="flex flex-col items-center min-w-0 flex-1 max-w-20">
+              {/* Age category segments stacked vertically */}
+              <div className="flex flex-col-reverse w-full">
+                {species.ageCategories.map((ageCat, ageIndex) => {
+                  const height = totalForSpecies > 0 ? (ageCat.count / maxCount) * 200 : 0
+                  return (
+                    <div
+                      key={ageIndex}
+                      className={`bg-gradient-to-t ${ageCategoryColors[ageCat.name as keyof typeof ageCategoryColors]} 
+                        flex items-center justify-center text-white text-xs font-medium
+                        ${height > 20 ? 'px-1' : 'px-0.5'}
+                        ${ageIndex === 0 ? 'rounded-t-lg' : ''}
+                        ${ageIndex === species.ageCategories.length - 1 ? 'rounded-b-lg' : ''}
+                        border border-white border-opacity-20`}
+                      style={{ 
+                        height: `${Math.max(height, 2)}px`,
+                        minHeight: ageCat.count > 0 ? '8px' : '2px'
+                      }}
+                      title={`${ageCat.name}: ${ageCat.count}`}
+                    >
+                      {height > 20 && ageCat.count > 0 && (
+                        <span className="text-xs font-bold">
+                          {ageCat.count}
+                        </span>
+                      )}
+                    </div>
+                  )
+                })}
+              </div>
+              
+              {/* Species label */}
+              <div className="mt-2 text-xs text-gray-600 text-center font-medium">
+                {species.species}
+              </div>
+              
+              {/* Total count */}
+              <div className="text-xs text-gray-500 text-center">
+                {totalForSpecies}
+              </div>
+            </div>
+          )
+        })}
+      </div>
+
+      {/* Summary */}
       <div className="mt-4 text-center text-sm text-gray-600">
-        Total Population: {data.summary.totalPeople}
+        Total Population: {data.summary.totalPeople} | 
+        Species: {pyramidData.length} | 
+        Age Categories: 5 (Young Adult, Mature, Middle Aged, Old, Venerable)
       </div>
     </div>
   )
