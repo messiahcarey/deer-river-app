@@ -2,6 +2,19 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import {
+  BarChart as RechartsBarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+  PieChart as RechartsPieChart,
+  Pie,
+  Cell
+} from 'recharts'
 
 interface DashboardData {
   summary: {
@@ -259,53 +272,65 @@ export default function Dashboard() {
         {/* Faction Distribution */}
         <div className="bg-white rounded-lg shadow p-6">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Faction Distribution</h3>
-          <div className="space-y-3">
-            {data.distributions.factions.map((faction) => (
-              <div key={faction.factionId} className="flex items-center justify-between">
-                <div className="flex items-center">
-                  <div 
-                    className="w-4 h-4 rounded-full mr-3"
-                    style={{ backgroundColor: faction.color }}
-                  ></div>
-                  <span className="text-sm font-medium text-gray-700">{faction.factionName}</span>
-                </div>
-                <div className="flex items-center">
-                  <div className="w-24 bg-gray-200 rounded-full h-2 mr-3">
-                    <div 
-                      className="h-2 rounded-full"
-                      style={{ 
-                        backgroundColor: faction.color,
-                        width: `${(faction.count / data.summary.totalPeople) * 100}%`
-                      }}
-                    ></div>
-                  </div>
-                  <span className="text-sm text-gray-600 w-8 text-right">{faction.count}</span>
-                </div>
-              </div>
-            ))}
+          <div className="h-64">
+            <ResponsiveContainer width="100%" height="100%">
+              <RechartsBarChart
+                data={data.distributions.factions.map(faction => ({
+                  name: faction.factionName,
+                  members: faction.count,
+                  fill: faction.color
+                }))}
+                margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis 
+                  dataKey="name" 
+                  angle={-45}
+                  textAnchor="end"
+                  height={80}
+                  tick={{ fontSize: 12 }}
+                />
+                <YAxis />
+                <Tooltip 
+                  formatter={(value) => [value, 'Members']}
+                  labelFormatter={(label) => `Faction: ${label}`}
+                />
+                <Bar dataKey="members" />
+              </RechartsBarChart>
+            </ResponsiveContainer>
           </div>
         </div>
 
         {/* Species Distribution */}
         <div className="bg-white rounded-lg shadow p-6">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Species Distribution</h3>
-          <div className="space-y-3">
-            {data.distributions.species.slice(0, 8).map((species) => (
-              <div key={species.species} className="flex items-center justify-between">
-                <span className="text-sm font-medium text-gray-700">{species.species}</span>
-                <div className="flex items-center">
-                  <div className="w-24 bg-gray-200 rounded-full h-2 mr-3">
-                    <div 
-                      className="h-2 rounded-full bg-blue-500"
-                      style={{ 
-                        width: `${(species.count / data.summary.totalPeople) * 100}%`
-                      }}
-                    ></div>
-                  </div>
-                  <span className="text-sm text-gray-600 w-8 text-right">{species.count}</span>
-                </div>
-              </div>
-            ))}
+          <div className="h-64">
+            <ResponsiveContainer width="100%" height="100%">
+              <RechartsPieChart>
+                <Pie
+                  data={data.distributions.species.slice(0, 8).map((species, index) => ({
+                    name: species.species,
+                    value: species.count,
+                    fill: `hsl(${(index * 137.5) % 360}, 70%, 50%)`
+                  }))}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={40}
+                  outerRadius={80}
+                  paddingAngle={2}
+                  dataKey="value"
+                >
+                  {data.distributions.species.slice(0, 8).map((_, index) => (
+                    <Cell key={`cell-${index}`} fill={`hsl(${(index * 137.5) % 360}, 70%, 50%)`} />
+                  ))}
+                </Pie>
+                <Tooltip 
+                  formatter={(value) => [value, 'Count']}
+                  labelFormatter={(label) => `Species: ${label}`}
+                />
+                <Legend />
+              </RechartsPieChart>
+            </ResponsiveContainer>
           </div>
         </div>
       </div>

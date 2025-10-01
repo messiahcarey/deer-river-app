@@ -1,6 +1,19 @@
 'use client'
 
 import React, { useState } from 'react'
+import {
+  BarChart as RechartsBarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+  PieChart as RechartsPieChart,
+  Pie,
+  Cell
+} from 'recharts'
 
 interface DemographicsData {
   summary: {
@@ -52,59 +65,47 @@ interface DemographicsChartsProps {
   data: DemographicsData
 }
 
-// Pie Chart Component
+// Pie Chart Component with Recharts
 const PieChart: React.FC<{
   data: Array<{ label: string; value: number; color: string }>
   title: string
   size?: number
 }> = ({ data, title, size = 200 }) => {
   const total = data.reduce((sum, item) => sum + item.value, 0)
-  let cumulativePercentage = 0
+  
+  // Convert data to Recharts format
+  const chartData = data.map(item => ({
+    name: item.label,
+    value: item.value,
+    fill: item.color
+  }))
 
   return (
     <div className="bg-white rounded-lg shadow-lg p-6">
       <h3 className="text-lg font-semibold text-gray-800 mb-4">{title}</h3>
       <div className="flex items-center justify-center">
-        <div className="relative" style={{ width: size, height: size }}>
-          <svg width={size} height={size} className="transform -rotate-90">
-            {data.map((item, index) => {
-              const percentage = (item.value / total) * 100
-              const startAngle = cumulativePercentage * 3.6 // 3.6 degrees per 1%
-              const endAngle = (cumulativePercentage + percentage) * 3.6
-              cumulativePercentage += percentage
-
-              const radius = size / 2 - 10
-              const x1 = size / 2 + radius * Math.cos((startAngle * Math.PI) / 180)
-              const y1 = size / 2 + radius * Math.sin((startAngle * Math.PI) / 180)
-              const x2 = size / 2 + radius * Math.cos((endAngle * Math.PI) / 180)
-              const y2 = size / 2 + radius * Math.sin((endAngle * Math.PI) / 180)
-              const largeArcFlag = percentage > 50 ? 1 : 0
-
-              const pathData = [
-                `M ${size / 2} ${size / 2}`,
-                `L ${x1} ${y1}`,
-                `A ${radius} ${radius} 0 ${largeArcFlag} 1 ${x2} ${y2}`,
-                'Z'
-              ].join(' ')
-
-              return (
-                <path
-                  key={index}
-                  d={pathData}
-                  fill={item.color}
-                  stroke="white"
-                  strokeWidth="2"
-                  className="hover:opacity-80 transition-opacity cursor-pointer"
-                />
-              )
-            })}
-          </svg>
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="text-center">
-              <div className="text-2xl font-bold text-gray-800">{total}</div>
-              <div className="text-sm text-gray-600">Total</div>
-            </div>
-          </div>
+        <div style={{ width: size, height: size }}>
+          <ResponsiveContainer width="100%" height="100%">
+            <RechartsPieChart>
+              <Pie
+                data={chartData}
+                cx="50%"
+                cy="50%"
+                innerRadius={size * 0.2}
+                outerRadius={size * 0.4}
+                paddingAngle={2}
+                dataKey="value"
+              >
+                {chartData.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={entry.fill} />
+                ))}
+              </Pie>
+              <Tooltip 
+                formatter={(value, name) => [value, name]}
+                labelFormatter={(label) => `${label}: ${((data.find(d => d.label === label)?.value || 0) / total * 100).toFixed(1)}%`}
+              />
+            </RechartsPieChart>
+          </ResponsiveContainer>
         </div>
       </div>
       <div className="mt-4 space-y-2">
@@ -130,39 +131,46 @@ const PieChart: React.FC<{
   )
 }
 
-// Bar Chart Component
+// Bar Chart Component with Recharts
 const BarChart: React.FC<{
   data: Array<{ label: string; value: number; color?: string }>
   title: string
   maxBars?: number
 }> = ({ data, title, maxBars = 10 }) => {
-  const maxValue = Math.max(...data.map(item => item.value))
   const displayData = data.slice(0, maxBars)
+  
+  // Convert data to Recharts format
+  const chartData = displayData.map(item => ({
+    name: item.label,
+    value: item.value,
+    fill: item.color || '#3B82F6'
+  }))
 
   return (
     <div className="bg-white rounded-lg shadow-lg p-6">
       <h3 className="text-lg font-semibold text-gray-800 mb-4">{title}</h3>
-      <div className="space-y-3">
-        {displayData.map((item, index) => (
-          <div key={index} className="flex items-center">
-            <div className="w-20 text-sm text-gray-600 truncate mr-3">
-              {item.label}
-            </div>
-            <div className="flex-1 bg-gray-200 rounded-full h-6 relative">
-              <div
-                className="bg-blue-500 h-6 rounded-full flex items-center justify-end pr-2 transition-all duration-500"
-                style={{
-                  width: `${(item.value / maxValue) * 100}%`,
-                  backgroundColor: item.color || '#3B82F6'
-                }}
-              >
-                <span className="text-white text-xs font-medium">
-                  {item.value}
-                </span>
-              </div>
-            </div>
-          </div>
-        ))}
+      <div className="h-80">
+        <ResponsiveContainer width="100%" height="100%">
+          <RechartsBarChart
+            data={chartData}
+            margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+          >
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis 
+              dataKey="name" 
+              angle={-45}
+              textAnchor="end"
+              height={80}
+              tick={{ fontSize: 12 }}
+            />
+            <YAxis />
+            <Tooltip 
+              formatter={(value, name) => [value, name]}
+              labelFormatter={(label) => `Category: ${label}`}
+            />
+            <Bar dataKey="value" fill="#3B82F6" />
+          </RechartsBarChart>
+        </ResponsiveContainer>
       </div>
       {data.length > maxBars && (
         <div className="mt-3 text-sm text-gray-500 text-center">
@@ -173,20 +181,20 @@ const BarChart: React.FC<{
   )
 }
 
-// Enhanced Population Pyramid Component with Species and Age Categories
+// Enhanced Population Pyramid Component with Recharts
 const PopulationPyramid: React.FC<{
   data: DemographicsData
 }> = ({ data }) => {
   // Get age category data with species breakdown
-  const getAgeCategoryData = () => {
+  const getChartData = () => {
     if (!data.speciesDemographics) {
       // Fallback to simplified data if no species demographics available
       return [
-        { ageCategory: 'Young Adult', species: [{ name: 'All', count: Math.floor(data.summary.totalPeople * 0.3), color: 'bg-blue-500' }] },
-        { ageCategory: 'Mature', species: [{ name: 'All', count: Math.floor(data.summary.totalPeople * 0.4), color: 'bg-blue-500' }] },
-        { ageCategory: 'Middle Aged', species: [{ name: 'All', count: Math.floor(data.summary.totalPeople * 0.2), color: 'bg-blue-500' }] },
-        { ageCategory: 'Old', species: [{ name: 'All', count: Math.floor(data.summary.totalPeople * 0.08), color: 'bg-blue-500' }] },
-        { ageCategory: 'Venerable', species: [{ name: 'All', count: Math.floor(data.summary.totalPeople * 0.02), color: 'bg-blue-500' }] }
+        { ageCategory: 'Young Adult', total: Math.floor(data.summary.totalPeople * 0.3), 'All Species': Math.floor(data.summary.totalPeople * 0.3) },
+        { ageCategory: 'Mature', total: Math.floor(data.summary.totalPeople * 0.4), 'All Species': Math.floor(data.summary.totalPeople * 0.4) },
+        { ageCategory: 'Middle Aged', total: Math.floor(data.summary.totalPeople * 0.2), 'All Species': Math.floor(data.summary.totalPeople * 0.2) },
+        { ageCategory: 'Old', total: Math.floor(data.summary.totalPeople * 0.08), 'All Species': Math.floor(data.summary.totalPeople * 0.08) },
+        { ageCategory: 'Venerable', total: Math.floor(data.summary.totalPeople * 0.02), 'All Species': Math.floor(data.summary.totalPeople * 0.02) }
       ]
     }
 
@@ -200,109 +208,76 @@ const PopulationPyramid: React.FC<{
       }))
       .sort((a, b) => b.total - a.total)
 
-    // Generate colors for species
-    const speciesColors = [
-      'bg-blue-500', 'bg-green-500', 'bg-yellow-500', 'bg-purple-500', 
-      'bg-pink-500', 'bg-indigo-500', 'bg-red-500', 'bg-orange-500'
-    ]
-
     return ageCategories.map(ageCategory => {
-      const speciesBreakdown = speciesList.map((species, index) => ({
-        name: species.name,
-        count: data.speciesDemographics![species.name.toLowerCase()]?.ageCategories[ageCategory] || 0,
-        color: speciesColors[index % speciesColors.length]
-      })).filter(s => s.count > 0)
+      const chartData: Record<string, string | number> = { ageCategory, total: 0 }
+      
+      speciesList.forEach(species => {
+        const count = data.speciesDemographics![species.name.toLowerCase()]?.ageCategories[ageCategory] || 0
+        chartData[species.name] = count
+        chartData.total = (chartData.total as number) + count
+      })
 
-      return {
-        ageCategory,
-        species: speciesBreakdown
-      }
+      return chartData
     })
   }
 
-  const ageCategoryData = getAgeCategoryData()
-  const maxCount = Math.max(...ageCategoryData.map(ageCat => 
-    ageCat.species.reduce((sum, species) => sum + species.count, 0)
-  ))
+  const chartData = getChartData()
+  const speciesList = Object.entries(data.speciesDemographics || {})
+    .filter(([, stats]) => stats.total > 0)
+    .map(([species, stats]) => ({
+      name: species.charAt(0).toUpperCase() + species.slice(1),
+      total: stats.total
+    }))
+    .sort((a, b) => b.total - a.total)
 
-  // Get all unique species with their colors for the legend
-  const allSpecies = new Map()
-  ageCategoryData.forEach(ageCat => {
-    ageCat.species.forEach(species => {
-      if (!allSpecies.has(species.name)) {
-        allSpecies.set(species.name, species.color)
-      }
-    })
-  })
+  // Generate colors for species
+  const COLORS = [
+    '#3B82F6', '#10B981', '#F59E0B', '#8B5CF6', 
+    '#EC4899', '#6366F1', '#EF4444', '#F97316'
+  ]
 
   return (
     <div className="bg-white rounded-lg shadow-lg p-6">
       <h3 className="text-lg font-semibold text-gray-800 mb-4">Population Pyramid by Age Category & Species</h3>
       
-      {/* Legend for species colors */}
-      <div className="mb-4 flex flex-wrap gap-2 text-xs">
-        {Array.from(allSpecies.entries()).map(([speciesName, color]) => (
-          <div key={speciesName} className="flex items-center">
-            <div className={`w-3 h-3 rounded ${color} mr-1`}></div>
-            <span className="text-gray-600">{speciesName}</span>
-          </div>
-        ))}
-      </div>
-
-      {/* Age Category Bars */}
-      <div className="flex items-end justify-center space-x-4 h-64">
-        {ageCategoryData.map((ageCat, ageIndex) => {
-          const totalForAge = ageCat.species.reduce((sum, species) => sum + species.count, 0)
-          return (
-            <div key={ageIndex} className="flex flex-col items-center min-w-0 flex-1 max-w-24">
-              {/* Species segments stacked vertically */}
-              <div className="flex flex-col-reverse w-full">
-                {ageCat.species.map((species, speciesIndex) => {
-                  const height = totalForAge > 0 ? (species.count / maxCount) * 200 : 0
-                  return (
-                    <div
-                      key={speciesIndex}
-                      className={`${species.color} 
-                        flex items-center justify-center text-white text-xs font-medium
-                        ${height > 20 ? 'px-1' : 'px-0.5'}
-                        ${speciesIndex === 0 ? 'rounded-t-lg' : ''}
-                        ${speciesIndex === ageCat.species.length - 1 ? 'rounded-b-lg' : ''}
-                        border border-white border-opacity-20`}
-                      style={{ 
-                        height: `${Math.max(height, 2)}px`,
-                        minHeight: species.count > 0 ? '8px' : '2px'
-                      }}
-                      title={`${species.name}: ${species.count}`}
-                    >
-                      {height > 20 && species.count > 0 && (
-                        <span className="text-xs font-bold">
-                          {species.count}
-                        </span>
-                      )}
-                    </div>
-                  )
-                })}
-              </div>
-              
-              {/* Age category label */}
-              <div className="mt-2 text-xs text-gray-600 text-center font-medium">
-                {ageCat.ageCategory}
-              </div>
-              
-              {/* Total count */}
-              <div className="text-xs text-gray-500 text-center">
-                {totalForAge}
-              </div>
-            </div>
-          )
-        })}
+      <div className="h-80">
+        <ResponsiveContainer width="100%" height="100%">
+          <RechartsBarChart
+            data={chartData}
+            margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+            layout="horizontal"
+          >
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis type="number" />
+            <YAxis 
+              dataKey="ageCategory" 
+              type="category" 
+              width={100}
+              tick={{ fontSize: 12 }}
+            />
+            <Tooltip 
+              formatter={(value, name) => [value, name]}
+              labelFormatter={(label) => `Age Category: ${label}`}
+            />
+            <Legend />
+            {speciesList.map((species, index) => (
+              <Bar
+                key={species.name}
+                dataKey={species.name}
+                stackId="a"
+                fill={COLORS[index % COLORS.length]}
+                name={species.name}
+              />
+            ))}
+          </RechartsBarChart>
+        </ResponsiveContainer>
       </div>
 
       {/* Summary */}
       <div className="mt-4 text-center text-sm text-gray-600">
         Total Population: {data.summary.totalPeople} | 
         Age Categories: 5 | 
-        Species: {ageCategoryData[0]?.species.length || 0} represented
+        Species: {speciesList.length} represented
       </div>
     </div>
   )
