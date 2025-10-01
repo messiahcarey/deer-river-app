@@ -121,7 +121,7 @@ export const waitForLoadingToFinish = async () => {
   await new Promise(resolve => setTimeout(resolve, 100))
 }
 
-export const mockFetch = (response: any) => {
+export const mockFetch = (response: unknown) => {
   global.fetch = jest.fn().mockResolvedValue({
     ok: true,
     json: async () => response,

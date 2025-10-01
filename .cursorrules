@@ -1,0 +1,181 @@
+# Deer River App - Cursor Rules
+
+## 🚨 CRITICAL: Always Backup Before Major Changes
+- **Before ANY schema changes** (adding/removing columns, tables, indexes)
+- **Before data migrations** (changing data types, restructuring data)
+- **Before major feature deployments** that modify database structure
+- **Before bulk data operations** (imports, updates, deletions)
+
+### Backup Methods:
+1. **AWS RDS Automated Backups** (Recommended)
+2. **Manual Database Export** via `pg_dump`
+3. **Quick Data Verification** via `/api/db-status`
+
+## 📋 Development Workflow
+
+### 1. Planning Phase
+- **REQUIRED**: Write a detailed PLAN before any code change >5 lines
+- Include: context, approach, expected outcomes, potential risks
+- For complex changes: create a design document or diagram
+
+### 2. Code Quality Sequence (ALWAYS run in this order)
+```bash
+npm run lint          # Check code style and catch errors
+npm run typecheck     # Verify TypeScript types (excludes test files)
+npm run test          # Run unit and integration tests
+npm run build         # Ensure production build works
+```
+
+**Note**: The typecheck script excludes test files to focus on production code quality. Test files have their own validation through Jest.
+
+### 3. Package Management
+- **ALWAYS use `npm ci`** for installs (not `npm install`)
+- This ensures reproducible builds and faster CI/CD
+- Use `npm install` only for adding new dependencies
+
+### 4. Database Changes
+- **For ANY DB-affecting changes:**
+  1. Propose Prisma migration with detailed description
+  2. Run `prisma migrate diff` in dry-run mode first
+  3. Test migration on development database
+  4. Document rollback procedure
+- **Schema changes require:**
+  - Migration file with clear comments
+  - Data validation after migration
+  - API endpoint testing
+  - Frontend component updates if needed
+
+### 5. API Development
+- **For API changes:**
+  1. Update API documentation
+  2. Test `/api/health` endpoint
+  3. Add/update API tests
+  4. Verify error handling
+  5. Test with both valid and invalid inputs
+- **API Route Pattern:**
+  ```typescript
+  const dbUrl = process.env.DATABASE_URL?.trim()
+  if (!dbUrl || (!dbUrl.startsWith('postgresql://') && !dbUrl.startsWith('postgres://'))) {
+    return NextResponse.json({ success: false, error: 'Database connection not configured' }, { status: 500 })
+  }
+  const prisma = new PrismaClient({ datasources: { db: { url: dbUrl } } })
+  ```
+
+### 6. Database Connection Rules
+- **Development**: Can connect to shared AWS database for testing
+- **Production**: Never make direct schema changes to production
+- **Local Testing**: Use `.env.local` for local development
+- **Schema Changes**: Always test on development branch first
+
+### 7. Pull Request Requirements
+Every PR must include:
+- **Context**: Why this change is needed
+- **Approach**: How the problem is being solved
+- **Diffs**: Key changes made
+- **Risks**: Potential issues and mitigation strategies
+- **Rollback Plan**: How to revert if issues arise
+- **Testing**: What was tested and how
+
+## 🛠️ Technical Standards
+
+### Code Quality
+- **TypeScript**: Strict mode enabled, no `any` types
+- **ESLint**: All rules must pass before commit
+- **Testing**: New features require tests
+- **Documentation**: Complex logic must be commented
+
+### File Organization
+- **Components**: Place in `src/components/`
+- **API Routes**: Place in `src/app/api/`
+- **Utilities**: Place in `src/lib/`
+- **Types**: Define interfaces for all data structures
+
+### Error Handling
+- **API Routes**: Always return consistent error format
+- **Frontend**: Graceful degradation with fallback data
+- **Database**: Proper connection cleanup in finally blocks
+
+## 🚀 Deployment Process
+
+### Pre-Deployment Checklist
+- [ ] All tests pass locally
+- [ ] Build succeeds without warnings
+- [ ] Database migrations tested
+- [ ] API endpoints verified
+- [ ] Frontend functionality tested
+- [ ] No console errors in browser
+
+### Amplify Deployment
+- **Development Branch**: Auto-deploys on push
+- **Production Branch**: Manual deployment after testing
+- **Rollback**: Use AWS Amplify console if needed
+
+## 🔍 Debugging Guidelines
+
+### When Issues Arise
+1. **Check logs**: Both browser console and server logs
+2. **Verify API**: Test endpoints directly with curl/Postman
+3. **Database**: Check connection and data integrity
+4. **Environment**: Verify all environment variables
+5. **Dependencies**: Ensure all packages are installed
+
+### Common Issues
+- **API 404s**: Check Prisma client initialization
+- **Build Failures**: Run lint/typecheck locally first
+- **Database Errors**: Verify schema matches Prisma models
+- **TypeScript Errors**: Check interface definitions
+
+## 📊 Monitoring
+
+### Health Checks
+- **API Health**: `/api/health` endpoint
+- **Database Status**: `/api/db-status` endpoint
+- **Build Status**: Check Amplify console
+- **Error Tracking**: Monitor browser console and server logs
+
+### Performance
+- **Build Time**: Monitor Amplify build duration
+- **API Response**: Check response times
+- **Database Queries**: Optimize slow queries
+- **Bundle Size**: Keep frontend bundle optimized
+
+## 🎯 Project-Specific Rules
+
+### Deer River App Context
+- **Fantasy Town Management**: AD&D 1e inspired
+- **Population Tracking**: People, factions, relationships
+- **Resource Management**: Economic and social systems
+- **Data Integrity**: Critical for game mechanics
+
+### Key Features
+- **Demographics**: Species-based analysis with D&D age categories
+- **Faction System**: Complex relationship tracking
+- **Location Management**: Buildings and places
+- **Interactive Maps**: Visual representation of town
+
+### Data Models
+- **Person**: Citizens with species, age, occupation
+- **Faction**: Political groups with relationships
+- **Location**: Buildings and places
+- **Membership**: Person-faction relationships
+- **Opinions**: Interpersonal and faction relationships
+
+## ⚠️ Critical Warnings
+
+1. **NEVER** make schema changes directly in production
+2. **ALWAYS** test changes on development branch first
+3. **ALWAYS** backup database before major changes
+4. **ALWAYS** verify data integrity after changes
+5. **NEVER** commit code that doesn't pass all quality checks
+
+## 📚 Resources
+
+- **Prisma Docs**: https://www.prisma.io/docs
+- **Next.js Docs**: https://nextjs.org/docs
+- **Amplify Docs**: https://docs.aws.amazon.com/amplify
+- **TypeScript Docs**: https://www.typescriptlang.org/docs
+- **Tailwind CSS**: https://tailwindcss.com/docs
+
+---
+
+**Remember**: This is a complex application managing critical game data. Always prioritize data integrity and user experience over speed of development.
