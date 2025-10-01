@@ -93,11 +93,24 @@ export default function Home() {
           </Link>
 
           <Link 
-            href="/analytics" 
+            href="/demographics" 
             className="bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow border-l-4 border-purple-500"
           >
             <div className="flex items-center mb-4">
               <span className="text-3xl mr-3">📊</span>
+              <h2 className="text-2xl font-semibold text-gray-800">Demographics</h2>
+            </div>
+            <p className="text-gray-600">
+              Explore population analytics, species distribution, and demographic trends.
+            </p>
+          </Link>
+
+          <Link 
+            href="/analytics" 
+            className="bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow border-l-4 border-indigo-500"
+          >
+            <div className="flex items-center mb-4">
+              <span className="text-3xl mr-3">🔍</span>
               <h2 className="text-2xl font-semibold text-gray-800">Analytics</h2>
             </div>
             <p className="text-gray-600">
@@ -107,7 +120,7 @@ export default function Home() {
 
           <Link 
             href="/events" 
-            className="bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow border-l-4 border-indigo-500"
+            className="bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow border-l-4 border-teal-500"
           >
             <div className="flex items-center mb-4">
               <span className="text-3xl mr-3">📝</span>

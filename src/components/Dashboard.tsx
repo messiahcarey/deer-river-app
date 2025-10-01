@@ -103,6 +103,22 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-6">
+      {/* Header */}
+      <div className="flex justify-between items-center">
+        <h2 className="text-2xl font-bold text-amber-900">📊 Dashboard</h2>
+        <div className="flex items-center space-x-4">
+          <Link 
+            href="/demographics"
+            className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-sm font-medium"
+          >
+            📈 View Demographics
+          </Link>
+          <div className="text-sm text-amber-700">
+            Last updated: {new Date().toLocaleTimeString()}
+          </div>
+        </div>
+      </div>
+
       {/* Key Metrics Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="bg-white rounded-lg shadow p-6 border-l-4 border-blue-500">
