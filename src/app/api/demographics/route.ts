@@ -59,7 +59,7 @@ export async function GET() {
 
     // Calculate species-based demographics
     const peopleForDemographics = people.map(p => ({
-      species: p.species || 'Unknown',
+      species: (p.species || 'Unknown').toLowerCase(),
       age: p.age || undefined
     }))
     const speciesDemographics = getDemographicsBySpecies(peopleForDemographics)
@@ -67,7 +67,7 @@ export async function GET() {
     // Calculate faction distribution by species
     const factionBySpecies: Record<string, Record<string, number>> = {}
     memberships.forEach(membership => {
-      const species = membership.person.species || 'Unknown'
+      const species = (membership.person.species || 'Unknown').toLowerCase()
       const factionName = membership.faction.name
       
       if (!factionBySpecies[species]) {
@@ -83,7 +83,7 @@ export async function GET() {
     const locationBySpecies: Record<string, Record<string, number>> = {}
     locations.forEach(location => {
       location.residents.forEach(resident => {
-        const species = resident.species || 'Unknown'
+        const species = (resident.species || 'Unknown').toLowerCase()
         const locationName = location.name
         
         if (!locationBySpecies[species]) {
@@ -99,7 +99,7 @@ export async function GET() {
     // Calculate occupation distribution by species
     const occupationBySpecies: Record<string, Record<string, number>> = {}
     people.forEach(person => {
-      const species = person.species || 'Unknown'
+      const species = (person.species || 'Unknown').toLowerCase()
       const occupation = person.occupation || 'Unknown'
       
       if (!occupationBySpecies[species]) {
