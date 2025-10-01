@@ -41,6 +41,14 @@ npm run build         # Ensure production build works
 - This ensures reproducible builds and faster CI/CD
 - Use `npm install` only for adding new dependencies
 
+### 3.1 Terminal Command Rules
+- **NO PAGINATION**: Always append `| head -20` or `--no-paginate` to commands that might produce long output
+- **Git Commands**: Use `git log --oneline -10`, `git diff --no-pager`, `git show --no-pager`
+- **AWS CLI**: Use `--no-paginate` flag for list commands
+- **System Commands**: Use `ps aux | head -20`, `netstat -tulpn | head -20`
+- **Docker Commands**: Use `docker logs --tail 50`, `docker ps --format "table {{.Names}}\t{{.Status}}"`
+- **Prevent Terminal Hangs**: Never run commands that use `less`, `more`, or similar pagers
+
 ### 4. Database Changes
 - **For ANY DB-affecting changes:**
   1. Propose Prisma migration with detailed description
@@ -100,6 +108,13 @@ Every PR must include:
 - **Grid Layouts**: Use `style={{ gridTemplateColumns: 'repeat(n, 1fr)' }}` for dynamic grids
 - **Type Assertions**: Cast types explicitly (`as number`) when necessary
 - **Build Validation**: Always run `npm run build` before pushing
+
+### Common Terminal Pitfalls to Avoid
+- **Pagination Hangs**: Never run commands without pagination control (`| head -20`, `--no-paginate`)
+- **Long Output**: Always limit output to prevent terminal from getting stuck
+- **Interactive Commands**: Use non-interactive flags (`--yes`, `--no-prompt`) when available
+- **Background Processes**: Use `nohup` or `&` for long-running commands
+- **Command Timeouts**: Set reasonable timeouts for potentially slow commands
 
 ### File Organization
 - **Components**: Place in `src/components/`
