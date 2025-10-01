@@ -3,8 +3,6 @@ frontend:
   phases:
     preBuild:
       commands:
-        - nvm install 20
-        - nvm use 20
         - echo "Installing dependencies..."
         - npm install
         - echo "Skipping database schema update for now..."
@@ -15,14 +13,6 @@ frontend:
       commands:
         - echo "Building application..."
         - npm run build
-        - echo "Checking build output..."
-        - ls -la .next/
-        - echo "Checking API routes..."
-        - find .next -name "*.js" | grep -i api | head -10
-        - echo "Checking server directory..."
-        - ls -la .next/server/ || echo "No server directory found"
-        - echo "Checking pages directory..."
-        - ls -la .next/server/pages/ || echo "No pages directory found"
   artifacts:
     baseDirectory: .next
     files:
@@ -31,5 +21,3 @@ frontend:
     paths:
       - node_modules/**/*
       - .next/cache/**/*
-image:
-  buildImage: 'amplify:al2023'
