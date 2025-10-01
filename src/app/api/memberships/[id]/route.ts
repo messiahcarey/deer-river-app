@@ -1,13 +1,24 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { PrismaClient } from '@prisma/client'
 
-const prisma = new PrismaClient()
-
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const dbUrl = process.env.DATABASE_URL?.trim()
+  if (!dbUrl || (!dbUrl.startsWith('postgresql://') && !dbUrl.startsWith('postgres://'))) {
+    return NextResponse.json({ 
+      success: false, 
+      error: 'Database connection not configured' 
+    }, { status: 500 })
+  }
+
+  const prisma = new PrismaClient({
+    datasources: { db: { url: dbUrl } }
+  })
+
   try {
+    await prisma.$connect()
     const { id } = await params
 
     const membership = await prisma.personFactionMembership.findUnique({
@@ -148,8 +159,6 @@ export async function DELETE(
       }
     })
 
-    await prismaWithEnv.$disconnect()
-
     return NextResponse.json({ 
       ok: true, 
       data: membership,
@@ -165,5 +174,7 @@ export async function DELETE(
       },
       { status: 500 }
     )
+  } finally {
+    await prisma.$disconnect()
   }
 }
