@@ -3,6 +3,7 @@
 import Link from "next/link"
 import { useState, useEffect } from "react"
 import FactionEditModal from "@/components/FactionEditModal"
+import FactionRelationshipDiagram from "@/components/FactionRelationshipDiagram"
 import Breadcrumbs from "@/components/Breadcrumbs"
 
 interface Faction {
@@ -154,6 +155,21 @@ export default function FactionsPage() {
             Track alliances, rivalries, and political relationships between factions.
           </p>
         </header>
+
+        {/* Faction Relationship Diagram */}
+        {!loading && !error && factions.length > 0 && (
+          <div className="mb-6">
+            <FactionRelationshipDiagram
+              factions={factions.map(faction => ({
+                ...faction,
+                members: faction.members || []
+              }))}
+              onFactionClick={setEditingFaction}
+              onFactionHover={() => {}}
+              selectedFactionId={editingFaction?.id}
+            />
+          </div>
+        )}
 
         <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
           <div className="flex justify-between items-center mb-6">

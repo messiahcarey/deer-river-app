@@ -4,6 +4,8 @@ import Link from "next/link"
 import { useState, useEffect } from "react"
 
 import BuildingEditModal from "@/components/BuildingEditModal"
+import BuildingTable from "@/components/BuildingTable"
+import InteractiveMapVisualization from "@/components/InteractiveMapVisualization"
 import Breadcrumbs from "@/components/Breadcrumbs"
 
 interface Person {
@@ -180,10 +182,9 @@ Market Stall,Business,"Temporary market stall or trading post",70,60,2,"Open-air
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-100">
       <div className="container mx-auto px-4 py-8">
+        <Breadcrumbs className="mb-6" />
+        
         <header className="mb-8">
-          <Link href="/" className="text-amber-600 hover:text-amber-800 mb-4 inline-block">
-            ← Back to Home
-          </Link>
           <h1 className="text-4xl font-bold text-amber-900 mb-4">
             🏗️ Buildings of Deer River
           </h1>
@@ -191,6 +192,18 @@ Market Stall,Business,"Temporary market stall or trading post",70,60,2,"Open-air
             Manage the buildings and locations of Deer River. View their details, residents, and workers.
           </p>
         </header>
+
+        {/* Interactive Map Visualization */}
+        {!loading && !error && buildings.length > 0 && (
+          <div className="mb-6">
+            <InteractiveMapVisualization
+              buildings={buildings}
+              onBuildingClick={setEditingBuilding}
+              onBuildingHover={() => {}}
+              selectedBuildingId={editingBuilding?.id}
+            />
+          </div>
+        )}
 
         <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
           <div className="flex justify-between items-center mb-6">
