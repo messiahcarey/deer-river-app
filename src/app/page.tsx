@@ -21,25 +21,8 @@ export default function Home() {
           </p>
         </header>
 
-        {/* Dashboard */}
-        <div className="mb-12">
-          <Dashboard />
-        </div>
-
-        {/* Workflow Templates */}
-        <div className="mb-12">
-          <WorkflowTemplates
-            onNewPerson={() => window.location.href = '/people?new=true'}
-            onNewFaction={() => window.location.href = '/factions?new=true'}
-            onNewBuilding={() => window.location.href = '/map?new=true'}
-            onBulkOperation={(operation) => {
-              // This would open bulk operation modals
-              alert(`Bulk operation: ${operation}`)
-            }}
-          />
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+        {/* Page Types - Moved to top */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto mb-12">
           <Link 
             href="/people" 
             className="bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow border-l-4 border-blue-500"
@@ -156,6 +139,24 @@ export default function Home() {
               Monitor application health, performance, and system metrics.
             </p>
           </Link>
+        </div>
+
+        {/* Dashboard */}
+        <div className="mb-12">
+          <Dashboard />
+        </div>
+
+        {/* Workflow Templates */}
+        <div className="mb-12">
+          <WorkflowTemplates
+            onNewPerson={() => window.location.href = '/people?new=true'}
+            onNewFaction={() => window.location.href = '/factions?new=true'}
+            onNewBuilding={() => window.location.href = '/map?new=true'}
+            onBulkOperation={(operation) => {
+              // This would open bulk operation modals
+              alert(`Bulk operation: ${operation}`)
+            }}
+          />
         </div>
 
         <div className="text-center mt-12">
