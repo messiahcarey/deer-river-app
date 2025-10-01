@@ -10,6 +10,11 @@ interface Person {
   occupation: string | null
   notes: string | null
   tags: string
+  householdId?: string | null
+  household: {
+    id: string
+    name: string | null
+  } | null
   livesAt: {
     id: string
     name: string
@@ -18,12 +23,14 @@ interface Person {
     id: string
     name: string
   } | null
-  memberships: Array<{
+  memberships?: Array<{
+    id: string
     faction: {
       id: string
       name: string
-      color: string
+      color: string | null
     }
+    role: string
     isPrimary: boolean
   }>
 }
@@ -33,14 +40,7 @@ interface PeopleTableProps {
   selectedPeople: string[]
   onPersonSelect: (personId: string, event: React.ChangeEvent<HTMLInputElement>) => void
   onEditPerson: (person: Person) => void
-  onDeletePerson: (personId: string) => void
-  onSavePerson: (person: Partial<Person>) => Promise<void>
-  onNavigateToPerson: (index: number) => void
-  editingPerson: Person | null
-  editingPersonIndex: number | null
-  allPeople: Person[]
-  onLocationCreated: () => void
-  getSortIcon: (field: string) => JSX.Element
+  getSortIcon: (field: string) => React.JSX.Element
   handleSort: (field: string) => void
 }
 
@@ -49,7 +49,6 @@ export default function PeopleTable({
   selectedPeople,
   onPersonSelect,
   onEditPerson,
-  onDeletePerson,
   getSortIcon,
   handleSort
 }: PeopleTableProps) {
@@ -91,12 +90,6 @@ export default function PeopleTable({
                 >
                   Edit
                 </button>
-                <button
-                  onClick={() => onDeletePerson(person.id)}
-                  className="px-3 py-1 bg-red-600 text-white text-sm rounded hover:bg-red-700"
-                >
-                  Delete
-                </button>
               </div>
             </div>
 
@@ -119,7 +112,7 @@ export default function PeopleTable({
               </div>
             </div>
 
-            {person.memberships.length > 0 && (
+            {person.memberships && person.memberships.length > 0 && (
               <div className="mt-3">
                 <span className="font-medium text-gray-700 text-sm">Factions:</span>
                 <div className="flex flex-wrap gap-1 mt-1">
@@ -127,7 +120,7 @@ export default function PeopleTable({
                     <span
                       key={membership.faction.id}
                       className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium text-white"
-                      style={{ backgroundColor: membership.faction.color }}
+                      style={{ backgroundColor: membership.faction.color || '#6b7280' }}
                     >
                       {membership.faction.name}
                       {membership.isPrimary && ' (Primary)'}
@@ -272,11 +265,11 @@ export default function PeopleTable({
               </td>
               <td className="px-4 py-3 text-gray-700">
                 <div className="flex flex-wrap gap-1">
-                  {person.memberships.map((membership) => (
+                  {person.memberships && person.memberships.map((membership) => (
                     <span
                       key={membership.faction.id}
                       className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium text-white"
-                      style={{ backgroundColor: membership.faction.color }}
+                      style={{ backgroundColor: membership.faction.color || '#6b7280' }}
                     >
                       {membership.faction.name}
                       {membership.isPrimary && ' (P)'}
@@ -291,12 +284,6 @@ export default function PeopleTable({
                     className="px-3 py-1 bg-blue-600 text-white text-sm rounded hover:bg-blue-700"
                   >
                     Edit
-                  </button>
-                  <button
-                    onClick={() => onDeletePerson(person.id)}
-                    className="px-3 py-1 bg-red-600 text-white text-sm rounded hover:bg-red-700"
-                  >
-                    Delete
                   </button>
                 </div>
               </td>

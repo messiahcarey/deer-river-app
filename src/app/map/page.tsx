@@ -196,7 +196,13 @@ Market Stall,Business,"Temporary market stall or trading post",70,60,2,"Open-air
           <div className="mb-6">
             <InteractiveMapVisualization
               buildings={buildings}
-              onBuildingClick={setEditingBuilding}
+              onBuildingClick={(building) => {
+                // Convert the diagram building back to the page building type
+                const pageBuilding = buildings.find(b => b.id === building.id)
+                if (pageBuilding) {
+                  setEditingBuilding(pageBuilding)
+                }
+              }}
               onBuildingHover={() => {}}
               selectedBuildingId={editingBuilding?.id}
             />

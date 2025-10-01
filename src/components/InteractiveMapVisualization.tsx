@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 
 interface Person {
   id: string
@@ -8,26 +8,6 @@ interface Person {
   species: string
   age: number | null
   occupation: string | null
-  livesAt: {
-    id: string
-    name: string
-    x: number | null
-    y: number | null
-  } | null
-  worksAt: {
-    id: string
-    name: string
-    x: number | null
-    y: number | null
-  } | null
-  memberships: Array<{
-    faction: {
-      id: string
-      name: string
-      color: string
-    }
-    isPrimary: boolean
-  }>
 }
 
 interface Building {
@@ -92,7 +72,7 @@ export default function InteractiveMapVisualization({
   const width = Math.max(bounds.maxX - bounds.minX, 400)
   const height = Math.max(bounds.maxY - bounds.minY, 300)
 
-  const drawMap = () => {
+  const drawMap = useCallback(() => {
     const canvas = canvasRef.current
     if (!canvas) return
 
@@ -214,7 +194,7 @@ export default function InteractiveMapVisualization({
           building2.workers.some(p => p.id === person.id)
         ).length
 
-        if (sharedPeople > 0) {
+        if (sharedPeople > 0 && building1.x !== null && building1.y !== null && building2.x !== null && building2.y !== null) {
           const x1 = (building1.x - centerX + width / 2) * zoom + pan.x + canvas.width / 4
           const y1 = (building1.y - centerY + height / 2) * zoom + pan.y + canvas.height / 4
           const x2 = (building2.x - centerX + width / 2) * zoom + pan.x + canvas.width / 4
@@ -227,32 +207,32 @@ export default function InteractiveMapVisualization({
         }
       })
     })
-  }
+  }, [buildings, hoveredBuilding, selectedBuildingId, zoom, pan, centerX, centerY, width, height])
 
   useEffect(() => {
     drawMap()
-  }, [buildings, hoveredBuilding, selectedBuildingId, zoom, pan, drawMap])
+  }, [drawMap])
 
   const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
     if (isDragging) {
-      const rect = e.currentTarget.getBoundingClientRect()
-      const newPan = {
-        x: pan.x + (e.clientX - dragStart.x),
-        y: pan.y + (e.clientY - dragStart.y)
-      }
+    const newPan = {
+      x: pan.x + (e.clientX - dragStart.x),
+      y: pan.y + (e.clientY - dragStart.y)
+    }
       setPan(newPan)
       setDragStart({ x: e.clientX, y: e.clientY })
       return
     }
 
-    const x = e.clientX - e.currentTarget.offsetLeft
-    const y = e.clientY - e.currentTarget.offsetTop
+    const canvas = e.currentTarget as HTMLCanvasElement
+    const x = e.clientX - canvas.offsetLeft
+    const y = e.clientY - canvas.offsetTop
 
     // Find building under mouse
     const building = buildings.find((b) => {
       if (b.x === null || b.y === null) return false
-      const bx = (b.x - centerX + width / 2) * zoom + pan.x + rect.width / 2
-      const by = (b.y - centerY + height / 2) * zoom + pan.y + rect.height / 2
+      const bx = (b.x - centerX + width / 2) * zoom + pan.x + canvas.width / 2
+      const by = (b.y - centerY + height / 2) * zoom + pan.y + canvas.height / 2
       const distance = Math.sqrt((x - bx) ** 2 + (y - by) ** 2)
       return distance <= 20
     })

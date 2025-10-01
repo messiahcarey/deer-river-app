@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import Dashboard from "@/components/Dashboard";
 import WorkflowTemplates from "@/components/WorkflowTemplates";

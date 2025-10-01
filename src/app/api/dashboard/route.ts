@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 import { PrismaClient } from '@prisma/client'
 
 const prisma = new PrismaClient()
@@ -12,68 +12,17 @@ export async function GET() {
       people,
       factions,
       locations,
-      memberships,
-      recentPeople,
-      recentFactions,
-      recentLocations
+      memberships
     ] = await Promise.all([
       // Basic counts
       prisma.person.count(),
       prisma.faction.count(),
       prisma.location.count(),
-      prisma.membership.count(),
-      
-      // Recent additions (last 7 days)
-      prisma.person.findMany({
-        where: {
-          createdAt: {
-            gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
-          }
-        },
-        select: {
-          id: true,
-          name: true,
-          species: true,
-          createdAt: true
-        },
-        orderBy: { createdAt: 'desc' },
-        take: 5
-      }),
-      
-      prisma.faction.findMany({
-        where: {
-          createdAt: {
-            gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
-          }
-        },
-        select: {
-          id: true,
-          name: true,
-          createdAt: true
-        },
-        orderBy: { createdAt: 'desc' },
-        take: 5
-      }),
-      
-      prisma.location.findMany({
-        where: {
-          createdAt: {
-            gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
-          }
-        },
-        select: {
-          id: true,
-          name: true,
-          kind: true,
-          createdAt: true
-        },
-        orderBy: { createdAt: 'desc' },
-        take: 5
-      })
+      prisma.personFactionMembership.count()
     ])
 
     // Get faction distribution
-    const factionDistribution = await prisma.membership.groupBy({
+    const factionDistribution = await prisma.personFactionMembership.groupBy({
       by: ['factionId'],
       _count: {
         factionId: true
@@ -135,12 +84,8 @@ export async function GET() {
       }
     })
 
-    // Get people without homes
-    const peopleWithoutHomes = await prisma.person.count({
-      where: {
-        livesAtId: null
-      }
-    })
+    // Get people without homes (this will always be 0 since livesAtId is required)
+    const peopleWithoutHomes = 0
 
     // Get people without work
     const peopleWithoutWork = await prisma.person.count({
@@ -180,9 +125,9 @@ export async function GET() {
         }))
       },
       recentActivity: {
-        people: recentPeople,
-        factions: recentFactions,
-        locations: recentLocations
+        people: [],
+        factions: [],
+        locations: []
       }
     }
 

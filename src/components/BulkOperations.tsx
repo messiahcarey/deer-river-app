@@ -17,12 +17,14 @@ interface Person {
     id: string
     name: string
   } | null
-  memberships: Array<{
+  memberships?: Array<{
+    id: string
     faction: {
       id: string
       name: string
-      color: string
+      color: string | null
     }
+    role: string
     isPrimary: boolean
   }>
 }
@@ -35,7 +37,7 @@ interface BulkOperationsProps {
   onBulkUpdateStatus: (personIds: string[], status: string) => void
   onBulkDelete: (personIds: string[]) => void
   locations: Array<{ id: string; name: string }>
-  factions: Array<{ id: string; name: string; color: string }>
+  factions: Array<{ id: string; name: string; color: string | null }>
 }
 
 export default function BulkOperations({

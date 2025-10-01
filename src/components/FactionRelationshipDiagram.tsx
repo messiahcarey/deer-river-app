@@ -1,12 +1,13 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 
 interface Faction {
   id: string
   name: string
   motto: string | null
-  color: string
+  description: string | null
+  color: string | null
   members: Array<{
     id: string
     name: string
@@ -44,7 +45,7 @@ export default function FactionRelationshipDiagram({
     }
   }
 
-  const drawDiagram = () => {
+  const drawDiagram = useCallback(() => {
     const canvas = canvasRef.current
     if (!canvas) return
 
@@ -121,15 +122,15 @@ export default function FactionRelationshipDiagram({
       ctx.arc(x, y, radius, 0, 2 * Math.PI)
       
       if (isSelected) {
-        ctx.fillStyle = faction.color
+        ctx.fillStyle = faction.color || '#3b82f6'
         ctx.strokeStyle = '#1d4ed8'
         ctx.lineWidth = 3
       } else if (isHovered) {
-        ctx.fillStyle = faction.color
+        ctx.fillStyle = faction.color || '#10b981'
         ctx.strokeStyle = '#059669'
         ctx.lineWidth = 2
       } else {
-        ctx.fillStyle = faction.color
+        ctx.fillStyle = faction.color || '#6b7280'
         ctx.strokeStyle = '#374151'
         ctx.lineWidth = 1
       }
@@ -170,19 +171,18 @@ export default function FactionRelationshipDiagram({
     ctx.font = 'bold 16px Arial'
     ctx.textAlign = 'center'
     ctx.fillText('Faction Relationships', centerX, centerY - 200)
-  }
+  }, [factions, hoveredFaction, selectedFactionId, zoom, pan])
 
   useEffect(() => {
     drawDiagram()
-  }, [factions, hoveredFaction, selectedFactionId, zoom, pan, drawDiagram])
+  }, [drawDiagram])
 
   const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
     if (isDragging) {
-      const rect = e.currentTarget.getBoundingClientRect()
-      const newPan = {
-        x: pan.x + (e.clientX - dragStart.x),
-        y: pan.y + (e.clientY - dragStart.y)
-      }
+    const newPan = {
+      x: pan.x + (e.clientX - dragStart.x),
+      y: pan.y + (e.clientY - dragStart.y)
+    }
       setPan(newPan)
       setDragStart({ x: e.clientX, y: e.clientY })
       return
@@ -265,7 +265,7 @@ export default function FactionRelationshipDiagram({
           <div className="absolute top-4 right-4 bg-white border border-gray-200 rounded-lg shadow-lg p-4 max-w-xs">
             <h4 className="font-semibold text-gray-900 mb-2">{hoveredFaction.name}</h4>
             {hoveredFaction.motto && (
-              <p className="text-sm text-gray-600 mb-2 italic">"{hoveredFaction.motto}"</p>
+              <p className="text-sm text-gray-600 mb-2 italic">&quot;{hoveredFaction.motto}&quot;</p>
             )}
             <div className="text-sm text-gray-600 mb-2">
               <p>Members: {hoveredFaction.members.length}</p>

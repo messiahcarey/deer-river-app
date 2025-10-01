@@ -324,19 +324,19 @@ export default function PeoplePage() {
     }
   };
 
-  const handleSort = (field: keyof Person) => {
+  const handleSort = (field: string) => {
     if (sortField === field) {
       setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
     } else {
-      setSortField(field);
+      setSortField(field as keyof Person);
       setSortDirection('asc');
     }
   };
 
 
-  const getSortIcon = (field: keyof Person) => {
-    if (sortField !== field) return '↕️';
-    return sortDirection === 'asc' ? '↑' : '↓';
+  const getSortIcon = (field: string) => {
+    if (sortField !== field) return <span>↕️</span>;
+    return <span>{sortDirection === 'asc' ? '↑' : '↓'}</span>;
   };
 
   // Filter functions
@@ -826,13 +826,6 @@ export default function PeoplePage() {
               selectedPeople={selectedPeople}
               onPersonSelect={handlePersonSelect}
               onEditPerson={handleEditPerson}
-              onDeletePerson={handleDeletePerson}
-              onSavePerson={handleSavePerson}
-              onNavigateToPerson={handleNavigateToPerson}
-              editingPerson={editingPerson}
-              editingPersonIndex={editingPersonIndex}
-              allPeople={getFilteredAndSortedPeople()}
-              onLocationCreated={fetchLocations}
               getSortIcon={getSortIcon}
               handleSort={handleSort}
             />

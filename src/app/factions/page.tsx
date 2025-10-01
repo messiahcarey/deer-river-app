@@ -161,9 +161,19 @@ export default function FactionsPage() {
             <FactionRelationshipDiagram
               factions={factions.map(faction => ({
                 ...faction,
-                members: faction.members || []
+                members: (faction.members || []).map(member => ({
+                  id: member.id,
+                  name: member.name,
+                  isPrimary: false // Default to false since we don't have this data
+                }))
               }))}
-              onFactionClick={setEditingFaction}
+              onFactionClick={(faction) => {
+                // Convert the diagram faction back to the page faction type
+                const pageFaction = factions.find(f => f.id === faction.id)
+                if (pageFaction) {
+                  setEditingFaction(pageFaction)
+                }
+              }}
               onFactionHover={() => {}}
               selectedFactionId={editingFaction?.id}
             />
