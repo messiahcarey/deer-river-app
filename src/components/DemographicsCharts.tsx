@@ -275,9 +275,9 @@ const PopulationPyramid: React.FC<{
   return (
     <div className="bg-white rounded-lg shadow-lg p-6">
       <div className="flex justify-between items-center mb-4">
-        <h3 className="text-lg font-semibold text-gray-800">
-          Population Analysis by Age Category & Species
-        </h3>
+            <h3 className="text-lg font-semibold text-gray-800">
+              Population by Age Category & Species
+            </h3>
         
         {/* Chart Type Switcher */}
         <div className="flex bg-gray-100 rounded-lg p-1">
@@ -289,7 +289,7 @@ const PopulationPyramid: React.FC<{
                 : 'text-gray-600 hover:text-gray-900'
             }`}
           >
-            📊 Pyramid
+            📊 Bar Chart
           </button>
           <button
             onClick={() => setChartType('heatmap')}
@@ -310,15 +310,17 @@ const PopulationPyramid: React.FC<{
             <RechartsBarChart
               data={chartData}
               margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-              layout="horizontal"
               barCategoryGap="20%"
             >
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis type="number" />
-              <YAxis 
+              <XAxis 
                 dataKey="ageCategory" 
-                type="category" 
-                width={100}
+                type="category"
+                tick={{ fontSize: 12, angle: -45, textAnchor: 'end' }}
+                height={60}
+              />
+              <YAxis 
+                type="number"
                 tick={{ fontSize: 12 }}
               />
               <Tooltip 
@@ -407,7 +409,7 @@ const PopulationPyramid: React.FC<{
         Total Population: {data.summary.totalPeople} | 
         Age Categories: 5 | 
         Species: {speciesList.length} represented |
-        View: {chartType === 'pyramid' ? 'Population Pyramid' : 'Heatmap Matrix'}
+            View: {chartType === 'pyramid' ? 'Bar Chart' : 'Heatmap Matrix'}
       </div>
     </div>
   )
