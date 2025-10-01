@@ -111,6 +111,46 @@ export default function PersonEditModal({ person, locations, factions, onClose, 
     }))
   }
 
+  const saveWithoutClosing = async () => {
+    if (!person) return
+
+    try {
+      const updatedPerson = {
+        ...person,
+        name: formData.name,
+        species: formData.species,
+        age: formData.age ? parseInt(formData.age) : null,
+        occupation: formData.occupation || null,
+        notes: formData.notes || null,
+        tags: formData.tags,
+        factionIds: formData.factionIds,
+        livesAtId: formData.livesAtId,
+        worksAtId: formData.worksAtId || null
+      }
+
+      // Save directly via API without closing modal
+      const response = await fetch(`/api/people/${person.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updatedPerson),
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        // Update the person data in the parent component without closing modal
+        // We'll just update the local form data to reflect the changes
+        console.log('Person saved successfully without closing modal')
+      } else {
+        throw new Error(data.error || 'Failed to save person');
+      }
+    } catch (err) {
+      console.error('Save failed:', err)
+      alert(err instanceof Error ? err.message : 'Failed to save person')
+    }
+  }
+
   const autoSave = async () => {
     if (!person) return
 
@@ -198,8 +238,11 @@ export default function PersonEditModal({ person, locations, factions, onClose, 
         onLocationCreated()
       }
 
-      // Auto-save the person with the new home (keeps modal open)
-      await autoSave()
+      // Save the person with the new home (keeps modal open)
+      await saveWithoutClosing()
+      
+      // Show success feedback
+      alert('Home created and person assigned successfully!')
 
     } catch (err) {
       console.error('Failed to create home:', err)
@@ -399,32 +442,36 @@ export default function PersonEditModal({ person, locations, factions, onClose, 
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Lives At *
                 </label>
-                <div className="space-y-2">
-                  <div className="flex gap-2">
-                    <select
-                      value={formData.livesAtId}
-                      onChange={(e) => setFormData({ ...formData, livesAtId: e.target.value })}
-                      className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      required
-                    >
-                      <option value="">Select Location</option>
-                      {locations.map((location) => (
-                        <option key={location.id} value={location.id}>
-                          {location.name}
-                        </option>
-                      ))}
-                    </select>
-                    <button
-                      type="button"
-                      onClick={createHome}
-                      className="px-2 py-2 bg-green-600 hover:bg-green-700 text-white text-xs font-medium rounded-md transition-colors focus:ring-2 focus:ring-green-500 focus:ring-offset-1 whitespace-nowrap flex-shrink-0"
-                      title="Create a new Private Residence for this person"
-                    >
-                      🏠 Create Home
-                    </button>
-                  </div>
-                  <div className="text-xs text-gray-500 italic">
-                    Click &quot;Create Home&quot; to add a new Private Residence for this person
+                <div className="space-y-3">
+                  <div className="flex gap-3 items-start">
+                    <div className="flex-1">
+                      <select
+                        value={formData.livesAtId}
+                        onChange={(e) => setFormData({ ...formData, livesAtId: e.target.value })}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        required
+                      >
+                        <option value="">Select Location</option>
+                        {locations.map((location) => (
+                          <option key={location.id} value={location.id}>
+                            {location.name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className="flex flex-col items-center">
+                      <button
+                        type="button"
+                        onClick={createHome}
+                        className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition-colors focus:ring-2 focus:ring-green-500 focus:ring-offset-2 shadow-sm border border-green-700"
+                        title="Create a new Private Residence for this person"
+                      >
+                        🏠 Create Home
+                      </button>
+                      <div className="text-xs text-gray-500 mt-1 text-center max-w-24">
+                        Add new residence
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
