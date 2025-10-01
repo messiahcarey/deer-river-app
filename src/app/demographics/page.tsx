@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react'
 import DemographicsCharts from '@/components/DemographicsCharts'
 import Breadcrumbs from '@/components/Breadcrumbs'
+import Link from 'next/link'
 
 interface DemographicsData {
   summary: {
@@ -174,9 +175,15 @@ export default function DemographicsPage() {
             <h1 className="text-4xl font-bold text-amber-900 mb-4">
               📊 Population Demographics
             </h1>
-            <p className="text-lg text-amber-700 max-w-2xl mx-auto">
+            <p className="text-lg text-amber-700 max-w-2xl mx-auto mb-4">
               Explore the population structure, species distribution, occupations, and faction dynamics of Deer River.
             </p>
+            <Link
+              href="/demographics-enhanced"
+              className="inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-sm font-medium"
+            >
+              🔍 Enhanced Species Analysis
+            </Link>
           </div>
 
           <DemographicsCharts data={data} />
