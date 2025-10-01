@@ -21,67 +21,64 @@ export async function GET() {
       prisma.personFactionMembership.count()
     ])
 
-    // Get faction distribution
-    const factionDistribution = await prisma.personFactionMembership.groupBy({
-      by: ['factionId'],
-      _count: {
-        factionId: true
-      },
-      orderBy: {
-        _count: {
-          factionId: 'desc'
-        }
-      }
-    })
-
-    // Get faction names for the distribution
-    const factionNames = await prisma.faction.findMany({
+    // Get faction distribution - simplified approach
+    const factionDistributionWithNames = await prisma.faction.findMany({
       select: {
         id: true,
         name: true,
-        color: true
+        color: true,
+        _count: {
+          select: {
+            memberships: true
+          }
+        }
+      },
+      orderBy: {
+        memberships: {
+          _count: 'desc'
+        }
       }
-    })
+    }).then(factions => 
+      factions.map(faction => ({
+        factionId: faction.id,
+        factionName: faction.name,
+        color: faction.color,
+        count: faction._count.memberships
+      }))
+    )
 
-    const factionDistributionWithNames = factionDistribution.map(item => {
-      const faction = factionNames.find(f => f.id === item.factionId)
-      return {
-        factionId: item.factionId,
-        factionName: faction?.name || 'Unknown',
-        color: faction?.color || '#6B7280',
-        count: item._count.factionId
-      }
-    })
-
-    // Get species distribution
-    const speciesDistribution = await prisma.person.groupBy({
-      by: ['species'],
-      _count: {
+    // Get species distribution - simplified approach
+    const speciesDistribution = await prisma.person.findMany({
+      select: {
         species: true
-      },
-      orderBy: {
-        _count: {
-          species: 'desc'
-        }
       }
+    }).then(people => {
+      const counts = people.reduce((acc, person) => {
+        const species = person.species || 'Unknown'
+        acc[species] = (acc[species] || 0) + 1
+        return acc
+      }, {} as Record<string, number>)
+      
+      return Object.entries(counts)
+        .map(([species, count]) => ({ species, _count: { species: count } }))
+        .sort((a, b) => b._count.species - a._count.species)
     })
 
-    // Get occupation distribution
-    const occupationDistribution = await prisma.person.groupBy({
-      by: ['occupation'],
-      _count: {
+    // Get occupation distribution - simplified approach
+    const occupationDistribution = await prisma.person.findMany({
+      select: {
         occupation: true
-      },
-      where: {
-        occupation: {
-          not: null
-        }
-      },
-      orderBy: {
-        _count: {
-          occupation: 'desc'
-        }
       }
+    }).then(people => {
+      const counts = people.reduce((acc, person) => {
+        const occupation = person.occupation || 'Unknown'
+        acc[occupation] = (acc[occupation] || 0) + 1
+        return acc
+      }, {} as Record<string, number>)
+      
+      return Object.entries(counts)
+        .map(([occupation, count]) => ({ occupation, _count: { occupation: count } }))
+        .sort((a, b) => b._count.occupation - a._count.occupation)
     })
 
     // Get people without homes (this will always be 0 since livesAtId is required)
