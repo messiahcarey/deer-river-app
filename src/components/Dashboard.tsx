@@ -100,12 +100,12 @@ export default function Dashboard() {
             { factionId: '2', factionName: 'Merchants', color: '#4AE24A', count: 6 }
           ],
           species: [
-            { species: 'Human', _count: { species: 31 } },
-            { species: 'Half-elf', _count: { species: 14 } }
+            { species: 'Human', count: 31 },
+            { species: 'Half-elf', count: 14 }
           ],
           occupations: [
-            { occupation: 'Villager (retired/aging)', _count: { occupation: 23 } },
-            { occupation: 'Man-at-arms', _count: { occupation: 2 } }
+            { occupation: 'Villager (retired/aging)', count: 23 },
+            { occupation: 'Man-at-arms', count: 2 }
           ]
         },
         recentActivity: {

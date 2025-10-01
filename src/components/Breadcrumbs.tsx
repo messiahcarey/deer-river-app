@@ -19,7 +19,7 @@ export default function Breadcrumbs({ items, className = '' }: BreadcrumbsProps)
   
   // Auto-generate breadcrumbs from pathname if not provided
   const autoItems: BreadcrumbItem[] = items || (() => {
-    const segments = pathname.split('/').filter(Boolean)
+    const segments = (pathname || '').split('/').filter(Boolean)
     const breadcrumbs: BreadcrumbItem[] = [
       { label: 'Home', href: '/' }
     ]
