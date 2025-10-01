@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Dashboard from "@/components/Dashboard";
 
 export default function Home() {
   return (
@@ -16,6 +17,11 @@ export default function Home() {
             Track the lives and relationships of every citizen in Deer River.
           </p>
         </header>
+
+        {/* Dashboard */}
+        <div className="mb-12">
+          <Dashboard />
+        </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
           <Link 
