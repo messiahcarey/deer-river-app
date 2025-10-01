@@ -225,16 +225,26 @@ const PopulationPyramid: React.FC<{
     ageCat.species.reduce((sum, species) => sum + species.count, 0)
   ))
 
+  // Get all unique species with their colors for the legend
+  const allSpecies = new Map()
+  ageCategoryData.forEach(ageCat => {
+    ageCat.species.forEach(species => {
+      if (!allSpecies.has(species.name)) {
+        allSpecies.set(species.name, species.color)
+      }
+    })
+  })
+
   return (
     <div className="bg-white rounded-lg shadow-lg p-6">
       <h3 className="text-lg font-semibold text-gray-800 mb-4">Population Pyramid by Age Category & Species</h3>
       
       {/* Legend for species colors */}
       <div className="mb-4 flex flex-wrap gap-2 text-xs">
-        {ageCategoryData[0]?.species.map((species, index) => (
-          <div key={index} className="flex items-center">
-            <div className={`w-3 h-3 rounded ${species.color} mr-1`}></div>
-            <span className="text-gray-600">{species.name}</span>
+        {Array.from(allSpecies.entries()).map(([speciesName, color]) => (
+          <div key={speciesName} className="flex items-center">
+            <div className={`w-3 h-3 rounded ${color} mr-1`}></div>
+            <span className="text-gray-600">{speciesName}</span>
           </div>
         ))}
       </div>
