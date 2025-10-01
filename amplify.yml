@@ -13,6 +13,10 @@ frontend:
       commands:
         - echo "Building application..."
         - npm run build
+        - echo "Checking build output..."
+        - ls -la .next/
+        - echo "Checking API routes..."
+        - find .next -name "*.js" | grep -i api | head -10
   artifacts:
     baseDirectory: .next
     files:
