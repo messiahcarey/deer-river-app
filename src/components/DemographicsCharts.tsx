@@ -316,8 +316,10 @@ const PopulationPyramid: React.FC<{
               <XAxis 
                 dataKey="ageCategory" 
                 type="category"
-                tick={{ fontSize: 12, angle: -45, textAnchor: 'end' }}
+                tick={{ fontSize: 12 }}
                 height={60}
+                angle={-45}
+                textAnchor="end"
               />
               <YAxis 
                 type="number"
