@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import PersonEditModal from "@/components/PersonEditModal";
+import PeopleTable from "@/components/PeopleTable";
+import Breadcrumbs from "@/components/Breadcrumbs";
 
 interface Person {
   id: string;
@@ -479,10 +481,9 @@ export default function PeoplePage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-100">
       <div className="container mx-auto px-4 py-8">
+        <Breadcrumbs className="mb-6" />
+        
         <header className="mb-8">
-          <Link href="/" className="text-amber-600 hover:text-amber-800 mb-4 inline-block">
-            ← Back to Home
-          </Link>
           <h1 className="text-4xl font-bold text-amber-900 mb-4">
             👥 People of Deer River
           </h1>
@@ -749,163 +750,21 @@ export default function PeoplePage() {
           )}
 
           {!loading && !error && people.length > 0 && (
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-4 py-3 text-center font-semibold text-gray-700 w-12">
-                      <input
-                        type="checkbox"
-                        checked={selectedPeople.length === people.length && people.length > 0}
-                        onChange={(e) => e.target.checked ? handleSelectAll() : handleDeselectAll()}
-                        className="rounded"
-                      />
-                    </th>
-                    <th 
-                      className="px-4 py-3 text-left font-semibold text-gray-700 cursor-pointer hover:bg-gray-100 select-none"
-                      onClick={() => handleSort('name')}
-                    >
-                      <div className="flex items-center gap-1">
-                        Name {getSortIcon('name')}
-                      </div>
-                    </th>
-                    <th 
-                      className="px-4 py-3 text-left font-semibold text-gray-700 cursor-pointer hover:bg-gray-100 select-none"
-                      onClick={() => handleSort('species')}
-                    >
-                      <div className="flex items-center gap-1">
-                        Species {getSortIcon('species')}
-                      </div>
-                    </th>
-                    <th 
-                      className="px-4 py-3 text-left font-semibold text-gray-700 cursor-pointer hover:bg-gray-100 select-none"
-                      onClick={() => handleSort('age')}
-                    >
-                      <div className="flex items-center gap-1">
-                        Age {getSortIcon('age')}
-                      </div>
-                    </th>
-                    <th 
-                      className="px-4 py-3 text-left font-semibold text-gray-700 cursor-pointer hover:bg-gray-100 select-none"
-                      onClick={() => handleSort('occupation')}
-                    >
-                      <div className="flex items-center gap-1">
-                        Occupation {getSortIcon('occupation')}
-                      </div>
-                    </th>
-                    <th 
-                      className="px-4 py-3 text-left font-semibold text-gray-700 cursor-pointer hover:bg-gray-100 select-none"
-                      onClick={() => handleSort('livesAt')}
-                    >
-                      <div className="flex items-center gap-1">
-                        Lives At {getSortIcon('livesAt')}
-                      </div>
-                    </th>
-                    <th 
-                      className="px-4 py-3 text-left font-semibold text-gray-700 cursor-pointer hover:bg-gray-100 select-none"
-                      onClick={() => handleSort('worksAt')}
-                    >
-                      <div className="flex items-center gap-1">
-                        Works At {getSortIcon('worksAt')}
-                      </div>
-                    </th>
-                    <th 
-                      className="px-4 py-3 text-left font-semibold text-gray-700 cursor-pointer hover:bg-gray-100 select-none"
-                      onClick={() => handleSort('tags')}
-                    >
-                      <div className="flex items-center gap-1">
-                        Status {getSortIcon('tags')}
-                      </div>
-                    </th>
-                    <th 
-                      className="px-4 py-3 text-left font-semibold text-gray-700 cursor-pointer hover:bg-gray-100 select-none"
-                      onClick={() => handleSort('memberships')}
-                    >
-                      <div className="flex items-center gap-1">
-                        Factions {getSortIcon('memberships')}
-                      </div>
-                    </th>
-                    <th className="px-4 py-3 text-center font-semibold text-gray-700">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-200">
-                  {getFilteredAndSortedPeople().map((person) => (
-                    <tr key={person.id} className={`hover:bg-gray-50 ${selectedPeople.includes(person.id) ? 'bg-blue-50' : ''}`}>
-                      <td className="px-4 py-3 text-center">
-                        <input
-                          type="checkbox"
-                          checked={selectedPeople.includes(person.id)}
-                          onChange={(e) => handlePersonSelect(person.id, e)}
-                          className="rounded"
-                        />
-                      </td>
-                      <td className="px-4 py-3 font-medium text-gray-900">
-                        {person.name}
-                      </td>
-                      <td className="px-4 py-3 text-gray-700">
-                        {person.species}
-                      </td>
-                      <td className="px-4 py-3 text-gray-700">
-                        {person.age || 'Unknown'}
-                      </td>
-                      <td className="px-4 py-3 text-gray-700">
-                        {person.occupation || 'None'}
-                      </td>
-                      <td className="px-4 py-3 text-gray-700">
-                        {(() => {
-                          console.log('Rendering livesAt for', person.name, ':', person.livesAt);
-                          return person.livesAt?.name || 'Unknown';
-                        })()}
-                      </td>
-                      <td className="px-4 py-3 text-gray-700">
-                        {person.worksAt?.name || 'None'}
-                      </td>
-                              <td className="px-4 py-3">
-                                <span className={`px-2 py-1 rounded text-xs font-medium ${
-                                  person.tags === 'present' 
-                                    ? 'bg-green-100 text-green-800' 
-                                    : 'bg-red-100 text-red-800'
-                                }`}>
-                                  {person.tags === 'present' ? 'Present' : 'Absent'}
-                                </span>
-                              </td>
-                              <td className="px-4 py-3 text-gray-700">
-                                {person.memberships && person.memberships.length > 0 ? (
-                                  <div className="space-y-1">
-                                    {person.memberships.map((membership) => (
-                                      <div key={membership.id} className="flex items-center gap-2">
-                                        <span 
-                                          className="w-3 h-3 rounded-full"
-                                          style={{ backgroundColor: membership.faction.color || '#6b7280' }}
-                                        ></span>
-                                        <span className="text-sm">
-                                          {membership.faction.name}
-                                          {membership.isPrimary && (
-                                            <span className="ml-1 text-xs text-gray-500">(Primary)</span>
-                                          )}
-                                        </span>
-                                      </div>
-                                    ))}
-                                  </div>
-                                ) : (
-                                  <span className="text-gray-400 text-sm">No faction</span>
-                                )}
-                              </td>
-                              <td className="px-4 py-3 text-center">
-                                <div className="flex justify-center space-x-2">
-                                  <button
-                                    onClick={() => handleEditPerson(person)}
-                                    className="text-blue-600 hover:text-blue-800 text-sm font-medium bg-blue-50 px-2 py-1 rounded"
-                                  >
-                                    ✏️ Edit
-                                  </button>
-                                </div>
-                              </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            <PeopleTable
+              people={getFilteredAndSortedPeople()}
+              selectedPeople={selectedPeople}
+              onPersonSelect={handlePersonSelect}
+              onEditPerson={handleEditPerson}
+              onDeletePerson={handleDeletePerson}
+              onSavePerson={handleSavePerson}
+              onNavigateToPerson={handleNavigateToPerson}
+              editingPerson={editingPerson}
+              editingPersonIndex={editingPersonIndex}
+              allPeople={getFilteredAndSortedPeople()}
+              onLocationCreated={fetchLocations}
+              getSortIcon={getSortIcon}
+              handleSort={handleSort}
+            />
           )}
         </div>
 

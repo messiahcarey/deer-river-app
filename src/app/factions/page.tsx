@@ -3,6 +3,7 @@
 import Link from "next/link"
 import { useState, useEffect } from "react"
 import FactionEditModal from "@/components/FactionEditModal"
+import Breadcrumbs from "@/components/Breadcrumbs"
 
 interface Faction {
   id: string
@@ -143,10 +144,9 @@ export default function FactionsPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-100">
       <div className="container mx-auto px-4 py-8">
+        <Breadcrumbs className="mb-6" />
+        
         <header className="mb-8">
-          <Link href="/" className="text-amber-600 hover:text-amber-800 mb-4 inline-block">
-            ← Back to Home
-          </Link>
           <h1 className="text-4xl font-bold text-amber-900 mb-4">
             🏛️ Factions of Deer River
           </h1>

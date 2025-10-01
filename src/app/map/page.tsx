@@ -4,6 +4,7 @@ import Link from "next/link"
 import { useState, useEffect } from "react"
 
 import BuildingEditModal from "@/components/BuildingEditModal"
+import Breadcrumbs from "@/components/Breadcrumbs"
 
 interface Person {
   id: string
