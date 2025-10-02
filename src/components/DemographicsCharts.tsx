@@ -483,6 +483,255 @@ const KeyMetrics: React.FC<{
   )
 }
 
+// Species & Faction Distribution Chart Component
+const SpeciesFactionChart: React.FC<{
+  data: DemographicsData
+}> = ({ data }) => {
+  const [chartType, setChartType] = useState<'bar' | 'heatmap'>('bar')
+  
+  // Get faction data with species breakdown
+  const getChartData = () => {
+    if (!data.factionDistribution) {
+      // Fallback data if no faction distribution available
+      return [
+        { faction: 'Original Residents', total: 25, 'Human': 20, 'Half-elf': 3, 'Dwarf': 2 },
+        { faction: 'Merchants', total: 8, 'Human': 6, 'Half-elf': 2, 'Dwarf': 0 },
+        { faction: 'Refugees', total: 5, 'Human': 3, 'Half-elf': 1, 'Dwarf': 1 }
+      ]
+    }
+
+    // Get all unique factions
+    const allFactions = new Set<string>()
+    Object.values(data.factionDistribution).forEach(speciesFactions => {
+      Object.keys(speciesFactions).forEach(faction => allFactions.add(faction))
+    })
+
+    // Get all species with data
+    const speciesList = Object.entries(data.speciesDemographics || {})
+      .filter(([, stats]) => stats.total > 0)
+      .map(([species, stats]) => ({
+        name: species.charAt(0).toUpperCase() + species.slice(1),
+        total: stats.total
+      }))
+      .sort((a, b) => b.total - a.total)
+
+    return Array.from(allFactions).map(faction => {
+      const chartData: Record<string, string | number> = { faction, total: 0 }
+      
+      speciesList.forEach(species => {
+        const speciesKey = species.name.toLowerCase()
+        const count = data.factionDistribution![speciesKey]?.[faction] || 0
+        chartData[species.name] = count
+        chartData.total = (chartData.total as number) + count
+      })
+
+      return chartData
+    })
+  }
+
+  const chartData = getChartData()
+  const speciesList = Object.entries(data.speciesDemographics || {})
+    .filter(([, stats]) => stats.total > 0)
+    .map(([species, stats]) => ({
+      name: species.charAt(0).toUpperCase() + species.slice(1),
+      total: stats.total
+    }))
+    .sort((a, b) => b.total - a.total)
+
+  // Generate colors for species
+  const COLORS = [
+    '#3B82F6', '#10B981', '#F59E0B', '#8B5CF6', 
+    '#EC4899', '#6366F1', '#EF4444', '#F97316'
+  ]
+
+  // Heatmap data preparation
+  const getHeatmapData = () => {
+    if (!data.factionDistribution) return []
+    
+    const allFactions = new Set<string>()
+    Object.values(data.factionDistribution).forEach(speciesFactions => {
+      Object.keys(speciesFactions).forEach(faction => allFactions.add(faction))
+    })
+    
+    const heatmapData: Array<Record<string, string | number>> = []
+    
+    Array.from(allFactions).forEach(faction => {
+      const row: Record<string, string | number> = { faction }
+      let maxCount = 0
+      
+      speciesList.forEach(species => {
+        const speciesKey = species.name.toLowerCase()
+        const count = data.factionDistribution![speciesKey]?.[faction] || 0
+        row[species.name] = count
+        maxCount = Math.max(maxCount, count)
+      })
+      
+      row.maxCount = maxCount
+      heatmapData.push(row)
+    })
+    
+    return heatmapData
+  }
+
+  const heatmapData = getHeatmapData()
+  const maxValue = Math.max(...heatmapData.map(row => row.maxCount as number))
+
+  return (
+    <div className="bg-white rounded-lg shadow-lg p-6">
+      <div className="flex justify-between items-center mb-4">
+        <h3 className="text-lg font-semibold text-gray-800">
+          Species Distribution by Faction
+        </h3>
+        
+        {/* Chart Type Switcher */}
+        <div className="flex bg-gray-100 rounded-lg p-1">
+          <button
+            onClick={() => setChartType('bar')}
+            className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
+              chartType === 'bar'
+                ? 'bg-white text-blue-600 shadow-sm'
+                : 'text-gray-600 hover:text-gray-900'
+            }`}
+          >
+            📊 Bar Chart
+          </button>
+          <button
+            onClick={() => setChartType('heatmap')}
+            className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
+              chartType === 'heatmap'
+                ? 'bg-white text-blue-600 shadow-sm'
+                : 'text-gray-600 hover:text-gray-900'
+            }`}
+          >
+            🔥 Heatmap
+          </button>
+        </div>
+      </div>
+      
+      <div className="h-[28rem]">
+        {chartType === 'bar' ? (
+          <ResponsiveContainer width="100%" height="100%">
+            <RechartsBarChart
+              data={chartData}
+              margin={{ top: 20, right: 30, left: 20, bottom: 80 }}
+              barCategoryGap="20%"
+            >
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis 
+                dataKey="faction" 
+                type="category"
+                tick={{ fontSize: 10 }}
+                height={80}
+                angle={-60}
+                textAnchor="end"
+                interval={0}
+                tickFormatter={(value) => {
+                  // Shorten long faction names
+                  const labels: Record<string, string> = {
+                    'Original Residents': 'Original',
+                    'Merchants': 'Merchants',
+                    'Refugees': 'Refugees',
+                    'Guild Members': 'Guild',
+                    'Nobles': 'Nobles'
+                  }
+                  return labels[value] || value
+                }}
+              />
+              <YAxis 
+                type="number"
+                tick={{ fontSize: 12 }}
+              />
+              <Tooltip 
+                formatter={(value, name) => [value, name]}
+                labelFormatter={(label) => `Faction: ${label}`}
+              />
+              <Legend />
+              {speciesList.map((species, index) => (
+                <Bar
+                  key={species.name}
+                  dataKey={species.name}
+                  stackId="a"
+                  fill={COLORS[index % COLORS.length]}
+                  name={species.name}
+                  radius={[0, 0, 0, 0]}
+                />
+              ))}
+            </RechartsBarChart>
+          </ResponsiveContainer>
+        ) : (
+          <div className="h-full">
+            {/* Heatmap Visualization */}
+            <div className="grid grid-cols-1 gap-2 h-full">
+              {/* Header with species names */}
+              <div className="flex items-center">
+                <div className="w-24 text-xs font-medium text-gray-600">Faction</div>
+                <div className="flex-1 grid gap-1" style={{ gridTemplateColumns: `repeat(${speciesList.length}, 1fr)` }}>
+                  {speciesList.map((species) => (
+                    <div key={species.name} className="text-xs font-medium text-center text-gray-700">
+                      {species.name}
+                    </div>
+                  ))}
+                </div>
+              </div>
+              
+              {/* Heatmap rows */}
+              {heatmapData.map((row, rowIndex) => (
+                <div key={rowIndex} className="flex items-center">
+                  <div className="w-24 text-xs text-gray-600 font-medium">
+                    {row.faction}
+                  </div>
+                  <div className="flex-1 grid gap-1" style={{ gridTemplateColumns: `repeat(${speciesList.length}, 1fr)` }}>
+                    {speciesList.map((speciesIndex) => {
+                      const count = row[speciesIndex.name] as number
+                      const intensity = maxValue > 0 ? count / maxValue : 0
+                      const bgColor = `rgba(59, 130, 246, ${0.2 + intensity * 0.8})`
+                      
+                      return (
+                        <div
+                          key={speciesIndex.name}
+                          className="h-8 flex items-center justify-center text-xs font-medium rounded"
+                          style={{ backgroundColor: bgColor }}
+                          title={`${speciesIndex.name}: ${count}`}
+                        >
+                          {count > 0 && count}
+                        </div>
+                      )
+                    })}
+                  </div>
+                </div>
+              ))}
+            </div>
+            
+            {/* Heatmap Legend */}
+            <div className="mt-4 flex items-center justify-center space-x-4">
+              <span className="text-xs text-gray-600">Intensity:</span>
+              <div className="flex items-center space-x-1">
+                <div className="w-4 h-4 rounded" style={{ backgroundColor: 'rgba(59, 130, 246, 0.2)' }}></div>
+                <span className="text-xs text-gray-600">Low</span>
+              </div>
+              <div className="flex items-center space-x-1">
+                <div className="w-4 h-4 rounded" style={{ backgroundColor: 'rgba(59, 130, 246, 0.6)' }}></div>
+                <span className="text-xs text-gray-600">Medium</span>
+              </div>
+              <div className="flex items-center space-x-1">
+                <div className="w-4 h-4 rounded" style={{ backgroundColor: 'rgba(59, 130, 246, 1)' }}></div>
+                <span className="text-xs text-gray-600">High</span>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Summary */}
+      <div className="mt-4 text-center text-sm text-gray-600">
+        Total Factions: {chartData.length} | 
+        Species: {speciesList.length} represented |
+        View: {chartType === 'bar' ? 'Bar Chart' : 'Heatmap Matrix'}
+      </div>
+    </div>
+  )
+}
+
 // Main Demographics Charts Component
 const DemographicsCharts: React.FC<DemographicsChartsProps> = ({ data }) => {
   const [activeTab, setActiveTab] = useState<'overview' | 'species' | 'occupations' | 'factions'>('overview')
@@ -610,6 +859,9 @@ const DemographicsCharts: React.FC<DemographicsChartsProps> = ({ data }) => {
                 title="Species Distribution"
                 size={120}
               />
+            </div>
+            <div className="lg:col-span-3">
+              <SpeciesFactionChart data={data} />
             </div>
           </>
         )}
