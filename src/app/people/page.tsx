@@ -561,17 +561,36 @@ export default function PeoplePage() {
           }}
           onBulkDelete={async (personIds) => {
             // Implement bulk delete
+            let successCount = 0
+            let failedCount = 0
+
             for (const personId of personIds) {
-              const response = await fetch(`/api/people/${personId}`, {
-                method: 'DELETE'
-              })
-              if (!response.ok) {
-                console.error(`Failed to delete person ${personId}`)
+              try {
+                const response = await fetch(`/api/people/${personId}`, {
+                  method: 'DELETE'
+                })
+                const data = await response.json()
+                
+                if (response.ok && data.success) {
+                  successCount++
+                } else {
+                  failedCount++
+                  console.error(`Failed to delete person ${personId}:`, data.error)
+                }
+              } catch (error) {
+                failedCount++
+                console.error(`Error deleting person ${personId}:`, error)
               }
             }
+            
             await fetchPeople()
             setSelectedPeople([])
-            alert(`Deleted ${personIds.length} people`)
+            
+            if (failedCount > 0) {
+              alert(`Delete completed!\n✅ Successful: ${successCount}\n❌ Failed: ${failedCount}`)
+            } else {
+              alert(`Successfully deleted ${successCount} people`)
+            }
           }}
           locations={locations}
           factions={factions}

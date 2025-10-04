@@ -129,6 +129,79 @@ export async function PUT(
   }
 }
 
+export async function DELETE(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await params
+    
+    const dbUrl = process.env.DATABASE_URL?.trim()
+    if (!dbUrl || (!dbUrl.startsWith('postgresql://') && !dbUrl.startsWith('postgres://'))) {
+      return NextResponse.json({
+        success: false,
+        error: `Invalid DATABASE_URL format: ${dbUrl}`,
+        timestamp: new Date().toISOString()
+      }, {
+        status: 500,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'GET, PUT, DELETE, OPTIONS',
+          'Access-Control-Allow-Headers': 'Content-Type',
+        }
+      })
+    }
+
+    const prismaWithEnv = new PrismaClient({
+      datasources: {
+        db: {
+          url: dbUrl
+        }
+      }
+    })
+
+    await prismaWithEnv.$connect()
+
+    // First, delete all related records (memberships, etc.)
+    await prismaWithEnv.personFactionMembership.deleteMany({
+      where: { personId: id }
+    })
+
+    // Then delete the person
+    await prismaWithEnv.person.delete({
+      where: { id }
+    })
+
+    await prismaWithEnv.$disconnect()
+
+    return NextResponse.json({
+      success: true,
+      message: 'Person deleted successfully',
+      timestamp: new Date().toISOString()
+    }, {
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, PUT, DELETE, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type',
+      }
+    })
+  } catch (error) {
+    console.error('Failed to delete person:', error)
+    return NextResponse.json({
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error',
+      timestamp: new Date().toISOString()
+    }, {
+      status: 500,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, PUT, DELETE, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type',
+      }
+    })
+  }
+}
+
 export async function OPTIONS() {
   return new NextResponse(null, {
     status: 200,
