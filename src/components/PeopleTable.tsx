@@ -100,7 +100,15 @@ export default function PeopleTable({
               </div>
               <div>
                 <span className="font-medium text-gray-700">Status:</span>
-                <p className="text-gray-600">{person.tags}</p>
+                <p className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                  person.tags === 'present' 
+                    ? 'bg-green-100 text-green-800' 
+                    : person.tags === 'absent'
+                    ? 'bg-red-100 text-red-800'
+                    : 'bg-gray-100 text-gray-800'
+                }`}>
+                  {person.tags}
+                </p>
               </div>
               <div>
                 <span className="font-medium text-gray-700">Lives At:</span>
@@ -259,7 +267,13 @@ export default function PeopleTable({
                 {person.worksAt?.name || 'None'}
               </td>
               <td className="px-4 py-3 text-gray-700">
-                <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                  person.tags === 'present' 
+                    ? 'bg-green-100 text-green-800' 
+                    : person.tags === 'absent'
+                    ? 'bg-red-100 text-red-800'
+                    : 'bg-gray-100 text-gray-800'
+                }`}>
                   {person.tags}
                 </span>
               </td>
