@@ -469,6 +469,20 @@ export default function PeoplePage() {
         bValue = primaryMembership ? primaryMembership.faction.name : (bValue.length > 0 ? (bValue[0] as { faction: { name: string } }).faction.name : '');
       }
 
+      // Handle numeric fields specially
+      if (sortField === 'age') {
+        const aNum = typeof aValue === 'number' ? aValue : (aValue === '' || aValue === null || aValue === undefined) ? -1 : Number(aValue);
+        const bNum = typeof bValue === 'number' ? bValue : (bValue === '' || bValue === null || bValue === undefined) ? -1 : Number(bValue);
+        
+        // Handle NaN values (treat as -1 for sorting)
+        const aAge = isNaN(aNum) ? -1 : aNum;
+        const bAge = isNaN(bNum) ? -1 : bNum;
+        
+        if (aAge < bAge) return sortDirection === 'asc' ? -1 : 1;
+        if (aAge > bAge) return sortDirection === 'asc' ? 1 : -1;
+        return 0;
+      }
+
       // Convert to strings for comparison
       const aStr = String(aValue).toLowerCase();
       const bStr = String(bValue).toLowerCase();
