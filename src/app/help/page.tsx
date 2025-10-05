@@ -1,139 +1,139 @@
-'use client'
+&apos;use client&apos;
 
-import { useState } from 'react'
-import Breadcrumbs from '@/components/Breadcrumbs'
+import { useState } from &apos;react&apos;
+import Breadcrumbs from &apos;@/components/Breadcrumbs&apos;
 
 interface FeatureStatus {
   name: string
-  status: 'complete' | 'partial' | 'incomplete' | 'planned'
+  status: &apos;complete&apos; | &apos;partial&apos; | &apos;incomplete&apos; | &apos;planned&apos;
   description: string
   notes?: string
 }
 
 export default function HelpPage() {
-  const [activeSection, setActiveSection] = useState('overview')
+  const [activeSection, setActiveSection] = useState(&apos;overview&apos;)
 
   const featureStatuses: FeatureStatus[] = [
     {
-      name: 'People Management',
-      status: 'complete',
-      description: 'Full CRUD operations for residents',
-      notes: 'Includes editing, deleting, filtering, sorting, and bulk operations'
+      name: &apos;People Management&apos;,
+      status: &apos;complete&apos;,
+      description: &apos;Full CRUD operations for residents&apos;,
+      notes: &apos;Includes editing, deleting, filtering, sorting, and bulk operations&apos;
     },
     {
-      name: 'Faction Management',
-      status: 'complete',
-      description: 'Full CRUD operations for factions',
-      notes: 'Includes creating, editing, deleting factions and managing memberships'
+      name: &apos;Faction Management&apos;,
+      status: &apos;complete&apos;,
+      description: &apos;Full CRUD operations for factions&apos;,
+      notes: &apos;Includes creating, editing, deleting factions and managing memberships&apos;
     },
     {
-      name: 'Building Management',
-      status: 'complete',
-      description: 'Full CRUD operations for buildings',
-      notes: 'Includes creating, editing, deleting buildings and managing residents'
+      name: &apos;Building Management&apos;,
+      status: &apos;complete&apos;,
+      description: &apos;Full CRUD operations for buildings&apos;,
+      notes: &apos;Includes creating, editing, deleting buildings and managing residents&apos;
     },
     {
-      name: 'Demographics & Analytics',
-      status: 'complete',
-      description: 'Comprehensive demographic analysis and charts',
-      notes: 'Population pyramids, species distribution, faction analysis, age categories'
+      name: &apos;Demographics & Analytics&apos;,
+      status: &apos;complete&apos;,
+      description: &apos;Comprehensive demographic analysis and charts&apos;,
+      notes: &apos;Population pyramids, species distribution, faction analysis, age categories&apos;
     },
     {
-      name: 'Interactive Map',
-      status: 'partial',
-      description: 'Canvas-based map with building placement',
-      notes: 'Map exists but may need enhancement for better user experience'
+      name: &apos;Interactive Map&apos;,
+      status: &apos;partial&apos;,
+      description: &apos;Canvas-based map with building placement&apos;,
+      notes: &apos;Map exists but may need enhancement for better user experience&apos;
     },
     {
-      name: 'Faction Relationship Diagram',
-      status: 'partial',
-      description: 'Network visualization of faction relationships',
-      notes: 'Component exists but may need data integration and styling improvements'
+      name: &apos;Faction Relationship Diagram&apos;,
+      status: &apos;partial&apos;,
+      description: &apos;Network visualization of faction relationships&apos;,
+      notes: &apos;Component exists but may need data integration and styling improvements&apos;
     },
     {
-      name: 'Search & Filtering',
-      status: 'complete',
-      description: 'Advanced filtering and search capabilities',
-      notes: 'Multi-select filters, "None" options, real-time search'
+      name: &apos;Search & Filtering&apos;,
+      status: &apos;complete&apos;,
+      description: &apos;Advanced filtering and search capabilities&apos;,
+      notes: &apos;Multi-select filters, "None" options, real-time search&apos;
     },
     {
-      name: 'Bulk Operations',
-      status: 'complete',
-      description: 'Bulk editing and deletion capabilities',
-      notes: 'Select multiple items for batch operations'
+      name: &apos;Bulk Operations&apos;,
+      status: &apos;complete&apos;,
+      description: &apos;Bulk editing and deletion capabilities&apos;,
+      notes: &apos;Select multiple items for batch operations&apos;
     },
     {
-      name: 'Auto-save',
-      status: 'complete',
-      description: 'Automatic saving of changes',
-      notes: 'Changes are saved automatically as you edit'
+      name: &apos;Auto-save&apos;,
+      status: &apos;complete&apos;,
+      description: &apos;Automatic saving of changes&apos;,
+      notes: &apos;Changes are saved automatically as you edit&apos;
     },
     {
-      name: 'Responsive Design',
-      status: 'complete',
-      description: 'Mobile-friendly interface',
-      notes: 'Works on desktop, tablet, and mobile devices'
+      name: &apos;Responsive Design&apos;,
+      status: &apos;complete&apos;,
+      description: &apos;Mobile-friendly interface&apos;,
+      notes: &apos;Works on desktop, tablet, and mobile devices&apos;
     },
     {
-      name: 'Data Export',
-      status: 'incomplete',
-      description: 'Export data to CSV/Excel',
-      notes: 'Not yet implemented - would be useful for data analysis'
+      name: &apos;Data Export&apos;,
+      status: &apos;incomplete&apos;,
+      description: &apos;Export data to CSV/Excel&apos;,
+      notes: &apos;Not yet implemented - would be useful for data analysis&apos;
     },
     {
-      name: 'User Authentication',
-      status: 'incomplete',
-      description: 'User login and role management',
-      notes: 'Currently no authentication system'
+      name: &apos;User Authentication&apos;,
+      status: &apos;incomplete&apos;,
+      description: &apos;User login and role management&apos;,
+      notes: &apos;Currently no authentication system&apos;
     },
     {
-      name: 'Audit Trail',
-      status: 'incomplete',
-      description: 'Track changes and user actions',
-      notes: 'No history of who made what changes when'
+      name: &apos;Audit Trail&apos;,
+      status: &apos;incomplete&apos;,
+      description: &apos;Track changes and user actions&apos;,
+      notes: &apos;No history of who made what changes when&apos;
     },
     {
-      name: 'Advanced Reporting',
-      status: 'partial',
-      description: 'Custom reports and analytics',
-      notes: 'Basic demographics exist, but could be expanded'
+      name: &apos;Advanced Reporting&apos;,
+      status: &apos;partial&apos;,
+      description: &apos;Custom reports and analytics&apos;,
+      notes: &apos;Basic demographics exist, but could be expanded&apos;
     },
     {
-      name: 'Data Backup',
-      status: 'incomplete',
-      description: 'Automated backup system',
-      notes: 'Manual backup process exists but no automation'
+      name: &apos;Data Backup&apos;,
+      status: &apos;incomplete&apos;,
+      description: &apos;Automated backup system&apos;,
+      notes: &apos;Manual backup process exists but no automation&apos;
     }
   ]
 
   const sections = [
-    { id: 'overview', title: 'Overview', icon: '🏠' },
-    { id: 'people', title: 'People Management', icon: '👥' },
-    { id: 'factions', title: 'Faction Management', icon: '🏛️' },
-    { id: 'buildings', title: 'Building Management', icon: '🏘️' },
-    { id: 'map', title: 'Interactive Map', icon: '🗺️' },
-    { id: 'analytics', title: 'Analytics & Demographics', icon: '📊' },
-    { id: 'features', title: 'Feature Status', icon: '⚙️' },
-    { id: 'troubleshooting', title: 'Troubleshooting', icon: '🔧' }
+    { id: &apos;overview&apos;, title: &apos;Overview&apos;, icon: &apos;🏠&apos; },
+    { id: &apos;people&apos;, title: &apos;People Management&apos;, icon: &apos;👥&apos; },
+    { id: &apos;factions&apos;, title: &apos;Faction Management&apos;, icon: &apos;🏛️&apos; },
+    { id: &apos;buildings&apos;, title: &apos;Building Management&apos;, icon: &apos;🏘️&apos; },
+    { id: &apos;map&apos;, title: &apos;Interactive Map&apos;, icon: &apos;🗺️&apos; },
+    { id: &apos;analytics&apos;, title: &apos;Analytics & Demographics&apos;, icon: &apos;📊&apos; },
+    { id: &apos;features&apos;, title: &apos;Feature Status&apos;, icon: &apos;⚙️&apos; },
+    { id: &apos;troubleshooting&apos;, title: &apos;Troubleshooting&apos;, icon: &apos;🔧&apos; }
   ]
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'complete': return 'text-green-600 bg-green-100'
-      case 'partial': return 'text-yellow-600 bg-yellow-100'
-      case 'incomplete': return 'text-red-600 bg-red-100'
-      case 'planned': return 'text-blue-600 bg-blue-100'
-      default: return 'text-gray-600 bg-gray-100'
+      case &apos;complete&apos;: return &apos;text-green-600 bg-green-100&apos;
+      case &apos;partial&apos;: return &apos;text-yellow-600 bg-yellow-100&apos;
+      case &apos;incomplete&apos;: return &apos;text-red-600 bg-red-100&apos;
+      case &apos;planned&apos;: return &apos;text-blue-600 bg-blue-100&apos;
+      default: return &apos;text-gray-600 bg-gray-100&apos;
     }
   }
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'complete': return '✅'
-      case 'partial': return '⚠️'
-      case 'incomplete': return '❌'
-      case 'planned': return '📋'
-      default: return '❓'
+      case &apos;complete&apos;: return &apos;✅&apos;
+      case &apos;partial&apos;: return &apos;⚠️&apos;
+      case &apos;incomplete&apos;: return &apos;❌&apos;
+      case &apos;planned&apos;: return &apos;📋&apos;
+      default: return &apos;❓&apos;
     }
   }
 
@@ -147,7 +147,7 @@ export default function HelpPage() {
             🏘️ Deer River Help Center
           </h1>
           <p className="text-lg text-gray-600">
-            Complete guide to managing your village's residents, factions, buildings, and relationships.
+            Complete guide to managing your village&apos;s residents, factions, buildings, and relationships.
           </p>
         </div>
 
@@ -163,8 +163,8 @@ export default function HelpPage() {
                       onClick={() => setActiveSection(section.id)}
                       className={`w-full text-left px-3 py-2 rounded-md text-sm font-medium transition-colors ${
                         activeSection === section.id
-                          ? 'bg-blue-100 text-blue-700'
-                          : 'text-gray-600 hover:bg-gray-100'
+                          ? &apos;bg-blue-100 text-blue-700&apos;
+                          : &apos;text-gray-600 hover:bg-gray-100&apos;
                       }`}
                     >
                       <span className="mr-2">{section.icon}</span>
@@ -181,7 +181,7 @@ export default function HelpPage() {
             <div className="bg-white rounded-lg shadow-sm p-6">
               
               {/* Overview Section */}
-              {activeSection === 'overview' && (
+              {activeSection === &apos;overview&apos; && (
                 <div>
                   <h2 className="text-2xl font-bold text-gray-900 mb-6">🏠 Application Overview</h2>
                   
@@ -189,7 +189,7 @@ export default function HelpPage() {
                     <p className="text-lg text-gray-600 mb-6">
                       Deer River is a comprehensive village management system for tracking residents, 
                       factions, buildings, and their relationships. This application helps you 
-                      maintain detailed records of your community's social structure.
+                      maintain detailed records of your community&apos;s social structure.
                     </p>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
@@ -231,7 +231,7 @@ export default function HelpPage() {
                       <li>Start by adding residents to your village</li>
                       <li>Create factions to organize your community</li>
                       <li>Add buildings and assign residents to them</li>
-                      <li>Use the analytics page to understand your community's demographics</li>
+                      <li>Use the analytics page to understand your community&apos;s demographics</li>
                       <li>Explore the interactive map to visualize your village layout</li>
                     </ol>
                   </div>
@@ -239,7 +239,7 @@ export default function HelpPage() {
               )}
 
               {/* People Management Section */}
-              {activeSection === 'people' && (
+              {activeSection === &apos;people&apos; && (
                 <div>
                   <h2 className="text-2xl font-bold text-gray-900 mb-6">👥 People Management</h2>
                   
@@ -248,8 +248,8 @@ export default function HelpPage() {
                       <h3 className="text-lg font-semibold text-gray-900 mb-3">Adding New Residents</h3>
                       <ol className="list-decimal list-inside space-y-2 text-gray-600">
                         <li>Go to the <strong>People</strong> page</li>
-                        <li>Click the <strong>"New Person"</strong> button</li>
-                        <li>Fill in the resident's information:
+                        <li>Click the <strong>&quot;New Person&quot;</strong> button</li>
+                        <li>Fill in the resident&apos;s information:
                           <ul className="list-disc list-inside ml-4 mt-2 space-y-1">
                             <li><strong>Name:</strong> Full name of the resident</li>
                             <li><strong>Species:</strong> Race or species (Human, Elf, Dwarf, etc.)</li>
@@ -261,7 +261,7 @@ export default function HelpPage() {
                             <li><strong>Factions:</strong> Which factions they belong to</li>
                           </ul>
                         </li>
-                        <li>Click <strong>"Save Changes"</strong></li>
+                        <li>Click <strong>&quot;Save Changes&quot;</strong></li>
                       </ol>
                     </div>
 
@@ -279,7 +279,7 @@ export default function HelpPage() {
                     <div>
                       <h3 className="text-lg font-semibold text-gray-900 mb-3">Managing Faction Memberships</h3>
                       <ol className="list-decimal list-inside space-y-2 text-gray-600">
-                        <li>Open a resident's edit modal</li>
+                        <li>Open a resident&apos;s edit modal</li>
                         <li>Scroll to the <strong>Factions</strong> section</li>
                         <li>Select factions from the dropdown (multiple selection allowed)</li>
                         <li><strong>First faction selected becomes the primary faction</strong></li>
@@ -290,7 +290,7 @@ export default function HelpPage() {
                     <div>
                       <h3 className="text-lg font-semibold text-gray-900 mb-3">Creating a Home</h3>
                       <ol className="list-decimal list-inside space-y-2 text-gray-600">
-                        <li>In a resident's edit modal, click <strong>"Create Home"</strong></li>
+                        <li>In a resident&apos;s edit modal, click <strong>"Create Home"</strong></li>
                         <li>This creates a "Private Residence" building</li>
                         <li>The building gets a sequential number to avoid duplicates</li>
                         <li>The resident is automatically assigned to the new building</li>
@@ -334,7 +334,7 @@ export default function HelpPage() {
               )}
 
               {/* Faction Management Section */}
-              {activeSection === 'factions' && (
+              {activeSection === &apos;factions&apos; && (
                 <div>
                   <h2 className="text-2xl font-bold text-gray-900 mb-6">🏛️ Faction Management</h2>
                   
@@ -343,7 +343,7 @@ export default function HelpPage() {
                       <h3 className="text-lg font-semibold text-gray-900 mb-3">Creating New Factions</h3>
                       <ol className="list-decimal list-inside space-y-2 text-gray-600">
                         <li>Go to the <strong>Factions</strong> page</li>
-                        <li>Click the <strong>"New Faction"</strong> button</li>
+                        <li>Click the <strong>&quot;New Faction&quot;</strong> button</li>
                         <li>Fill in the faction details:
                           <ul className="list-disc list-inside ml-4 mt-2 space-y-1">
                             <li><strong>Name:</strong> Faction name (e.g., "Merchant Guild")</li>
@@ -351,7 +351,7 @@ export default function HelpPage() {
                             <li><strong>Color:</strong> Optional color for visual identification</li>
                           </ul>
                         </li>
-                        <li>Click <strong>"Save Changes"</strong></li>
+                        <li>Click <strong>&quot;Save Changes&quot;</strong></li>
                       </ol>
                     </div>
 
@@ -371,7 +371,7 @@ export default function HelpPage() {
                         <li>View faction members in the faction details</li>
                         <li>Add members by editing individual residents (see People Management)</li>
                         <li>Remove members by editing their faction memberships</li>
-                        <li>Set primary faction by selecting it first in the resident's faction list</li>
+                        <li>Set primary faction by selecting it first in the resident&apos;s faction list</li>
                       </ul>
                     </div>
 
@@ -398,7 +398,7 @@ export default function HelpPage() {
               )}
 
               {/* Building Management Section */}
-              {activeSection === 'buildings' && (
+              {activeSection === &apos;buildings&apos; && (
                 <div>
                   <h2 className="text-2xl font-bold text-gray-900 mb-6">🏘️ Building Management</h2>
                   
@@ -407,7 +407,7 @@ export default function HelpPage() {
                       <h3 className="text-lg font-semibold text-gray-900 mb-3">Adding New Buildings</h3>
                       <ol className="list-decimal list-inside space-y-2 text-gray-600">
                         <li>Go to the <strong>Map</strong> page</li>
-                        <li>Click the <strong>"New Building"</strong> button</li>
+                        <li>Click the <strong>&quot;New Building&quot;</strong> button</li>
                         <li>Fill in the building details:
                           <ul className="list-disc list-inside ml-4 mt-2 space-y-1">
                             <li><strong>Name:</strong> Building name (e.g., "Town Hall")</li>
@@ -416,7 +416,7 @@ export default function HelpPage() {
                             <li><strong>Description:</strong> Optional building description</li>
                           </ul>
                         </li>
-                        <li>Click <strong>"Save Changes"</strong></li>
+                        <li>Click <strong>&quot;Save Changes&quot;</strong></li>
                       </ol>
                     </div>
 
@@ -466,7 +466,7 @@ export default function HelpPage() {
               )}
 
               {/* Map Section */}
-              {activeSection === 'map' && (
+              {activeSection === &apos;map&apos; && (
                 <div>
                   <h2 className="text-2xl font-bold text-gray-900 mb-6">🗺️ Interactive Map</h2>
                   
@@ -505,7 +505,7 @@ export default function HelpPage() {
               )}
 
               {/* Analytics Section */}
-              {activeSection === 'analytics' && (
+              {activeSection === &apos;analytics&apos; && (
                 <div>
                   <h2 className="text-2xl font-bold text-gray-900 mb-6">📊 Analytics & Demographics</h2>
                   
@@ -513,7 +513,7 @@ export default function HelpPage() {
                     <div>
                       <h3 className="text-lg font-semibold text-gray-900 mb-3">Demographics Page</h3>
                       <p className="text-gray-600 mb-4">
-                        The Demographics page provides comprehensive analysis of your village's population.
+                        The Demographics page provides comprehensive analysis of your village&apos;s population.
                       </p>
                       
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
@@ -572,7 +572,7 @@ export default function HelpPage() {
               )}
 
               {/* Feature Status Section */}
-              {activeSection === 'features' && (
+              {activeSection === &apos;features&apos; && (
                 <div>
                   <h2 className="text-2xl font-bold text-gray-900 mb-6">⚙️ Feature Status</h2>
                   
@@ -645,7 +645,7 @@ export default function HelpPage() {
               )}
 
               {/* Troubleshooting Section */}
-              {activeSection === 'troubleshooting' && (
+              {activeSection === &apos;troubleshooting&apos; && (
                 <div>
                   <h2 className="text-2xl font-bold text-gray-900 mb-6">🔧 Troubleshooting</h2>
                   
@@ -670,7 +670,7 @@ export default function HelpPage() {
                         <div className="border-l-4 border-yellow-400 bg-yellow-50 p-4">
                           <h4 className="font-semibold text-yellow-900 mb-2">⚠️ Changes Not Saving</h4>
                           <p className="text-yellow-700 text-sm mb-2">
-                            If your edits aren't being saved:
+                            If your edits aren&apos;t being saved:
                           </p>
                           <ul className="list-disc list-inside space-y-1 text-yellow-700 text-sm">
                             <li>Make sure you click "Save Changes" after editing</li>
