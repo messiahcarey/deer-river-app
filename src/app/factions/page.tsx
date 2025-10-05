@@ -119,9 +119,24 @@ export default function FactionsPage() {
       setIsDeleting(true)
       setError(null)
 
-      // Remove from local state instead of making API call
-      setFactions(prev => prev.filter(f => f.id !== faction.id))
-      setDeletingFaction(null)
+      // Make API call to delete the faction
+      const response = await fetch('/api/factions', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ id: faction.id })
+      })
+
+      const data = await response.json()
+
+      if (data.success) {
+        // Remove from local state after successful API deletion
+        setFactions(prev => prev.filter(f => f.id !== faction.id))
+        setDeletingFaction(null)
+      } else {
+        throw new Error(data.error || 'Failed to delete faction')
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to delete faction')
     } finally {

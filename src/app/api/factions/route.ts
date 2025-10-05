@@ -257,12 +257,100 @@ export async function PUT(request: Request) {
   }
 }
 
+export async function DELETE(request: Request) {
+  try {
+    console.log('Deleting faction...')
+
+    const body = await request.json()
+    const { id } = body
+
+    if (!id) {
+      return NextResponse.json({
+        success: false,
+        error: 'Faction ID is required for deletion',
+        timestamp: new Date().toISOString()
+      }, {
+        status: 400,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+          'Access-Control-Allow-Headers': 'Content-Type',
+        }
+      })
+    }
+
+    const dbUrl = process.env.DATABASE_URL?.trim()
+    if (!dbUrl || (!dbUrl.startsWith('postgresql://') && !dbUrl.startsWith('postgres://'))) {
+      return NextResponse.json({
+        success: false,
+        error: `Invalid DATABASE_URL format: ${dbUrl}`,
+        timestamp: new Date().toISOString()
+      }, {
+        status: 500,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+          'Access-Control-Allow-Headers': 'Content-Type',
+        }
+      })
+    }
+
+    const prismaWithEnv = new PrismaClient({
+      datasources: {
+        db: {
+          url: dbUrl
+        }
+      }
+    })
+
+    await prismaWithEnv.$connect()
+
+    // First, delete all related records (memberships)
+    await prismaWithEnv.personFactionMembership.deleteMany({
+      where: { factionId: id }
+    })
+
+    // Then delete the faction
+    await prismaWithEnv.faction.delete({
+      where: { id }
+    })
+
+    await prismaWithEnv.$disconnect()
+
+    return NextResponse.json({
+      success: true,
+      message: 'Faction deleted successfully',
+      timestamp: new Date().toISOString()
+    }, {
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type',
+      }
+    })
+  } catch (error) {
+    console.error('Failed to delete faction:', error)
+    return NextResponse.json({
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error',
+      timestamp: new Date().toISOString()
+    }, {
+      status: 500,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type',
+      }
+    })
+  }
+}
+
 export async function OPTIONS() {
   return new NextResponse(null, {
     status: 200,
     headers: {
       'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'GET, POST, PUT, OPTIONS',
+      'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
       'Access-Control-Allow-Headers': 'Content-Type',
     },
   })
