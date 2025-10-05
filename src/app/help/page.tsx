@@ -248,7 +248,7 @@ export default function HelpPage() {
                       <h3 className="text-lg font-semibold text-gray-900 mb-3">Adding New Residents</h3>
                       <ol className="list-decimal list-inside space-y-2 text-gray-600">
                         <li>Go to the <strong>People</strong> page</li>
-                        <li>Click the <strong>&quot;New Person&quot;</strong> button</li>
+                        <li>Click the <strong>'New Person'</strong> button</li>
                         <li>Fill in the resident's information:
                           <ul className="list-disc list-inside ml-4 mt-2 space-y-1">
                             <li><strong>Name:</strong> Full name of the resident</li>
@@ -261,7 +261,7 @@ export default function HelpPage() {
                             <li><strong>Factions:</strong> Which factions they belong to</li>
                           </ul>
                         </li>
-                        <li>Click <strong>&quot;Save Changes&quot;</strong></li>
+                        <li>Click <strong>'Save Changes'</strong></li>
                       </ol>
                     </div>
 
@@ -343,7 +343,7 @@ export default function HelpPage() {
                       <h3 className="text-lg font-semibold text-gray-900 mb-3">Creating New Factions</h3>
                       <ol className="list-decimal list-inside space-y-2 text-gray-600">
                         <li>Go to the <strong>Factions</strong> page</li>
-                        <li>Click the <strong>&quot;New Faction&quot;</strong> button</li>
+                        <li>Click the <strong>'New Faction'</strong> button</li>
                         <li>Fill in the faction details:
                           <ul className="list-disc list-inside ml-4 mt-2 space-y-1">
                             <li><strong>Name:</strong> Faction name (e.g., "Merchant Guild")</li>
@@ -351,7 +351,7 @@ export default function HelpPage() {
                             <li><strong>Color:</strong> Optional color for visual identification</li>
                           </ul>
                         </li>
-                        <li>Click <strong>&quot;Save Changes&quot;</strong></li>
+                        <li>Click <strong>'Save Changes'</strong></li>
                       </ol>
                     </div>
 
@@ -407,7 +407,7 @@ export default function HelpPage() {
                       <h3 className="text-lg font-semibold text-gray-900 mb-3">Adding New Buildings</h3>
                       <ol className="list-decimal list-inside space-y-2 text-gray-600">
                         <li>Go to the <strong>Map</strong> page</li>
-                        <li>Click the <strong>&quot;New Building&quot;</strong> button</li>
+                        <li>Click the <strong>'New Building'</strong> button</li>
                         <li>Fill in the building details:
                           <ul className="list-disc list-inside ml-4 mt-2 space-y-1">
                             <li><strong>Name:</strong> Building name (e.g., "Town Hall")</li>
@@ -416,7 +416,7 @@ export default function HelpPage() {
                             <li><strong>Description:</strong> Optional building description</li>
                           </ul>
                         </li>
-                        <li>Click <strong>&quot;Save Changes&quot;</strong></li>
+                        <li>Click <strong>'Save Changes'</strong></li>
                       </ol>
                     </div>
 
