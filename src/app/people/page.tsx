@@ -121,6 +121,8 @@ export default function PeoplePage() {
       if (data.success) {
         console.log('People data received:', data.data);
         console.log('First person livesAt:', data.data[0]?.livesAt);
+        console.log('First person age:', data.data[0]?.age);
+        console.log('First person memberships:', data.data[0]?.memberships);
         setPeople(data.data);
         setError(null);
       } else {
@@ -188,7 +190,9 @@ export default function PeoplePage() {
         });
 
         const data = await response.json();
+        console.log('Update response:', data);
         if (data.success) {
+          console.log('Update successful, refreshing people data...');
           await fetchPeople(); // Refresh the list
           setEditingPerson(null);
         } else {

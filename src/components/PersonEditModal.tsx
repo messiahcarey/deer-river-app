@@ -142,6 +142,10 @@ export default function PersonEditModal({ person, locations, factions, onClose, 
         // Update the person data in the parent component without closing modal
         // We'll just update the local form data to reflect the changes
         console.log('Person saved successfully without closing modal')
+        // Trigger parent refresh to get updated data
+        if (onSave) {
+          onSave(data.data)
+        }
       } else {
         throw new Error(data.error || 'Failed to save person');
       }
@@ -270,6 +274,10 @@ export default function PersonEditModal({ person, locations, factions, onClose, 
         livesAtId: formData.livesAtId,
         worksAtId: formData.worksAtId || null
       }
+      
+      console.log('Saving person with data:', updatedPerson);
+      console.log('Form data age:', formData.age);
+      console.log('Parsed age:', formData.age ? parseInt(formData.age) : null);
 
       await onSave(updatedPerson)
       onClose()
