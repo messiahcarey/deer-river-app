@@ -76,33 +76,34 @@ export default function ImportPage() {
     fetchData()
   }, [])
 
-  const updatePersonData = async (personId: string, updates: {
-    factionIds?: string[]
-    livesAtId?: string
-    worksAtId?: string
-  }) => {
-    try {
-      const response = await fetch(`/api/people/${personId}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(updates),
-      })
+  // TODO: Implement updatePersonData function for post-import editing
+  // const updatePersonData = async (personId: string, updates: {
+  //   factionIds?: string[]
+  //   livesAtId?: string
+  //   worksAtId?: string
+  // }) => {
+  //   try {
+  //     const response = await fetch(`/api/people/${personId}`, {
+  //       method: 'PUT',
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //       },
+  //       body: JSON.stringify(updates),
+  //     })
 
-      if (response.ok) {
-        const result = await response.json()
-        console.log('Person updated:', result)
-        return true
-      } else {
-        console.error('Failed to update person:', await response.text())
-        return false
-      }
-    } catch (error) {
-      console.error('Error updating person:', error)
-      return false
-    }
-  }
+  //     if (response.ok) {
+  //       const result = await response.json()
+  //       console.log('Person updated:', result)
+  //       return true
+  //     } else {
+  //       console.error('Failed to update person:', await response.text())
+  //       return false
+  //     }
+  //   } catch (error) {
+  //     console.error('Error updating person:', error)
+  //     return false
+  //   }
+  // }
 
   const parseCSV = (csvText: string): CSVRow[] => {
     const lines = csvText.trim().split('\n')
