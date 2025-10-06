@@ -140,8 +140,10 @@ export default function Home() {
             </p>
           </Link>
 
-        <Link
-          href="/help"
+        <a
+          href="/help.html"
+          target="_blank"
+          rel="noopener noreferrer"
           className="bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow border-l-4 border-cyan-500"
         >
           <div className="flex items-center mb-4">
@@ -151,7 +153,7 @@ export default function Home() {
           <p className="text-gray-600">
             Complete guide to using Deer River. Learn about all features and capabilities.
           </p>
-        </Link>
+        </a>
         </div>
 
         {/* Dashboard */}
