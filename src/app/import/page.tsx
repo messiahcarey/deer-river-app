@@ -224,11 +224,15 @@ export default function ImportPage() {
       })
 
       const result = await response.json()
+      console.log('Import result:', result)
       setImportResult(result)
       
       // Show post-import edit option if people were imported
       if (result.success && result.importedCount > 0) {
+        console.log('Showing post-import edit, importedPeople:', result.importedPeople)
         setShowPostImportEdit(true)
+      } else {
+        console.log('Not showing post-import edit. Success:', result.success, 'Count:', result.importedCount)
       }
     } catch (error) {
       console.error('Import failed:', error)
@@ -427,6 +431,14 @@ Torrin,Human,44,Shopkeeper,"Gruff, impatient, protective; tolerates adventurers 
                       {importResult.errorCount > 0 && (
                         <p>• Errors: {importResult.errorCount} residents</p>
                       )}
+                      {importResult.importedCount > 0 && !showPostImportEdit && (
+                        <button
+                          onClick={() => setShowPostImportEdit(true)}
+                          className="mt-2 px-3 py-1 bg-blue-500 text-white rounded text-sm hover:bg-blue-600"
+                        >
+                          Edit Imported People
+                        </button>
+                      )}
                     </div>
                   )}
 
@@ -449,7 +461,7 @@ Torrin,Human,44,Shopkeeper,"Gruff, impatient, protective; tolerates adventurers 
         </div>
 
         {/* Post-Import Editing Section */}
-        {showPostImportEdit && importResult?.importedPeople && (
+        {showPostImportEdit && importResult && importResult.importedCount > 0 && (
           <div className="mt-8 bg-white rounded-lg shadow-lg p-6">
             <h2 className="text-2xl font-semibold text-gray-800 mb-4">
               ✏️ Post-Import Editing
@@ -459,7 +471,8 @@ Torrin,Human,44,Shopkeeper,"Gruff, impatient, protective; tolerates adventurers 
             </p>
 
             <div className="space-y-4">
-              {importResult.importedPeople.map((person, index) => (
+              {importResult.importedPeople && importResult.importedPeople.length > 0 ? (
+                importResult.importedPeople.map((person, index) => (
                 <div key={person.id} className="border rounded-lg p-4">
                   <div className="flex items-center justify-between mb-3">
                     <div>
@@ -547,7 +560,13 @@ Torrin,Human,44,Shopkeeper,"Gruff, impatient, protective; tolerates adventurers 
                     </div>
                   )}
                 </div>
-              ))}
+              ))
+              ) : (
+                <div className="text-center py-8 text-gray-500">
+                  <p>No imported people data available for editing.</p>
+                  <p className="text-sm mt-2">The import was successful, but detailed person data is not available for post-import editing.</p>
+                </div>
+              )}
             </div>
 
             <div className="mt-6 flex gap-3">
