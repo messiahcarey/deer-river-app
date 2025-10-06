@@ -110,6 +110,26 @@ export async function POST(request: NextRequest) {
       prismaWithEnv.faction.findUnique({ where: { id: body.factionId } })
     ])
 
+    // Check if membership already exists
+    const existingMembership = await prismaWithEnv.personFactionMembership.findFirst({
+      where: {
+        personId: body.personId,
+        factionId: body.factionId,
+        leftAt: null // Only active memberships
+      }
+    })
+
+    if (existingMembership) {
+      return NextResponse.json(
+        { 
+          ok: false, 
+          data: null, 
+          error: 'Person is already a member of this faction' 
+        },
+        { status: 409 }
+      )
+    }
+
     if (!person) {
       return NextResponse.json(
         { 

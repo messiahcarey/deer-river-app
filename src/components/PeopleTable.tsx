@@ -281,7 +281,7 @@ export default function PeopleTable({
                 <div className="flex flex-wrap gap-1">
                   {person.memberships && person.memberships.map((membership) => (
                     <span
-                      key={membership.faction.id}
+                      key={membership.id}
                       className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium text-white"
                       style={{ backgroundColor: membership.faction.color || '#6b7280' }}
                     >
