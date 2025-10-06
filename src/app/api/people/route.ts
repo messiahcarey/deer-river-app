@@ -130,7 +130,7 @@ export async function POST(request: Request) {
     console.log('Creating new person...')
 
     const body = await request.json()
-    const { name, species, age, occupation, notes, tags, livesAtId, worksAtId, householdId } = body
+    const { name, species, age, occupation, notes, tags, livesAtId, worksAtId, householdId, factionIds } = body
 
     // Ensure the URL starts with the correct protocol
     const dbUrl = process.env.DATABASE_URL?.trim()
@@ -178,6 +178,24 @@ export async function POST(request: Request) {
         household: true
       }
     })
+
+    // Handle faction memberships if factionIds is provided
+    if (factionIds && Array.isArray(factionIds) && factionIds.length > 0) {
+      for (let i = 0; i < factionIds.length; i++) {
+        const factionId = factionIds[i]
+        await prismaWithEnv.personFactionMembership.create({
+          data: {
+            personId: person.id,
+            factionId: factionId,
+            role: 'member',
+            isPrimary: i === 0, // First faction is primary
+            alignment: 75,
+            openness: 60,
+            notes: 'Created via new person form'
+          }
+        })
+      }
+    }
 
     await prismaWithEnv.$disconnect()
 
