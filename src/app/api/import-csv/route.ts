@@ -154,6 +154,18 @@ export async function POST(request: Request) {
       errors: errors,
       locations: Object.keys(locations).length,
       factions: Object.keys(factions).length,
+      importedPeople: importedResidents.map(person => ({
+        id: person.id,
+        name: person.name,
+        species: person.species,
+        age: person.age,
+        occupation: person.occupation,
+        tags: person.tags,
+        livesAtId: person.livesAtId,
+        worksAtId: person.worksAtId,
+        householdId: person.householdId,
+        factionIds: [] // Will be populated by the frontend
+      })),
       timestamp: new Date().toISOString()
     }, {
       headers: {

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
 
 interface CSVRow {
@@ -25,6 +25,18 @@ interface ImportResult {
   locations: number
   factions: number
   timestamp: string
+  importedPeople?: Array<{
+    id: string
+    name: string
+    species: string
+    age: number | null
+    occupation: string | null
+    tags: string
+    livesAtId: string | null
+    worksAtId: string | null
+    householdId: string | null
+    factionIds: string[]
+  }>
 }
 
 export default function ImportPage() {
@@ -32,7 +44,65 @@ export default function ImportPage() {
   const [isUploading, setIsUploading] = useState(false)
   const [importResult, setImportResult] = useState<ImportResult | null>(null)
   const [dragActive, setDragActive] = useState(false)
+  const [showPostImportEdit, setShowPostImportEdit] = useState(false)
+  const [factions, setFactions] = useState<Array<{id: string, name: string, color: string}>>([])
+  const [locations, setLocations] = useState<Array<{id: string, name: string, type: string}>>([])
+  const [editingPerson, setEditingPerson] = useState<number | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
+
+  // Fetch factions and locations on component mount
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [factionsRes, locationsRes] = await Promise.all([
+          fetch('/api/factions'),
+          fetch('/api/locations')
+        ])
+        
+        if (factionsRes.ok) {
+          const factionsData = await factionsRes.json()
+          setFactions(factionsData.data || [])
+        }
+        
+        if (locationsRes.ok) {
+          const locationsData = await locationsRes.json()
+          setLocations(locationsData.data || [])
+        }
+      } catch (error) {
+        console.error('Failed to fetch factions and locations:', error)
+      }
+    }
+    
+    fetchData()
+  }, [])
+
+  const updatePersonData = async (personId: string, updates: {
+    factionIds?: string[]
+    livesAtId?: string
+    worksAtId?: string
+  }) => {
+    try {
+      const response = await fetch(`/api/people/${personId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updates),
+      })
+
+      if (response.ok) {
+        const result = await response.json()
+        console.log('Person updated:', result)
+        return true
+      } else {
+        console.error('Failed to update person:', await response.text())
+        return false
+      }
+    } catch (error) {
+      console.error('Error updating person:', error)
+      return false
+    }
+  }
 
   const parseCSV = (csvText: string): CSVRow[] => {
     const lines = csvText.trim().split('\n')
@@ -154,6 +224,11 @@ export default function ImportPage() {
 
       const result = await response.json()
       setImportResult(result)
+      
+      // Show post-import edit option if people were imported
+      if (result.success && result.importedCount > 0) {
+        setShowPostImportEdit(true)
+      }
     } catch (error) {
       console.error('Import failed:', error)
       setImportResult({
@@ -371,6 +446,129 @@ Torrin,Human,44,Shopkeeper,"Gruff, impatient, protective; tolerates adventurers 
             </div>
           </div>
         </div>
+
+        {/* Post-Import Editing Section */}
+        {showPostImportEdit && importResult?.importedPeople && (
+          <div className="mt-8 bg-white rounded-lg shadow-lg p-6">
+            <h2 className="text-2xl font-semibold text-gray-800 mb-4">
+              ✏️ Post-Import Editing
+            </h2>
+            <p className="text-gray-600 mb-6">
+              Review and adjust faction memberships, living locations, and work assignments for imported residents.
+            </p>
+
+            <div className="space-y-4">
+              {importResult.importedPeople.map((person, index) => (
+                <div key={person.id} className="border rounded-lg p-4">
+                  <div className="flex items-center justify-between mb-3">
+                    <div>
+                      <h3 className="font-semibold text-gray-800">{person.name}</h3>
+                      <p className="text-sm text-gray-600">
+                        {person.species} • Age: {person.age || 'Unknown'} • {person.occupation || 'No occupation'}
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => setEditingPerson(editingPerson === index ? null : index)}
+                      className="px-3 py-1 bg-blue-500 text-white rounded text-sm hover:bg-blue-600"
+                    >
+                      {editingPerson === index ? 'Cancel' : 'Edit'}
+                    </button>
+                  </div>
+
+                  {editingPerson === index && (
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+                      {/* Faction Selection */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Factions
+                        </label>
+                        <div className="space-y-2 max-h-32 overflow-y-auto">
+                          {factions.map(faction => (
+                            <label key={faction.id} className="flex items-center">
+                              <input
+                                type="checkbox"
+                                defaultChecked={person.factionIds.includes(faction.id)}
+                                className="mr-2"
+                                onChange={(e) => {
+                                  // Handle faction selection
+                                  console.log('Faction selection changed:', faction.name, e.target.checked)
+                                }}
+                              />
+                              <span className="text-sm" style={{ color: faction.color }}>
+                                {faction.name}
+                              </span>
+                            </label>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Living Location */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Lives At
+                        </label>
+                        <select 
+                          className="w-full p-2 border rounded"
+                          defaultValue={person.livesAtId || ''}
+                          onChange={(e) => {
+                            console.log('Living location changed:', e.target.value)
+                          }}
+                        >
+                          <option value="">Select location...</option>
+                          {locations.map(location => (
+                            <option key={location.id} value={location.id}>
+                              {location.name} ({location.type})
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+
+                      {/* Work Location */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Works At
+                        </label>
+                        <select 
+                          className="w-full p-2 border rounded"
+                          defaultValue={person.worksAtId || ''}
+                          onChange={(e) => {
+                            console.log('Work location changed:', e.target.value)
+                          }}
+                        >
+                          <option value="">Select location...</option>
+                          {locations.map(location => (
+                            <option key={location.id} value={location.id}>
+                              {location.name} ({location.type})
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-6 flex gap-3">
+              <button
+                onClick={() => {
+                  // Save all changes
+                  console.log('Saving all changes...')
+                  setShowPostImportEdit(false)
+                }}
+                className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+              >
+                Save All Changes
+              </button>
+              <button
+                onClick={() => setShowPostImportEdit(false)}
+                className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
+              >
+                Skip Editing
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* Instructions */}
         <div className="mt-8 bg-white rounded-lg shadow-lg p-6">
