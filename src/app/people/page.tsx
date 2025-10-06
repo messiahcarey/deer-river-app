@@ -6,6 +6,10 @@ import PersonEditModal from "@/components/PersonEditModal";
 import PeopleTable from "@/components/PeopleTable";
 import BulkOperations from "@/components/BulkOperations";
 import Breadcrumbs from "@/components/Breadcrumbs";
+import { usePersonValidation } from "@/hooks/useDataValidation";
+import { validatePeopleListResponse } from "@/utils/apiValidation";
+import { logDataConsistency } from "@/utils/dataConsistency";
+import { useAutoRefresh } from "@/hooks/useAutoRefresh";
 
 interface Person {
   id: string;
@@ -70,6 +74,15 @@ export default function PeoplePage() {
     fetchFactions();
   }, []);
 
+  // Auto-refresh data when user returns to tab or page becomes visible
+  useAutoRefresh({
+    refreshFunction: fetchPeople,
+    onError: (error) => {
+      console.error('Auto-refresh failed:', error);
+      setError('Failed to refresh data automatically');
+    }
+  });
+
   // Extract unique values for filter options
   const getUniqueSpecies = () => {
     const species = [...new Set(people.map(person => person.species))].filter(Boolean).sort();
@@ -123,6 +136,18 @@ export default function PeoplePage() {
         console.log('First person livesAt:', data.data[0]?.livesAt);
         console.log('First person age:', data.data[0]?.age);
         console.log('First person memberships:', data.data[0]?.memberships);
+        
+        // Validate API response
+        const validation = validatePeopleListResponse(data);
+        if (!validation.isValid) {
+          console.warn('API response validation failed:', validation.errors);
+          setError(`Data validation failed: ${validation.errors.join(', ')}`);
+          return;
+        }
+        
+        // Check data consistency
+        logDataConsistency(data.data);
+        
         setPeople(data.data);
         setError(null);
       } else {
