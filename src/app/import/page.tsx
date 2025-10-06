@@ -4,12 +4,16 @@ import { useState, useRef } from 'react'
 import Link from 'next/link'
 
 interface CSVRow {
-  Name: string
-  Race: string
-  Age: string
-  Occupation: string
-  Presence: string
-  Notes: string
+  name: string
+  species: string
+  age: string
+  occupation: string
+  notes: string
+  tags: string
+  livesAtId: string
+  worksAtId: string
+  householdId: string
+  factionIds: string
 }
 
 interface ImportResult {
@@ -62,12 +66,16 @@ export default function ImportPage() {
       
       // Convert to CSVRow interface
       return {
-        Name: obj.Name || '',
-        Race: obj.Race || '',
-        Age: obj.Age || '',
-        Occupation: obj.Occupation || '',
-        Presence: obj.Presence || '',
-        Notes: obj.Notes || ''
+        name: obj.name || '',
+        species: obj.species || '',
+        age: obj.age || '',
+        occupation: obj.occupation || '',
+        notes: obj.notes || '',
+        tags: obj.tags || 'present',
+        livesAtId: obj.livesAtId || '',
+        worksAtId: obj.worksAtId || '',
+        householdId: obj.householdId || '',
+        factionIds: obj.factionIds || ''
       }
     })
     return data
@@ -127,9 +135,9 @@ export default function ImportPage() {
     try {
       // Convert CSV data back to a file for upload
       const csvText = [
-        'Name,Race,Age,Occupation,Presence,Notes',
+        'name,species,age,occupation,notes,tags,livesAtId,worksAtId,householdId,factionIds',
         ...csvData.map(row => 
-          `${row.Name},${row.Race},${row.Age},${row.Occupation},${row.Presence},"${row.Notes}"`
+          `${row.name},${row.species},${row.age},${row.occupation},"${row.notes}",${row.tags},${row.livesAtId},${row.worksAtId},${row.householdId},${row.factionIds}`
         )
       ].join('\n')
 
@@ -164,10 +172,10 @@ export default function ImportPage() {
   }
 
   const downloadSampleCSV = () => {
-    const sampleData = `Name,Race,Age,Occupation,Presence,Notes
-Rurik Copperpot,Human,58,Innkeeper (Rusty Pike Inn/Tavern),Present,"Boisterous; stout, large nose; pragmatic about adventurers."
-Oswin Finch,Human,8,Blacksmith (Forge of Fortune),Present,"Wispy grey beard, missing left ear; serious, grim worker."
-Torrin,Human,44,Shopkeeper (River's Edge Goods),Present,"Gruff, impatient, protective; tolerates adventurers for coin."`
+    const sampleData = `name,species,age,occupation,notes,tags,livesAtId,worksAtId,householdId,factionIds
+Rurik Copperpot,Human,58,Innkeeper,"Boisterous; stout, large nose; pragmatic about adventurers.",present,,,,
+Oswin Finch,Human,8,Blacksmith,"Wispy grey beard, missing left ear; serious, grim worker.",present,,,,
+Torrin,Human,44,Shopkeeper,"Gruff, impatient, protective; tolerates adventurers for coin.",present,,,,`
     
     const blob = new Blob([sampleData], { type: 'text/csv' })
     const url = window.URL.createObjectURL(blob)
@@ -249,28 +257,28 @@ Torrin,Human,44,Shopkeeper (River's Edge Goods),Present,"Gruff, impatient, prote
                     <thead className="bg-gray-50 sticky top-0">
                       <tr>
                         <th className="px-3 py-2 text-left">Name</th>
-                        <th className="px-3 py-2 text-left">Race</th>
+                        <th className="px-3 py-2 text-left">Species</th>
                         <th className="px-3 py-2 text-left">Age</th>
                         <th className="px-3 py-2 text-left">Occupation</th>
-                        <th className="px-3 py-2 text-left">Presence</th>
+                        <th className="px-3 py-2 text-left">Status</th>
                       </tr>
                     </thead>
                     <tbody>
                       {csvData.slice(0, 10).map((row, index) => (
                         <tr key={index} className="border-t">
-                          <td className="px-3 py-2">{row.Name}</td>
-                          <td className="px-3 py-2">{row.Race}</td>
-                          <td className="px-3 py-2">{row.Age}</td>
-                          <td className="px-3 py-2 truncate max-w-32" title={row.Occupation}>
-                            {row.Occupation}
+                          <td className="px-3 py-2">{row.name}</td>
+                          <td className="px-3 py-2">{row.species}</td>
+                          <td className="px-3 py-2">{row.age}</td>
+                          <td className="px-3 py-2 truncate max-w-32" title={row.occupation}>
+                            {row.occupation}
                           </td>
                           <td className="px-3 py-2">
                             <span className={`px-2 py-1 rounded text-xs ${
-                              row.Presence === 'Present' 
+                              row.tags === 'present' 
                                 ? 'bg-green-100 text-green-800' 
                                 : 'bg-red-100 text-red-800'
                             }`}>
-                              {row.Presence}
+                              {row.tags}
                             </span>
                           </td>
                         </tr>

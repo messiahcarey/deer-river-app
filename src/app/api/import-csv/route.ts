@@ -96,24 +96,48 @@ export async function POST(request: Request) {
     const errors = []
     
     for (const resident of data) {
-      if (resident.Name && resident.Name.trim()) {
+      if (resident.name && resident.name.trim()) {
         try {
+          // Parse faction IDs if provided
+          const factionIds = resident.factionIds ? 
+            resident.factionIds.split(',').map(id => id.trim()).filter(id => id) : []
+
           const person = await prismaWithEnv.person.create({
             data: {
-              name: resident.Name,
-              species: resident.Race || 'Unknown',
-              age: resident.Age ? parseInt(resident.Age) : null,
-              occupation: resident.Occupation || null,
-              notes: resident.Notes || null,
-              tags: resident.Presence === 'Present' ? 'present' : 'absent',
-              livesAtId: locations['Deer River'].id, // Default to main town
-              worksAtId: extractWorkLocation(resident.Occupation, locations)
+              name: resident.name,
+              species: resident.species || 'Unknown',
+              age: resident.age ? parseInt(resident.age) : null,
+              occupation: resident.occupation || null,
+              notes: resident.notes || null,
+              tags: resident.tags || 'present',
+              livesAtId: resident.livesAtId || locations['Deer River'].id,
+              worksAtId: resident.worksAtId || extractWorkLocation(resident.occupation, locations),
+              householdId: resident.householdId || null
             }
           })
+
+          // Handle faction memberships if factionIds is provided
+          if (factionIds.length > 0) {
+            for (let i = 0; i < factionIds.length; i++) {
+              const factionId = factionIds[i]
+              await prismaWithEnv.personFactionMembership.create({
+                data: {
+                  personId: person.id,
+                  factionId: factionId,
+                  role: 'member',
+                  isPrimary: i === 0, // First faction is primary
+                  alignment: 75,
+                  openness: 60,
+                  notes: 'Imported via CSV'
+                }
+              })
+            }
+          }
+
           importedResidents.push(person)
         } catch (error) {
           errors.push({
-            name: resident.Name,
+            name: resident.name,
             error: error instanceof Error ? error.message : 'Unknown error'
           })
         }
