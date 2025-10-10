@@ -58,12 +58,12 @@ export default function Breadcrumbs({ items, className = '' }: BreadcrumbsProps)
 
   return (
     <nav className={`flex ${className}`} aria-label="Breadcrumb">
-      <ol className="inline-flex items-center space-x-1 md:space-x-3">
+      <ol className="inline-flex items-center space-x-2 md:space-x-4">
         {autoItems.map((item, index) => (
           <li key={index} className="inline-flex items-center">
             {index > 0 && (
               <svg
-                className="w-6 h-6 text-gray-400"
+                className="w-4 h-4 text-secondary-400 mx-2"
                 fill="currentColor"
                 viewBox="0 0 20 20"
                 xmlns="http://www.w3.org/2000/svg"
@@ -78,14 +78,16 @@ export default function Breadcrumbs({ items, className = '' }: BreadcrumbsProps)
             {item.href ? (
               <Link
                 href={item.href}
-                className="inline-flex items-center text-sm font-medium text-gray-700 hover:text-blue-600"
+                className="inline-flex items-center px-3 py-1 text-sm font-medium text-secondary-600 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-all duration-200"
               >
                 {item.label}
               </Link>
             ) : (
               <span
-                className={`text-sm font-medium ${
-                  item.current ? 'text-gray-500' : 'text-gray-700'
+                className={`inline-flex items-center px-3 py-1 text-sm font-medium rounded-lg ${
+                  item.current 
+                    ? 'text-primary-700 bg-primary-100' 
+                    : 'text-secondary-500'
                 }`}
                 aria-current={item.current ? 'page' : undefined}
               >
