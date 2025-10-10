@@ -84,6 +84,19 @@ export default function Home() {
           </Link>
 
           <Link 
+            href="/demographics" 
+            className="bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow border-l-4 border-teal-500"
+          >
+            <div className="flex items-center mb-4">
+              <span className="text-3xl mr-3">📈</span>
+              <h2 className="text-2xl font-semibold text-gray-800">Demographics</h2>
+            </div>
+            <p className="text-gray-600">
+              View population statistics, age distributions, and demographic insights.
+            </p>
+          </Link>
+
+          <Link 
             href="/events" 
             className="bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow border-l-4 border-indigo-500"
           >
