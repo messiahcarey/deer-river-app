@@ -45,6 +45,7 @@ npm run build         # Ensure production build works
 - **NO PAGINATION**: ALWAYS append `| head -20` or `--no-paginate` to commands that might produce long output
 - **Git Commands**: Use `git log --oneline -10`, `git diff --no-pager`, `git show --no-pager`
 - **AWS CLI**: Use `--no-paginate` flag for list commands
+- **AWS Commands**: ALL commands starting with `aws` MUST include `--no-paginate` flag
 - **System Commands**: Use `ps aux | head -20`, `netstat -tulpn | head -20`
 - **Docker Commands**: Use `docker logs --tail 50`, `docker ps --format "table {{.Names}}\t{{.Status}}"`
 - **Prevent Terminal Hangs**: Never run commands that use `less`, `more`, or similar pagers
