@@ -41,13 +41,17 @@ npm run build         # Ensure production build works
 - This ensures reproducible builds and faster CI/CD
 - Use `npm install` only for adding new dependencies
 
-### 3.1 Terminal Command Rules
-- **NO PAGINATION**: Always append `| head -20` or `--no-paginate` to commands that might produce long output
+### 3.1 Terminal Command Rules (MANDATORY)
+- **NO PAGINATION**: ALWAYS append `| head -20` or `--no-paginate` to commands that might produce long output
 - **Git Commands**: Use `git log --oneline -10`, `git diff --no-pager`, `git show --no-pager`
 - **AWS CLI**: Use `--no-paginate` flag for list commands
 - **System Commands**: Use `ps aux | head -20`, `netstat -tulpn | head -20`
 - **Docker Commands**: Use `docker logs --tail 50`, `docker ps --format "table {{.Names}}\t{{.Status}}"`
 - **Prevent Terminal Hangs**: Never run commands that use `less`, `more`, or similar pagers
+- **Universal Rule**: If a command might produce more than 20 lines, add `| head -20` or `--no-paginate`
+- **Environment Variable**: Set `PAGER=cat` for commands that don't support `--no-paginate`
+- **Background Commands**: Use `nohup` or `&` for long-running commands
+- **Command Timeouts**: Set reasonable timeouts for potentially slow commands
 
 ### 4. Database Changes
 - **For ANY DB-affecting changes:**
