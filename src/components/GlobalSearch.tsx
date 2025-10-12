@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 
 interface SearchResult {
@@ -48,7 +47,7 @@ export default function GlobalSearch({ isOpen, onClose }: GlobalSearchProps) {
       const mockResults: SearchResult[] = [
         {
           id: '1',
-          type: 'person',
+          type: 'person' as const,
           title: 'Alara Veylinor',
           description: 'Human, Aspiring archer',
           href: '/people/alara-veylinor',
@@ -57,7 +56,7 @@ export default function GlobalSearch({ isOpen, onClose }: GlobalSearchProps) {
         },
         {
           id: '2',
-          type: 'faction',
+          type: 'faction' as const,
           title: 'Original Residents',
           description: 'The founding families of Deer River',
           href: '/factions/original-residents',
@@ -66,7 +65,7 @@ export default function GlobalSearch({ isOpen, onClose }: GlobalSearchProps) {
         },
         {
           id: '3',
-          type: 'location',
+          type: 'location' as const,
           title: 'Tobren Veylinor\'s Manor',
           description: 'Noble residence in Deer River',
           href: '/map',
@@ -75,7 +74,7 @@ export default function GlobalSearch({ isOpen, onClose }: GlobalSearchProps) {
         },
         {
           id: '4',
-          type: 'page',
+          type: 'page' as const,
           title: 'People Management',
           description: 'Manage citizens and their relationships',
           href: '/people',
