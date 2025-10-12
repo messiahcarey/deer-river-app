@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from 'react'
 import DemographicsCharts from '@/components/DemographicsCharts'
-import Breadcrumbs from '@/components/Breadcrumbs'
 
 interface DemographicsData {
   summary: {
@@ -135,10 +134,6 @@ export default function DemographicsPage() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-100">
         <div className="container mx-auto px-4 py-8">
-          <Breadcrumbs items={[
-            { label: 'Home', href: '/' },
-            { label: 'Demographics', href: '/demographics' }
-          ]} />
           
           <div className="mt-8">
             <div className="flex items-center justify-center h-64">
@@ -157,10 +152,6 @@ export default function DemographicsPage() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-100">
         <div className="container mx-auto px-4 py-8">
-          <Breadcrumbs items={[
-            { label: 'Home', href: '/' },
-            { label: 'Demographics', href: '/demographics' }
-          ]} />
           
           <div className="mt-8">
             <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
@@ -177,10 +168,6 @@ export default function DemographicsPage() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-100">
         <div className="container mx-auto px-4 py-8">
-          <Breadcrumbs items={[
-            { label: 'Home', href: '/' },
-            { label: 'Demographics', href: '/demographics' }
-          ]} />
           
           <div className="mt-8">
             <div className="bg-gray-50 border border-gray-200 rounded-lg p-6 text-center">
@@ -196,11 +183,6 @@ export default function DemographicsPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-100">
       <div className="container mx-auto px-4 py-8">
-        <Breadcrumbs items={[
-          { label: 'Home', href: '/' },
-          { label: 'Demographics', href: '/demographics' }
-        ]} />
-        
         <div className="mt-8">
           <div className="text-center mb-8">
             <h1 className="text-4xl font-bold text-amber-900 mb-4">

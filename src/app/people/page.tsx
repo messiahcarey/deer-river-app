@@ -5,7 +5,6 @@ import { useState, useEffect } from "react";
 import PersonEditModal from "@/components/PersonEditModal";
 import PeopleTable from "@/components/PeopleTable";
 import BulkOperations from "@/components/BulkOperations";
-import Breadcrumbs from "@/components/Breadcrumbs";
 // import { usePersonValidation } from "@/hooks/useDataValidation";
 // import { validatePeopleListResponse } from "@/utils/apiValidation";
 // import { logDataConsistency } from "@/utils/dataConsistency";
@@ -525,7 +524,6 @@ export default function PeoplePage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-100">
       <div className="container mx-auto px-4 py-8">
-        <Breadcrumbs className="mb-6" />
         
         <header className="mb-8">
           <h1 className="text-4xl font-bold text-amber-900 mb-4">

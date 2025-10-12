@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react"
 import FactionEditModal from "@/components/FactionEditModal"
 import FactionRelationshipDiagram from "@/components/FactionRelationshipDiagram"
-import Breadcrumbs from "@/components/Breadcrumbs"
 
 interface Faction {
   id: string
@@ -159,7 +158,6 @@ export default function FactionsPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-100">
       <div className="container mx-auto px-4 py-8">
-        <Breadcrumbs className="mb-6" />
         
         <header className="mb-8">
           <h1 className="text-4xl font-bold text-amber-900 mb-4">
