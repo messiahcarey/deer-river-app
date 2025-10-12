@@ -31,6 +31,15 @@ model Person {
   // New relationship models
   memberships PersonFactionMembership[]
   factionOpinions FactionOpinion[]
+  
+  // Involvement & Loyalty v2 relationships
+  cohorts           PersonCohort[]
+  fromRelations     PersonRelation[] @relation("FromRelations")
+  toRelations       PersonRelation[] @relation("ToRelations")
+  fromOverrides     PersonRelationOverride[] @relation("FromOverrides")
+  toOverrides       PersonRelationOverride[] @relation("ToOverrides")
+  fromEventEffects  EventEffect[] @relation("FromEventEffects")
+  toEventEffects    EventEffect[] @relation("ToEventEffects")
 }
 
 model Faction {
@@ -152,4 +161,166 @@ model FactionOpinion {
   faction Faction @relation(fields:[factionId], references:[id])
 
   @@unique([personId, factionId], name: "personId_factionId")
+}
+
+// ===== INVOLVEMENT & LOYALTY MODEL V2 =====
+
+/** Cohorts for grouping people (e.g., ORIGINAL_RESIDENT, MERCHANT, GUARD) */
+model Cohort {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?
+  color       String?  // For UI display
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  people           PersonCohort[]
+  seedingPolicies  SeedingPolicy[] @relation("SourceCohort")
+  targetPolicies   SeedingPolicy[] @relation("TargetCohort")
+  eventEffects     EventEffect[]   @relation("SourceCohort")
+  targetEffects    EventEffect[]   @relation("TargetCohort")
+
+  @@map("cohorts")
+}
+
+/** Junction table for person-cohort relationships */
+model PersonCohort {
+  id        String   @id @default(cuid())
+  personId  String
+  cohortId  String
+  joinedAt  DateTime @default(now())
+  notes     String?
+
+  person Person @relation(fields: [personId], references: [id], onDelete: Cascade)
+  cohort Cohort @relation(fields: [cohortId], references: [id], onDelete: Cascade)
+
+  @@unique([personId, cohortId])
+  @@map("person_cohorts")
+}
+
+/** Seeding policies for automatic relationship generation */
+model SeedingPolicy {
+  id                String   @id @default(cuid())
+  name              String
+  description       String?
+  sourceCohortId    String
+  targetCohortId     String
+  domain            String   // KINSHIP, FACTION, WORK
+  probability       Float    // 0.0 to 1.0
+  involvementLevel  String   // ACQUAINTANCE, FRIEND, ALLY, etc.
+  scoreMin          Int      // Minimum score (1-100)
+  scoreMax          Int      // Maximum score (1-100)
+  worldSeed         String?  // For deterministic generation
+  isActive          Boolean  @default(true)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  sourceCohort Cohort @relation("SourceCohort", fields: [sourceCohortId], references: [id])
+  targetCohort Cohort @relation("TargetCohort", fields: [targetCohortId], references: [id])
+
+  @@map("seeding_policies")
+}
+
+/** Enhanced person relations with provenance tracking */
+model PersonRelation {
+  id           String   @id @default(cuid())
+  fromPersonId String
+  toPersonId   String
+  domain       String   // KINSHIP, FACTION, WORK
+  involvement  String   // ACQUAINTANCE, FRIEND, ALLY, etc.
+  score        Int      // 1-100
+  provenance   String   @default("MANUAL") // MANUAL, SEEDED, OVERRIDE, EVENT
+  sourceRef    Json?    // Reference to source (policy, event, etc.)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  fromPerson Person @relation("FromRelations", fields: [fromPersonId], references: [id], onDelete: Cascade)
+  toPerson   Person @relation("ToRelations", fields: [toPersonId], references: [id], onDelete: Cascade)
+
+  // Audit trail
+  auditLogs PersonRelationAudit[]
+
+  @@unique([fromPersonId, toPersonId, domain])
+  @@map("person_relations")
+}
+
+/** Overrides for specific person pairs */
+model PersonRelationOverride {
+  id           String   @id @default(cuid())
+  fromPersonId String
+  toPersonId   String
+  domain       String
+  involvement  String?
+  score        Int?
+  reason       String?
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  fromPerson Person @relation("FromOverrides", fields: [fromPersonId], references: [id], onDelete: Cascade)
+  toPerson   Person @relation("ToOverrides", fields: [toPersonId], references: [id], onDelete: Cascade)
+
+  @@unique([fromPersonId, toPersonId, domain])
+  @@map("person_relation_overrides")
+}
+
+/** Events that affect relationships */
+model Event {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  eventType   String   // CONFLICT, CELEBRATION, TRAGEDY, etc.
+  startDate   DateTime
+  endDate     DateTime?
+  isActive    Boolean  @default(true)
+  worldSeed   String?  // For deterministic effects
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  effects EventEffect[]
+
+  @@map("events")
+}
+
+/** Effects that events have on relationships */
+model EventEffect {
+  id                String   @id @default(cuid())
+  eventId           String
+  sourceCohortId     String?
+  targetCohortId     String?
+  fromPersonId       String?
+  toPersonId         String?
+  domain             String?  // KINSHIP, FACTION, WORK (null = all domains)
+  effectType         String   // ADD, MULTIPLY, DECAY
+  value              Float    // Value for the effect
+  decayPerDay        Float?   // For DECAY effects
+  scope              String   // GLOBAL, COHORT_TO_COHORT, PERSON_TO_PERSON
+  isActive           Boolean  @default(true)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  event        Event  @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  sourceCohort Cohort? @relation("SourceCohort", fields: [sourceCohortId], references: [id])
+  targetCohort Cohort? @relation("TargetCohort", fields: [targetCohortId], references: [id])
+  fromPerson   Person? @relation("FromEventEffects", fields: [fromPersonId], references: [id])
+  toPerson     Person? @relation("ToEventEffects", fields: [toPersonId], references: [id])
+
+  @@map("event_effects")
+}
+
+/** Audit trail for relationship changes */
+model PersonRelationAudit {
+  id               String   @id @default(cuid())
+  relationId       String
+  action           String   // CREATE, UPDATE, DELETE
+  oldValues        Json?
+  newValues        Json?
+  changedBy        String?  // User or system identifier
+  reason           String?
+  createdAt        DateTime @default(now())
+
+  relation PersonRelation @relation(fields: [relationId], references: [id], onDelete: Cascade)
+
+  @@map("person_relation_audit")
 }
