@@ -1,7 +1,7 @@
 generator client {
-  provider = "prisma-client-js"
-  engineType = "binary"
+  provider      = "prisma-client-js"
   binaryTargets = ["native"]
+  engineType    = "binary"
 }
 
 datasource db {
@@ -10,28 +10,18 @@ datasource db {
 }
 
 model Person {
-  id       String @id @default(cuid())
-  name     String
-  species  String
-  age      Int?
-  occupation String?
-  householdId  String?
-  household    Household? @relation(fields: [householdId], references: [id])
-  livesAtId    String
-  livesAt      Location @relation("LivesAt", fields: [livesAtId], references: [id])
-  worksAtId    String?
-  worksAt      Location? @relation("WorksAt", fields: [worksAtId], references: [id])
-  tags         String
-  notes        String?
+  id          String  @id @default(cuid())
+  name        String
+  species     String
+  age         Int?
+  occupation  String?
+  factionId   String?
+  householdId String?
+  livesAtId   String
+  worksAtId   String?
+  tags        String
+  notes       String?
 
-  opinionsFrom Opinion[] @relation("From")
-  opinionsTo   Opinion[] @relation("To")
-  resourceEntries TownResourceLedger[]
-  
-  // New relationship models
-  memberships PersonFactionMembership[]
-  factionOpinions FactionOpinion[]
-  
   // Involvement & Loyalty v2 relationships
   cohorts           PersonCohort[]
   fromRelations     PersonRelation[] @relation("FromRelations")
@@ -43,124 +33,107 @@ model Person {
 }
 
 model Faction {
-  id          String @id @default(cuid())
-  name        String @unique
+  id          String  @id @default(cuid())
+  name        String  @unique
   motto       String?
   description String?
   color       String?
-  
-  // New relationship models
-  memberships PersonFactionMembership[]
-  opinions   FactionOpinion[]
 }
 
 model Household {
-  id          String @id @default(cuid())
-  name        String
-  description String?
-  members     Person[]
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id         String  @id @default(cuid())
+  name       String?
+  locationId String
+  notes      String?
 }
 
 model Location {
-  id        String @id @default(cuid())
-  name      String @unique
-  kind      String
-  parentId  String?
-  x         Float?
-  y         Float?
-  address   String?
-  notes     String?
-  residents Person[] @relation("LivesAt")
-  workers   Person[] @relation("WorksAt")
+  id       String  @id @default(cuid())
+  name     String
+  kind     String
+  parentId String?
+  x        Float?  @db.Real
+  y        Float?  @db.Real
+  address  String?
+  notes    String?
 }
 
 model Opinion {
-  id        String @id @default(cuid())
-  fromId    String
-  from      Person @relation("From", fields: [fromId], references: [id])
-  toId      String
-  to        Person @relation("To", fields: [toId], references: [id])
-  score     Int
-  notes     String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id           String   @id @default(cuid())
+  fromPersonId String
+  toPersonId   String
+  score        Int
+  reason       String?
+  updatedAt    DateTime @default(now()) @updatedAt @db.Timestamp(6)
 
-  @@unique([fromId, toId], name: "Opinion_fromPersonId_toPersonId_key")
+  @@unique([fromPersonId, toPersonId], name: "Opinion_fromPersonId_toPersonId_key")
 }
 
 model ResourceCategory {
-  id          String @id @default(cuid())
-  name        String
-  description String?
-  unit        String
-  ledgerEntries TownResourceLedger[]
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id    String  @id @default(cuid())
+  name  String  @unique
+  unit  String
+  notes String?
 }
 
 model TownResourceLedger {
-  id          String @id @default(cuid())
-  categoryId  String
-  category    ResourceCategory @relation(fields: [categoryId], references: [id])
-  amount      Float
-  change      Float
-  reason      String?
-  personId    String?
-  person      Person? @relation(fields: [personId], references: [id])
-  createdAt   DateTime @default(now())
+  id                 String   @id @default(cuid())
+  date               DateTime @db.Timestamp(6)
+  resourceCategoryId String
+  delta              Float    @db.Real
+  reason             String
+  sourcePersonId     String?
+  sourceFactionId    String?
 }
 
 model EventLog {
-  id        String @id @default(cuid())
-  event     String
-  details   String?
-  personId  String?
-  createdAt DateTime @default(now())
+  id         String   @id @default(cuid())
+  date       DateTime @db.Timestamp(6)
+  title      String
+  details    String?
+  locationId String?
 }
 
-/** One row per person↔faction relationship */
+/// * One row per person↔faction relationship
 model PersonFactionMembership {
-  id          String   @id @default(cuid())
-  personId    String
-  factionId   String
-  role        String?      // "member", "captain", "leader", etc.
-  isPrimary   Boolean @default(false)
-  joinedAt    DateTime @default(now())
-  leftAt      DateTime?    // null if active
-
-  /** Personal alignment with THIS faction's current direction:
-   * -100 (actively subversive) … 0 (neutral/indifferent) … +100 (strongly aligned)
-   */
-  alignment   Int      @default(0)
-
-  /** Optional: how publicly they show that alignment (0..100). */
-  openness    Int      @default(50)
-
-  /** Optional notes */
-  notes       String?
-
-  person   Person  @relation(fields: [personId], references: [id])
-  faction  Faction @relation(fields: [factionId], references: [id])
-
-  @@index([personId, factionId])
-  @@unique([personId, factionId, joinedAt]) // allows re-joining later
+  id        String    @id @default(cuid())
+  personId  String
+  factionId String
+  role      String    @default("member")
+  isPrimary Boolean   @default(false)
+  /// * Personal alignment with THIS faction's current direction:
+  ///    * -100 (actively subversive) … 0 (neutral/indifferent) … +100 (strongly aligned)
+  alignment Int       @default(0)
+  /// * Optional: how publicly they show that alignment (0..100).
+  openness  Int       @default(50)
+  joinedAt  DateTime  @default(now()) @db.Timestamp(6)
+  leftAt    DateTime? @db.Timestamp(6)
+  /// * Optional notes
+  notes     String?
 }
 
-/** Feelings about factions regardless of membership */
+/// * Feelings about factions regardless of membership
 model FactionOpinion {
   id        String   @id @default(cuid())
   personId  String
   factionId String
-  score     Int      // -100..100
+  score     Int
   reason    String?
-  updatedAt DateTime @updatedAt
-
-  person  Person  @relation(fields:[personId], references:[id])
-  faction Faction @relation(fields:[factionId], references:[id])
+  updatedAt DateTime @default(now()) @updatedAt @db.Timestamp(6)
 
   @@unique([personId, factionId], name: "personId_factionId")
+}
+
+model Alliance {
+  id         String    @id
+  factionAId String
+  factionBId String
+  type       String
+  stance     String
+  notes      String?
+  startedAt  DateTime? @db.Timestamp(6)
+
+  @@unique([factionAId, factionBId])
 }
 
 // ===== INVOLVEMENT & LOYALTY MODEL V2 =====
