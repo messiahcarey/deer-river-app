@@ -79,10 +79,17 @@ export default function DemographicsPage() {
         
         const result = JSON.parse(text)
         
-        if (result.success) {
-          setData(result.data)
+        // Handle both wrapped and direct response formats
+        if (result.success !== undefined) {
+          // Wrapped response format
+          if (result.success) {
+            setData(result.data)
+          } else {
+            setError(result.error || 'Failed to fetch demographics data')
+          }
         } else {
-          setError(result.error || 'Failed to fetch demographics data')
+          // Direct response format
+          setData(result)
         }
       } catch (err) {
         console.error('Demographics API error:', err)
