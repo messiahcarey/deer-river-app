@@ -275,7 +275,7 @@ export default function Dashboard() {
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
               <RechartsBarChart
-                data={data.distributions.factions.map(faction => ({
+                data={data.distributions?.factions?.map(faction => ({
                   name: faction.factionName,
                   members: faction.count,
                   fill: faction.color
@@ -308,7 +308,7 @@ export default function Dashboard() {
             <ResponsiveContainer width="100%" height="100%">
               <RechartsPieChart>
                 <Pie
-                  data={data.distributions.species.slice(0, 8).map((species, index) => ({
+                  data={data.distributions?.species?.slice(0, 8).map((species, index) => ({
                     name: species.species,
                     value: species.count,
                     fill: `hsl(${(index * 137.5) % 360}, 70%, 50%)`
@@ -320,7 +320,7 @@ export default function Dashboard() {
                   paddingAngle={2}
                   dataKey="value"
                 >
-                  {data.distributions.species.slice(0, 8).map((_, index) => (
+                  {data.distributions?.species?.slice(0, 8).map((_, index) => (
                     <Cell key={`cell-${index}`} fill={`hsl(${(index * 137.5) % 360}, 70%, 50%)`} />
                   ))}
                 </Pie>

@@ -68,7 +68,7 @@ export default function PeopleTable({
     // Mobile card layout
     return (
       <div className="space-y-4">
-        {people.map((person) => (
+        {people?.map((person) => (
           <div key={person.id} className="bg-white rounded-lg shadow border p-4">
             <div className="flex items-start justify-between mb-3">
               <div className="flex items-center">
@@ -238,7 +238,7 @@ export default function PeopleTable({
           </tr>
         </thead>
         <tbody className="divide-y divide-gray-200">
-          {people.map((person) => (
+          {people?.map((person) => (
             <tr key={person.id} className={`hover:bg-gray-50 ${selectedPeople.includes(person.id) ? 'bg-blue-50' : ''}`}>
               <td className="px-4 py-3 text-center">
                 <input
