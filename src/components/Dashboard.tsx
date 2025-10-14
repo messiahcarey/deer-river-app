@@ -279,7 +279,7 @@ export default function Dashboard() {
                   name: faction.factionName,
                   members: faction.count,
                   fill: faction.color
-                }))}
+                })) || []}
                 margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
               >
                 <CartesianGrid strokeDasharray="3 3" />
@@ -312,7 +312,7 @@ export default function Dashboard() {
                     name: species.species,
                     value: species.count,
                     fill: `hsl(${(index * 137.5) % 360}, 70%, 50%)`
-                  }))}
+                  })) || []}
                   cx="50%"
                   cy="50%"
                   innerRadius={40}
