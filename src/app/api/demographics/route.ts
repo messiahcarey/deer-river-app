@@ -29,7 +29,12 @@ export async function GET() {
       select: {
         id: true,
         name: true,
-        color: true
+        color: true,
+        memberships: {
+          select: {
+            id: true
+          }
+        }
       }
     })
 
@@ -50,22 +55,49 @@ export async function GET() {
       ageRange: { min: 0, max: 100 } // Simplified
     }))
 
-    // Simple faction distribution
+    // Faction distribution with actual membership counts
     const factionDistribution = factions.map(faction => ({
       name: faction.name,
-      count: 0, // Simplified - no memberships relation
+      count: faction.memberships.length,
       color: faction.color || '#6B7280'
     }))
 
     const demographicsData = {
+      summary: {
+        totalPeople: people.length,
+        totalFactions: factions.length,
+        totalLocations: 0, // Will be calculated separately if needed
+        totalMemberships: factions.reduce((sum, faction) => sum + faction.memberships.length, 0),
+        peopleWithoutHomes: 0, // Simplified
+        peopleWithoutWork: 0, // Simplified
+        peopleWithoutFaction: 0, // Simplified
+        totalSpecies: speciesData.length,
+        speciesWithAgeData: 0 // Simplified
+      },
+      distributions: {
+        factions: factionDistribution.map(faction => ({
+          factionId: '', // Simplified
+          factionName: faction.name,
+          color: faction.color,
+          count: faction.count
+        })),
+        species: speciesData,
+        occupations: [] // Simplified
+      },
+      recentActivity: {
+        people: [],
+        factions: [],
+        locations: []
+      },
+      // Legacy fields for backward compatibility
       totalPopulation: people.length,
       speciesCount: speciesData.length,
       factionCount: factions.length,
       speciesDistribution: speciesData,
-      ageCategoryChartData: [], // Simplified
+      ageCategoryChartData: [],
       factionDistribution,
-      speciesFactionData: [], // Simplified
-      demographics: {} // Simplified
+      speciesFactionData: [],
+      demographics: {}
     }
 
     await prisma.$disconnect()
