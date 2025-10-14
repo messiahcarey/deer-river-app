@@ -15,13 +15,21 @@ export async function GET() {
   })
 
   try {
-    // Get basic demographics data
+    // Get comprehensive demographics data
     const people = await prisma.person.findMany({
       select: {
         id: true,
         species: true,
         age: true,
-        name: true
+        name: true,
+        occupation: true,
+        livesAtId: true,
+        worksAtId: true,
+        memberships: {
+          select: {
+            id: true
+          }
+        }
       }
     })
 
@@ -38,21 +46,83 @@ export async function GET() {
       }
     })
 
-    // Simple species distribution
+    const locations = await prisma.location.count()
+
+    // Calculate missing data
+    const peopleWithoutHomes = people.filter(p => !p.livesAtId).length
+    const peopleWithoutWork = people.filter(p => !p.worksAtId).length
+    const peopleWithoutFaction = people.filter(p => p.memberships.length === 0).length
+
+    // Species distribution with age data
     const speciesDistribution = people.reduce((acc, person) => {
       const species = person.species || 'Unknown'
       if (!acc[species]) {
-        acc[species] = 0
+        acc[species] = { count: 0, ages: [] }
       }
-      acc[species]++
+      acc[species].count++
+      if (person.age) {
+        acc[species].ages.push(person.age)
+      }
+      return acc
+    }, {} as Record<string, { count: number; ages: number[] }>)
+
+    const speciesData = Object.entries(speciesDistribution).map(([species, data]) => {
+      const ages = data.ages.filter(age => age > 0)
+      const averageAge = ages.length > 0 ? Math.round(ages.reduce((sum, age) => sum + age, 0) / ages.length) : 0
+      const ageRange = ages.length > 0 ? { min: Math.min(...ages), max: Math.max(...ages) } : { min: 0, max: 100 }
+      
+      return {
+        species,
+        count: data.count,
+        averageAge,
+        ageRange
+      }
+    })
+
+    // Occupation distribution
+    const occupationDistribution = people.reduce((acc, person) => {
+      const occupation = person.occupation || 'Unemployed'
+      acc[occupation] = (acc[occupation] || 0) + 1
       return acc
     }, {} as Record<string, number>)
 
-    const speciesData = Object.entries(speciesDistribution).map(([species, count]) => ({
-      species,
-      count,
-      averageAge: 0, // Simplified
-      ageRange: { min: 0, max: 100 } // Simplified
+    const occupationData = Object.entries(occupationDistribution).map(([occupation, count]) => ({
+      occupation,
+      count
+    })).sort((a, b) => b.count - a.count)
+
+    // Age category distribution
+    const ageCategories = {
+      'Child (0-12)': 0,
+      'Teen (13-17)': 0,
+      'Young Adult (18-25)': 0,
+      'Adult (26-50)': 0,
+      'Middle-aged (51-65)': 0,
+      'Elderly (65+)': 0,
+      'Unknown': 0
+    }
+
+    people.forEach(person => {
+      if (!person.age) {
+        ageCategories['Unknown']++
+      } else if (person.age <= 12) {
+        ageCategories['Child (0-12)']++
+      } else if (person.age <= 17) {
+        ageCategories['Teen (13-17)']++
+      } else if (person.age <= 25) {
+        ageCategories['Young Adult (18-25)']++
+      } else if (person.age <= 50) {
+        ageCategories['Adult (26-50)']++
+      } else if (person.age <= 65) {
+        ageCategories['Middle-aged (51-65)']++
+      } else {
+        ageCategories['Elderly (65+)']++
+      }
+    })
+
+    const ageCategoryData = Object.entries(ageCategories).map(([category, count]) => ({
+      category,
+      count
     }))
 
     // Faction distribution with actual membership counts
@@ -66,13 +136,13 @@ export async function GET() {
       summary: {
         totalPeople: people.length,
         totalFactions: factions.length,
-        totalLocations: 0, // Will be calculated separately if needed
+        totalLocations: locations,
         totalMemberships: factions.reduce((sum, faction) => sum + faction.memberships.length, 0),
-        peopleWithoutHomes: 0, // Simplified
-        peopleWithoutWork: 0, // Simplified
-        peopleWithoutFaction: 0, // Simplified
+        peopleWithoutHomes: peopleWithoutHomes,
+        peopleWithoutWork: peopleWithoutWork,
+        peopleWithoutFaction: peopleWithoutFaction,
         totalSpecies: speciesData.length,
-        speciesWithAgeData: 0 // Simplified
+        speciesWithAgeData: speciesData.filter(s => s.averageAge > 0).length
       },
       distributions: {
         factions: factionDistribution.map(faction => ({
@@ -82,7 +152,7 @@ export async function GET() {
           count: faction.count
         })),
         species: speciesData,
-        occupations: [] // Simplified
+        occupations: occupationData
       },
       recentActivity: {
         people: [],
@@ -94,7 +164,7 @@ export async function GET() {
       speciesCount: speciesData.length,
       factionCount: factions.length,
       speciesDistribution: speciesData,
-      ageCategoryChartData: [],
+      ageCategoryChartData: ageCategoryData,
       factionDistribution,
       speciesFactionData: [],
       demographics: {}
