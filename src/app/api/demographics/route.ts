@@ -175,6 +175,31 @@ export async function GET() {
       color: faction.color || '#6B7280'
     }))
 
+    // Create factionDistribution structure for charts (species -> faction -> count)
+    const factionDistributionForCharts: Record<string, Record<string, number>> = {}
+    
+    // Initialize all species with empty faction counts
+    speciesData.forEach(species => {
+      factionDistributionForCharts[species.species.toLowerCase()] = {}
+      factions.forEach(faction => {
+        factionDistributionForCharts[species.species.toLowerCase()][faction.name] = 0
+      })
+    })
+
+    // Count species per faction by looking at memberships
+    people.forEach(person => {
+      if (person.species && person.memberships.length > 0) {
+        const speciesKey = person.species.toLowerCase()
+        person.memberships.forEach(membership => {
+          // Find the faction name for this membership
+          const faction = factions.find(f => f.id === membership.factionId)
+          if (faction && factionDistributionForCharts[speciesKey]) {
+            factionDistributionForCharts[speciesKey][faction.name]++
+          }
+        })
+      }
+    })
+
     const demographicsData = {
       summary: {
         totalPeople: people.length,
@@ -204,13 +229,14 @@ export async function GET() {
       },
       // Enhanced species data for charts
       speciesDemographics,
+      factionDistribution: factionDistributionForCharts,
       // Legacy fields for backward compatibility
       totalPopulation: people.length,
       speciesCount: speciesData.length,
       factionCount: factions.length,
       speciesDistribution: speciesData,
       ageCategoryChartData: ageCategoryData,
-      factionDistribution,
+      factionDistributionLegacy: factionDistribution,
       speciesFactionData: [],
       demographics: {}
     }
