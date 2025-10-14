@@ -3,6 +3,8 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import Navigation from "@/components/Navigation";
 import ErrorBoundary from "@/components/ErrorBoundary";
+import ClientErrorHandler from "@/components/ClientErrorHandler";
+import DebugInfo from "@/components/DebugInfo";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -22,6 +24,8 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.variable} font-sans antialiased`}>
+        <ClientErrorHandler />
+        <DebugInfo />
         <ErrorBoundary>
           <Navigation />
           {children}
