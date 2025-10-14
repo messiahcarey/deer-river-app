@@ -20,7 +20,22 @@ export async function GET() {
         id: true,
         name: true,
         color: true,
-        motto: true
+        motto: true,
+        memberships: {
+          select: {
+            id: true,
+            personId: true,
+            role: true,
+            isPrimary: true,
+            person: {
+              select: {
+                id: true,
+                name: true,
+                species: true
+              }
+            }
+          }
+        }
       },
       orderBy: {
         name: 'asc'

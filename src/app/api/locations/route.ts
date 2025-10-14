@@ -21,7 +21,23 @@ export async function GET() {
         name: true,
         kind: true,
         x: true,
-        y: true
+        y: true,
+        residents: {
+          select: {
+            id: true,
+            name: true,
+            species: true,
+            occupation: true
+          }
+        },
+        workers: {
+          select: {
+            id: true,
+            name: true,
+            species: true,
+            occupation: true
+          }
+        }
       },
       orderBy: {
         name: 'asc'

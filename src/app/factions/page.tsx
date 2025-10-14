@@ -37,10 +37,16 @@ export default function FactionsPage() {
       const data = await response.json()
       
       if (data.success) {
-        // Add empty members array to each faction if it doesn't exist
-        const factionsWithMembers = data.data.map((faction: { id: string; name: string; motto: string | null; description: string | null; color: string | null; members?: Array<{ id: string; name: string; species: string }> }) => ({
+        // Transform memberships to members array for compatibility
+        const factionsWithMembers = data.data.map((faction: { id: string; name: string; motto: string | null; description: string | null; color: string | null; memberships?: Array<{ id: string; personId: string; role: string; isPrimary: boolean; person: { id: string; name: string; species: string } }> }) => ({
           ...faction,
-          members: faction.members || []
+          members: faction.memberships?.map(membership => ({
+            id: membership.person.id,
+            name: membership.person.name,
+            species: membership.person.species,
+            role: membership.role,
+            isPrimary: membership.isPrimary
+          })) || []
         }))
         setFactions(factionsWithMembers)
         setError(null)
