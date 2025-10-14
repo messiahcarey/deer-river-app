@@ -308,14 +308,14 @@ Market Stall,Business,"Temporary market stall or trading post",70,60,2,"Open-air
                         N/A
                       </td>
                       <td className="px-4 py-3 text-gray-700">
-                        {building.residents.length > 0 ? (
+                        {building.residents?.length > 0 ? (
                           <ul className="list-disc list-inside text-xs">
                             {building.residents?.map(p => <li key={p.id}>{p.name}</li>)}
                           </ul>
                         ) : 'None'}
                       </td>
                       <td className="px-4 py-3 text-gray-700">
-                        {building.workers.length > 0 ? (
+                        {building.workers?.length > 0 ? (
                           <ul className="list-disc list-inside text-xs">
                             {building.workers?.map(p => <li key={p.id}>{p.name}</li>)}
                           </ul>

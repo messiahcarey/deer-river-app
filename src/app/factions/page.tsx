@@ -299,7 +299,7 @@ export default function FactionsPage() {
                     <div className="mt-3 pt-3 border-t border-gray-200">
                       <p className="text-xs text-gray-600 mb-2">Key Members:</p>
                       <div className="flex flex-wrap gap-1">
-                        {faction.members.slice(0, 3).map((member) => (
+                        {faction.members?.slice(0, 3).map((member) => (
                           <span 
                             key={member.id}
                             className="text-xs bg-white px-2 py-1 rounded border"
