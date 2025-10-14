@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
       success: true,
       relationshipsCreated: 0,
       errors: [] as string[],
-      details: [] as any[]
+      details: [] as Array<{ policyName: string; relationshipsCreated: number; errors: string[] }>
     }
 
     for (const policy of policies) {
@@ -84,7 +84,7 @@ export async function POST(request: NextRequest) {
 }
 
 async function seedPolicyRelationships(
-  policy: any,
+  policy: { id: string; name: string; sourceCohortId: string; targetCohortId: string; domain: string; probability: number; involvementLevel: string; scoreMin: number; scoreMax: number },
   worldSeed: string,
   dryRun: boolean
 ): Promise<{ relationshipsGenerated: number }> {

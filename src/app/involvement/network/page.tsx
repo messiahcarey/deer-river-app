@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef, useCallback } from 'react'
 
 interface Person {
   id: string
@@ -85,7 +85,7 @@ export default function RelationshipNetwork() {
     return true
   })
 
-  const drawNetwork = () => {
+  const drawNetwork = useCallback(() => {
     const canvas = canvasRef.current
     if (!canvas) return
 
@@ -191,11 +191,11 @@ export default function RelationshipNetwork() {
       ctx.textAlign = 'center'
       ctx.fillText(person.name.split(' ')[0], pos.x, pos.y + 5)
     })
-  }
+  }, [filteredRelationships, people])
 
   useEffect(() => {
     drawNetwork()
-  }, [filteredRelationships, people])
+  }, [drawNetwork])
 
   if (loading) {
     return (

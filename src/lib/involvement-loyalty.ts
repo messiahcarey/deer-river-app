@@ -127,7 +127,7 @@ export async function seedRelationships(
  * Seed relationships for a specific policy
  */
 async function seedPolicyRelationships(
-  policy: any,
+  policy: { id: string; name: string; sourceCohortId: string; targetCohortId: string; domain: string; probability: number; involvementLevel: string; scoreMin: number; scoreMax: number },
   worldSeed: string,
   dryRun: boolean
 ): Promise<{ relationshipsGenerated: number }> {
@@ -287,7 +287,7 @@ export async function calculateEffectiveScore(
   // Apply effects in order
   for (const effect of eventEffects) {
     let applied = false
-    let effectValue = effect.value
+    const effectValue = effect.value
 
     // Check if effect applies to this specific relationship
     if (effect.scope === 'GLOBAL' || 
@@ -340,7 +340,7 @@ export async function calculateEffectiveScore(
 /**
  * Check if a cohort-to-cohort effect applies to a person pair
  */
-async function checkCohortEffect(effect: any, fromPersonId: string, toPersonId: string): Promise<boolean> {
+async function checkCohortEffect(effect: { sourceCohortId: string | null; targetCohortId: string | null }, fromPersonId: string, toPersonId: string): Promise<boolean> {
   if (!effect.sourceCohortId || !effect.targetCohortId) return false
 
   const fromPersonCohorts = await prisma.personCohort.findMany({
@@ -366,7 +366,7 @@ export async function createEvent(
   startDate: Date,
   endDate?: Date,
   worldSeed?: string
-): Promise<any> {
+): Promise<{ id: string; name: string; description: string | null; eventType: string; startDate: Date; endDate: Date | null; isActive: boolean; worldSeed: string | null; createdAt: Date; updatedAt: Date }> {
   return await prisma.event.create({
     data: {
       name,
@@ -396,7 +396,7 @@ export async function addEventEffect(
     toPersonId?: string
     decayPerDay?: number
   } = {}
-): Promise<any> {
+): Promise<{ id: string; eventId: string; sourceCohortId: string | null; targetCohortId: string | null; fromPersonId: string | null; toPersonId: string | null; domain: string | null; effectType: string; value: number; decayPerDay: number | null; scope: string; isActive: boolean; createdAt: Date; updatedAt: Date }> {
   return await prisma.eventEffect.create({
     data: {
       eventId,

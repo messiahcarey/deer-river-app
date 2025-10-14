@@ -1,7 +1,6 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-import { PrismaClient } from '@prisma/client'
 
 interface Cohort {
   id: string

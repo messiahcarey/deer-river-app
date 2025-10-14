@@ -64,7 +64,7 @@ export async function GET(request: NextRequest) {
     // Apply effects in order
     for (const effect of eventEffects) {
       let applied = false
-      let effectValue = effect.value
+      const effectValue = effect.value
 
       // Check if effect applies to this specific relationship
       if (effect.scope === 'GLOBAL' || 
@@ -125,7 +125,7 @@ export async function GET(request: NextRequest) {
 /**
  * Check if a cohort-to-cohort effect applies to a person pair
  */
-async function checkCohortEffect(effect: any, fromPersonId: string, toPersonId: string): Promise<boolean> {
+async function checkCohortEffect(effect: { sourceCohortId: string | null; targetCohortId: string | null }, fromPersonId: string, toPersonId: string): Promise<boolean> {
   if (!effect.sourceCohortId || !effect.targetCohortId) return false
 
   const fromPersonCohorts = await prisma.personCohort.findMany({
