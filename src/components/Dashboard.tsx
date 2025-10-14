@@ -343,7 +343,7 @@ export default function Dashboard() {
           <div>
             <h4 className="text-sm font-medium text-gray-700 mb-3">New People</h4>
             <div className="space-y-2">
-              {data.recentActivity.people.length > 0 ? (
+              {data.recentActivity?.people && data.recentActivity.people.length > 0 ? (
                 data.recentActivity.people.map((person) => (
                   <div key={person.id} className="flex items-center text-sm">
                     <span className="text-gray-500 mr-2">👤</span>
@@ -366,7 +366,7 @@ export default function Dashboard() {
           <div>
             <h4 className="text-sm font-medium text-gray-700 mb-3">New Factions</h4>
             <div className="space-y-2">
-              {data.recentActivity.factions.length > 0 ? (
+              {data.recentActivity?.factions && data.recentActivity.factions.length > 0 ? (
                 data.recentActivity.factions.map((faction) => (
                   <div key={faction.id} className="flex items-center text-sm">
                     <span className="text-gray-500 mr-2">🏛️</span>
@@ -388,7 +388,7 @@ export default function Dashboard() {
           <div>
             <h4 className="text-sm font-medium text-gray-700 mb-3">New Buildings</h4>
             <div className="space-y-2">
-              {data.recentActivity.locations.length > 0 ? (
+              {data.recentActivity?.locations && data.recentActivity.locations.length > 0 ? (
                 data.recentActivity.locations.map((location) => (
                   <div key={location.id} className="flex items-center text-sm">
                     <span className="text-gray-500 mr-2">🏠</span>

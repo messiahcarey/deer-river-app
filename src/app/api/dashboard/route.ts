@@ -48,6 +48,11 @@ export async function GET() {
           factions: [],
           species: [],
           occupations: []
+        },
+        recentActivity: {
+          people: [],
+          factions: [],
+          locations: []
         }
       }
     }
