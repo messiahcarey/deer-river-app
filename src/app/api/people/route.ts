@@ -22,7 +22,35 @@ export async function GET() {
         age: true,
         species: true,
         occupation: true,
-        tags: true
+        tags: true,
+        livesAt: {
+          select: {
+            id: true,
+            name: true,
+            kind: true
+          }
+        },
+        worksAt: {
+          select: {
+            id: true,
+            name: true,
+            kind: true
+          }
+        },
+        memberships: {
+          select: {
+            id: true,
+            faction: {
+              select: {
+                id: true,
+                name: true,
+                color: true
+              }
+            },
+            role: true,
+            isPrimary: true
+          }
+        }
       },
       orderBy: {
         name: 'asc'

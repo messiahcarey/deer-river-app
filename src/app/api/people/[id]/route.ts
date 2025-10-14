@@ -28,7 +28,35 @@ export async function GET(
         species: true,
         occupation: true,
         tags: true,
-        notes: true
+        notes: true,
+        livesAt: {
+          select: {
+            id: true,
+            name: true,
+            kind: true
+          }
+        },
+        worksAt: {
+          select: {
+            id: true,
+            name: true,
+            kind: true
+          }
+        },
+        memberships: {
+          select: {
+            id: true,
+            faction: {
+              select: {
+                id: true,
+                name: true,
+                color: true
+              }
+            },
+            role: true,
+            isPrimary: true
+          }
+        }
       }
     })
 
