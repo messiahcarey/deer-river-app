@@ -27,7 +27,8 @@ export async function GET() {
         worksAtId: true,
         memberships: {
           select: {
-            id: true
+            id: true,
+            factionId: true
           }
         }
       }
