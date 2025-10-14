@@ -125,6 +125,49 @@ export async function GET() {
       count
     }))
 
+    // Create speciesDemographics structure for the charts component
+    const speciesDemographics: Record<string, {
+      total: number
+      withAge: number
+      ageCategories: Record<string, number>
+      ageRange?: { min: number; max: number }
+      averageAge?: number
+    }> = {}
+
+    // Initialize species demographics
+    speciesData.forEach(species => {
+      speciesDemographics[species.species.toLowerCase()] = {
+        total: species.count,
+        withAge: species.averageAge > 0 ? species.count : 0,
+        ageCategories: {
+          'Young Adult': 0,
+          'Mature': 0,
+          'Middle Aged': 0,
+          'Old': 0,
+          'Venerable': 0
+        },
+        ageRange: species.ageRange,
+        averageAge: species.averageAge
+      }
+    })
+
+    // Distribute people across age categories by species
+    people.forEach(person => {
+      if (person.age && person.species) {
+        const speciesKey = person.species.toLowerCase()
+        if (speciesDemographics[speciesKey]) {
+          let ageCategory = 'Young Adult'
+          if (person.age <= 25) ageCategory = 'Young Adult'
+          else if (person.age <= 40) ageCategory = 'Mature'
+          else if (person.age <= 55) ageCategory = 'Middle Aged'
+          else if (person.age <= 70) ageCategory = 'Old'
+          else ageCategory = 'Venerable'
+          
+          speciesDemographics[speciesKey].ageCategories[ageCategory]++
+        }
+      }
+    })
+
     // Faction distribution with actual membership counts
     const factionDistribution = factions.map(faction => ({
       name: faction.name,
@@ -159,6 +202,8 @@ export async function GET() {
         factions: [],
         locations: []
       },
+      // Enhanced species data for charts
+      speciesDemographics,
       // Legacy fields for backward compatibility
       totalPopulation: people.length,
       speciesCount: speciesData.length,
