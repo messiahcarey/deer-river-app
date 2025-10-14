@@ -108,9 +108,9 @@ export default function PeoplePage() {
 
   const getUniqueFactions = () => {
     const factionNames = [...new Set(
-      people.flatMap(person => 
+      people?.flatMap(person => 
         person.memberships?.map(membership => membership.faction.name) || []
-      )
+      ) || []
     )].sort();
     return factionNames;
   };
@@ -254,7 +254,7 @@ export default function PeoplePage() {
       const start = Math.min(currentIndex, lastSelectedIndex);
       const end = Math.max(currentIndex, lastSelectedIndex);
       
-      const rangeIds = people.slice(start, end + 1).map(p => p.id);
+      const rangeIds = people?.slice(start, end + 1).map(p => p.id) || [];
       setSelectedPeople(prev => {
         const newSelection = new Set([...prev, ...rangeIds]);
         return Array.from(newSelection);
@@ -966,9 +966,9 @@ export default function PeoplePage() {
                   </p>
                   <div className="text-sm text-gray-500 mb-4 max-h-32 overflow-y-auto">
                     {people
-                      .filter(p => selectedPeople.includes(p.id))
-                      .map(p => p.name)
-                      .join(', ')}
+                      ?.filter(p => selectedPeople.includes(p.id))
+                      ?.map(p => p.name)
+                      ?.join(', ') || ''}
                   </div>
                 </div>
 
@@ -979,7 +979,7 @@ export default function PeoplePage() {
                     className="w-full border rounded px-3 py-2"
                   >
                     <option value="">Choose a faction...</option>
-                    {factions.map(faction => (
+                    {factions?.map(faction => (
                       <option key={faction.id} value={faction.id}>
                         {faction.name}
                       </option>

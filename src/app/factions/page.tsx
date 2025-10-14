@@ -172,7 +172,7 @@ export default function FactionsPage() {
         {!loading && !error && factions.length > 0 && (
           <div className="mb-6">
             <FactionRelationshipDiagram
-              factions={factions.map(faction => ({
+              factions={factions?.map(faction => ({
                 ...faction,
                 members: (faction.members || []).map(member => ({
                   id: member.id,
@@ -249,7 +249,7 @@ export default function FactionsPage() {
 
           {!loading && !error && factions.length > 0 && (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {factions.map((faction) => (
+              {factions?.map((faction) => (
                 <div key={faction.id} className="bg-gray-50 rounded-lg p-6 border border-gray-200 hover:shadow-md transition-shadow">
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex items-center space-x-3">

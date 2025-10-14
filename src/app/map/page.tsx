@@ -283,7 +283,7 @@ Market Stall,Business,"Temporary market stall or trading post",70,60,2,"Open-air
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">
-                  {buildings.map((building) => (
+                  {buildings?.map((building) => (
                     <tr key={building.id} className="hover:bg-gray-50">
                       <td className="px-4 py-3">
                         <div className="flex items-center space-x-2">
@@ -310,14 +310,14 @@ Market Stall,Business,"Temporary market stall or trading post",70,60,2,"Open-air
                       <td className="px-4 py-3 text-gray-700">
                         {building.residents.length > 0 ? (
                           <ul className="list-disc list-inside text-xs">
-                            {building.residents.map(p => <li key={p.id}>{p.name}</li>)}
+                            {building.residents?.map(p => <li key={p.id}>{p.name}</li>)}
                           </ul>
                         ) : 'None'}
                       </td>
                       <td className="px-4 py-3 text-gray-700">
                         {building.workers.length > 0 ? (
                           <ul className="list-disc list-inside text-xs">
-                            {building.workers.map(p => <li key={p.id}>{p.name}</li>)}
+                            {building.workers?.map(p => <li key={p.id}>{p.name}</li>)}
                           </ul>
                         ) : 'None'}
                       </td>
