@@ -84,24 +84,24 @@ export default function PeoplePage() {
 
   // Extract unique values for filter options
   const getUniqueSpecies = () => {
-    const species = [...new Set(people.map(person => person.species))].filter(Boolean).sort();
+    const species = [...new Set(people?.map(person => person.species) || [])].filter(Boolean).sort();
     return species;
   };
 
   const getUniqueOccupations = () => {
-    const occupations = [...new Set(people.map(person => person.occupation))].filter((occ): occ is string => Boolean(occ)).sort();
+    const occupations = [...new Set(people?.map(person => person.occupation) || [])].filter((occ): occ is string => Boolean(occ)).sort();
     return occupations;
   };
 
   const getUniqueTags = () => {
-    const tags = [...new Set(people.map(person => person.tags))].filter(Boolean).sort();
+    const tags = [...new Set(people?.map(person => person.tags) || [])].filter(Boolean).sort();
     return tags;
   };
 
   const getUniqueLocations = () => {
     const locations = [...new Set([
-      ...people.map(person => person.livesAt?.name).filter((name): name is string => Boolean(name)),
-      ...people.map(person => person.worksAt?.name).filter((name): name is string => Boolean(name))
+      ...(people?.map(person => person.livesAt?.name) || []).filter((name): name is string => Boolean(name)),
+      ...(people?.map(person => person.worksAt?.name) || []).filter((name): name is string => Boolean(name))
     ])].sort();
     return locations;
   };
@@ -270,7 +270,7 @@ export default function PeoplePage() {
   };
 
   const handleSelectAll = () => {
-    setSelectedPeople(people.map(p => p.id));
+    setSelectedPeople(people?.map(p => p.id) || []);
   };
 
   const handleDeselectAll = () => {
@@ -916,7 +916,7 @@ export default function PeoplePage() {
               </div>
               <div className="bg-purple-50 p-4 rounded-lg text-center">
                 <div className="text-2xl font-bold text-purple-600">
-                  {new Set(people.map(p => p.species)).size}
+                  {new Set(people?.map(p => p.species) || []).size}
                 </div>
                 <div className="text-sm text-purple-700">Species</div>
               </div>
