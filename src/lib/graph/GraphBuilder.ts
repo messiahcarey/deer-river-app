@@ -106,19 +106,20 @@ export class GraphBuilder {
    * Get edge style based on kind
    */
   public getEdgeStyle(edge: Record<string, unknown>): string {
+    // Sigma.js only supports: 'line', 'arrow', 'curve'
     const styles = {
-      kinship: 'solid',
-      household: 'solid',
-      work: 'dashed',
-      faction: 'dotted',
-      patronage: 'solid',
-      friendship: 'solid',
-      rivalry: 'solid',
-      command: 'solid',
-      merchant: 'dashed',
-      event_impact: 'dotted'
+      kinship: 'line',
+      household: 'line',
+      work: 'line',
+      faction: 'line',
+      patronage: 'line',
+      friendship: 'line',
+      rivalry: 'line',
+      command: 'line',
+      merchant: 'line',
+      event_impact: 'line'
     }
-    return styles[edge.kind as string] || 'solid'
+    return styles[edge.kind as string] || 'line'
   }
 
   /**

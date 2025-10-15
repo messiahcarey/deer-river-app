@@ -107,8 +107,7 @@ export function Sociogram({
         ...data,
         size: graphBuilder.getEdgeThickness(data),
         color: graphBuilder.getEdgeColor(data),
-        type: graphBuilder.getEdgeStyle(data) === 'dashed' ? 'dashed' : 
-              graphBuilder.getEdgeStyle(data) === 'dotted' ? 'dotted' : 'line'
+        type: graphBuilder.getEdgeStyle(data)
       }),
 
       // Interaction settings
