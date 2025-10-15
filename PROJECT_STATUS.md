@@ -1,10 +1,12 @@
 # Deer River App - Project Status Report
-**Date:** September 18, 2025  
-**Status:** ✅ FULLY OPERATIONAL
+**Date:** January 15, 2025  
+**Status:** ✅ FULLY OPERATIONAL + INVOLVEMENT & LOYALTY MODEL V3 COMPLETE
 
 ## 🎯 Current State Summary
 
-The Deer River app is now **fully functional** with all original data restored from the AWS RDS PostgreSQL database. All three main pages (People, Maps, Factions) are working correctly with live data from the database.
+The Deer River app is now **fully functional** with all original data restored from the AWS RDS PostgreSQL database. All core pages (People, Maps, Factions, Demographics) are working correctly with live data from the database. 
+
+**NEW:** The **Involvement & Loyalty Model v3** has been successfully implemented and deployed, adding sophisticated social dynamics tracking and network visualization capabilities.
 
 ## 🗄️ Database Status
 
@@ -18,7 +20,7 @@ The Deer River app is now **fully functional** with all original data restored f
 
 ## 📱 Application Features
 
-### ✅ Working Features
+### ✅ Core Features (Original)
 
 1. **People Management**
    - View all 48 residents with full details
@@ -36,25 +38,97 @@ The Deer River app is now **fully functional** with all original data restored f
    - View all 6 factions
    - Faction details and descriptions
    - Edit faction information
-   - Connected to RDS database (simplified schema)
+   - Connected to RDS database
+
+4. **Demographics Dashboard**
+   - Population statistics and charts
+   - Species distribution analysis
+   - Faction membership visualization
+   - Age category breakdowns
+
+### 🆕 NEW: Involvement & Loyalty Model v3 Features
+
+5. **Relationships Network** (`/relationships`)
+   - Interactive network visualization with Sigma.js
+   - Real-time relationship mapping
+   - Node filtering and search capabilities
+   - Detailed person/faction/household/workplace connections
+
+6. **Involvement Scoring** (`/involvement`)
+   - Civic engagement tracking dashboard
+   - Component breakdown (Role Activity, Event Participation, Network Centrality, Initiative, Reliability)
+   - Top performers analysis
+   - Score distribution charts
+
+7. **Loyalty Analysis** (`/loyalty`)
+   - Faction loyalty rankings and analysis
+   - Component breakdown (Identity Fit, Benefit Flow, Shared History, Pressure/Cost, Satisfaction)
+   - Strongest loyalty relationships tracking
+   - Interactive person and faction selection
+
+8. **Event Management** (`/events`)
+   - Create and manage community events
+   - Impact tracking on involvement and loyalty scores
+   - Event categorization (festival, raid, policy, disaster, market)
+   - Score recalculation triggers
 
 ### 🔧 Technical Infrastructure
 
 - **Frontend:** Next.js 15 with React
 - **Backend:** Next.js API routes
-- **Database:** AWS RDS PostgreSQL
+- **Database:** AWS RDS PostgreSQL (enhanced with v3 schema)
 - **Deployment:** AWS Amplify
 - **Styling:** Tailwind CSS
 - **ORM:** Prisma
+- **Visualization:** Sigma.js for network graphs
+- **Charts:** Recharts for analytics dashboards
+- **State Management:** Zustand
+- **Graph Processing:** Graphology
 
 ## 🚀 Deployment Status
 
-- **URL:** https://main.d25mi5h1ems0sj.amplifyapp.com
+- **Production URL:** https://main.d25mi5h1ems0sj.amplifyapp.com
+- **Development URL:** https://development.d25mi5h1ems0sj.amplifyapp.com
 - **Status:** ✅ Live and operational
-- **Last Deployment:** Job #94 - SUCCESS
+- **Last Production Deployment:** Job #137 - SUCCESS (Demographics fully functional)
+- **Last Development Deployment:** Job #138 - SUCCESS (Involvement & Loyalty Model v3)
 - **Build Status:** All steps (BUILD, DEPLOY, VERIFY) successful
 
-## 🔧 Recent Fixes Applied
+## 🔧 Recent Major Updates
+
+### 🆕 Involvement & Loyalty Model v3 Implementation (January 2025)
+
+1. **Database Schema Enhancement**
+   - Added new models: Workplace, Household, Relationship, InvolvementScore, LoyaltyScore, EventV3
+   - Created RelationshipKind enum for relationship types
+   - Enhanced existing models with v3 relationships
+   - Successfully migrated database schema
+
+2. **Core Scoring Algorithms**
+   - Implemented involvement scoring (RA, EP, NC, IN, RE components)
+   - Implemented loyalty scoring (IF, BF, SH, PC, SA components)
+   - Created scoring service classes with rolling window calculations
+   - Added score breakdown tracking and audit trail
+
+3. **API Endpoints**
+   - Created comprehensive RESTful API endpoints
+   - Enhanced existing APIs with v3 relationship data
+   - Implemented graph data, person scores, event management, and score recomputation
+   - Added layout persistence for network visualization
+
+4. **Network Visualization**
+   - Built complete network visualization system with Sigma.js
+   - Created interactive components: Sociogram, SociogramControls, NodeDetails
+   - Implemented visual encoding, filtering, and search functionality
+   - Added graph construction and layout logic
+
+5. **UI Integration**
+   - Created 4 new pages: /relationships, /involvement, /loyalty, /events
+   - Updated navigation with new menu items
+   - Integrated with existing data and maintained compatibility
+   - Implemented comprehensive dashboards with charts and analytics
+
+### 🔧 Previous Fixes Applied
 
 1. **Restored API Connections**
    - Re-enabled all API routes to connect to RDS
@@ -107,37 +181,63 @@ deer-river-app/
 │   ├── api/
 │   │   ├── people/route.ts ✅
 │   │   ├── locations/route.ts ✅
-│   │   └── factions/route.ts ✅
+│   │   ├── factions/route.ts ✅
+│   │   ├── demographics/route.ts ✅
+│   │   ├── graph/route.ts ✅ (NEW)
+│   │   ├── event/route.ts ✅ (NEW)
+│   │   ├── person/[id]/scores/route.ts ✅ (NEW)
+│   │   ├── scores/recompute/route.ts ✅ (NEW)
+│   │   └── layout/positions/route.ts ✅ (NEW)
 │   ├── people/page.tsx ✅
 │   ├── map/page.tsx ✅
-│   └── factions/page.tsx ✅
+│   ├── factions/page.tsx ✅
+│   ├── demographics/page.tsx ✅
+│   ├── relationships/page.tsx ✅ (NEW)
+│   ├── involvement/page.tsx ✅ (NEW)
+│   ├── loyalty/page.tsx ✅ (NEW)
+│   └── events/page.tsx ✅ (NEW)
+├── src/components/
+│   ├── Sociogram.tsx ✅ (NEW)
+│   ├── SociogramControls.tsx ✅ (NEW)
+│   ├── NodeDetails.tsx ✅ (NEW)
+│   └── DemographicsCharts.tsx ✅
+├── src/lib/
+│   ├── graph/GraphBuilder.ts ✅ (NEW)
+│   └── scoring/ ✅ (NEW)
+│       ├── involvement-scoring.ts
+│       ├── loyalty-scoring.ts
+│       └── scoring-service.ts
+├── src/types/
+│   ├── graph.ts ✅ (NEW)
+│   └── scoring.ts ✅ (NEW)
 ├── prisma/
-│   └── schema.prisma ✅
+│   └── schema.prisma ✅ (Enhanced)
 └── PROJECT_STATUS.md (this file)
 ```
 
 ## 🔮 Next Steps / Future Enhancements
 
-### Pending Features (from TODO list)
-- Analytics page implementation
-- Interactive map integration
-- Resources page for economic tracking
-- Events page for audit logging
-- Person detail enhancement for faction relationships
+### Recently Completed ✅
+- ✅ Analytics page implementation (Demographics dashboard)
+- ✅ Events page for audit logging (Event Management)
+- ✅ Person detail enhancement for faction relationships (Involvement & Loyalty Model v3)
+- ✅ Faction member relationships in RDS schema (v3 schema)
+- ✅ Person-faction membership management (Network visualization)
+- ✅ Faction opinion system (Loyalty analysis)
 
-### Potential Improvements
-- Add faction member relationships to RDS schema
-- Implement person-faction membership management
-- Add faction opinion system
-- Create interactive map with clickable locations
-- Add data export/import functionality
+### Potential Future Improvements
+- Interactive map integration with clickable locations
+- Resources page for economic tracking
+- Advanced analytics and reporting
+- Data export/import functionality
+- Mobile app development
+- Real-time collaboration features
 
 ## 🚨 Known Issues / Limitations
 
-1. **Faction Memberships:** Currently not implemented in RDS schema
-2. **Faction Opinions:** Not available in current database
-3. **Interactive Map:** Basic table view only, no visual map
-4. **Analytics:** Placeholder page only
+1. **Interactive Map:** Basic table view only, no visual map
+2. **Resources Page:** Not yet implemented
+3. **Mobile Optimization:** Could be enhanced for better mobile experience
 
 ## 💾 Backup Information
 
@@ -155,6 +255,6 @@ deer-river-app/
 
 ---
 
-**Status:** All systems operational ✅  
-**Last Updated:** September 18, 2025  
+**Status:** All systems operational + Involvement & Loyalty Model v3 complete ✅  
+**Last Updated:** January 15, 2025  
 **Next Review:** As needed
