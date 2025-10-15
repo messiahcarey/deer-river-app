@@ -50,6 +50,38 @@ export async function GET() {
             role: true,
             isPrimary: true
           }
+        },
+        // Enhanced v3 relationships
+        household: {
+          select: {
+            id: true,
+            name: true,
+            locationId: true
+          }
+        },
+        workplace: {
+          select: {
+            id: true,
+            name: true,
+            type: true,
+            location: true
+          }
+        },
+        involvementScore: {
+          select: {
+            score: true,
+            window: true,
+            updatedAt: true
+          }
+        },
+        loyaltyScores: {
+          select: {
+            targetId: true,
+            score: true,
+            window: true
+          },
+          take: 3,
+          orderBy: { score: 'desc' }
         }
       },
       orderBy: {
