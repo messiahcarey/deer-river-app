@@ -36,10 +36,13 @@ export default function Navigation({ className = '' }: NavigationProps) {
     { name: 'Map', href: '/map', icon: '🗺️', color: 'success' },
     { name: 'Resources', href: '/resources', icon: '💰', color: 'warning' },
     { name: 'Demographics', href: '/demographics', icon: '📊', color: 'accent' },
+    { name: 'Relationships', href: '/relationships', icon: '🕸️', color: 'secondary' },
+    { name: 'Involvement', href: '/involvement', icon: '⚡', color: 'primary' },
+    { name: 'Loyalty', href: '/loyalty', icon: '❤️', color: 'danger' },
+    { name: 'Events', href: '/events', icon: '📝', color: 'success' },
     { name: 'Analytics', href: '/analytics', icon: '🔍', color: 'secondary' },
-    { name: 'Events', href: '/events', icon: '📝', color: 'primary' },
-    { name: 'Import', href: '/import', icon: '📥', color: 'success' },
-    { name: 'Admin', href: '/admin', icon: '🔧', color: 'secondary' },
+    { name: 'Import', href: '/import', icon: '📥', color: 'warning' },
+    { name: 'Admin', href: '/admin', icon: '🔧', color: 'accent' },
   ]
 
   const getColorClasses = (color: string, isActive: boolean) => {
