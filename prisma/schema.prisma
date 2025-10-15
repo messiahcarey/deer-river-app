@@ -377,7 +377,7 @@ model InvolvementScore {
 
 // Loyalty scores (target can be faction or person)
 model LoyaltyScore {
-  personId   String   @id
+  personId   String
   targetId   String
   score      Float    // 0.0 to 1.0
   window     String   @default("180d")
@@ -387,7 +387,7 @@ model LoyaltyScore {
   // Relationships
   person     Person   @relation(fields: [personId], references: [id], onDelete: Cascade)
   
-  @@unique([personId, targetId])
+  @@id([personId, targetId])
   @@map("loyalty_scores")
 }
 
