@@ -4,7 +4,7 @@ import { PrismaClient } from '@prisma/client'
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const dbUrl = process.env.DATABASE_URL?.trim()
   if (!dbUrl || (!dbUrl.startsWith('postgresql://') && !dbUrl.startsWith('postgres://'))) {
@@ -19,7 +19,7 @@ export async function GET(
   })
 
   try {
-    const personId = params.id
+    const { id: personId } = await params
 
     // Get person with all related data
     const person = await prisma.person.findUnique({
@@ -83,7 +83,6 @@ export async function GET(
 
     // Transform loyalty scores to include target names
     const loyaltyScores = person.loyaltyScores.map(score => ({
-      id: score.id,
       targetId: score.targetId,
       score: score.score,
       window: score.window,
@@ -142,8 +141,6 @@ export async function GET(
       occupation: person.occupation,
       tags: person.tags.split(',').map(t => t.trim()).filter(t => t),
       notes: person.notes,
-      createdAt: person.createdAt,
-      updatedAt: person.updatedAt,
 
       // Involvement score
       involvement: person.involvementScore ? {

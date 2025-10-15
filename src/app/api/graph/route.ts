@@ -192,7 +192,7 @@ export async function GET(request: NextRequest) {
           key: `edge:${relationship.id}`,
           source: srcKey,
           target: dstKey,
-          kind: relationship.kind.toLowerCase() as any,
+          kind: relationship.kind.toLowerCase() as EdgeAttrs['kind'],
           weight: relationship.weight,
           sentiment: relationship.sentiment,
           directed: relationship.directed

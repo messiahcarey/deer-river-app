@@ -148,7 +148,7 @@ export class ScoringService {
 
     return scores.map(score => ({
       score: score.score,
-      breakdown: score.breakdown as any,
+      breakdown: score.breakdown as Record<string, unknown>,
       window: score.window,
       calculatedAt: score.updatedAt,
       metadata: { targetId: score.targetId }
@@ -163,7 +163,7 @@ export class ScoringService {
     targetName: string
     targetType: 'faction' | 'person'
     score: number
-    breakdown: any
+    breakdown: Record<string, unknown>
   }>> {
     const scores = await this.prisma.loyaltyScore.findMany({
       where: { personId },

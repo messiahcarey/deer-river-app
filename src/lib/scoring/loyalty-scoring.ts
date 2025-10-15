@@ -3,12 +3,7 @@ import { PrismaClient } from '@prisma/client'
 import type {
   LoyaltyBreakdown,
   ScoringResult,
-  ScoringConfig,
-  IdentityFitData,
-  BenefitFlowData,
-  SharedHistoryData,
-  PressureCostData,
-  SatisfactionData
+  ScoringConfig
 } from '@/types/scoring'
 
 export class LoyaltyScoringService {
@@ -215,9 +210,6 @@ export class LoyaltyScoringService {
    * Based on length/depth of past cooperation
    */
   private async calculateSharedHistory(personId: string, targetId: string): Promise<number> {
-    const now = new Date()
-    const windowStart = new Date(now.getTime() - this.config.window.days * 24 * 60 * 60 * 1000)
-
     let sharedHistory = 0.0
 
     // Factor 1: Relationship duration
@@ -239,15 +231,6 @@ export class LoyaltyScoringService {
     }
 
     // Factor 2: Event co-participation
-    const events = await this.prisma.eventV3.findMany({
-      where: {
-        startsAt: {
-          gte: windowStart,
-          lte: now
-        }
-      }
-    })
-
     // Simplified: assume co-participation based on faction membership
     const person = await this.prisma.person.findUnique({
       where: { id: personId },
@@ -581,7 +564,7 @@ export class LoyaltyScoringService {
       update: {
         score: result.score,
         window: result.window,
-        breakdown: result.breakdown as any,
+        breakdown: result.breakdown as Record<string, unknown>,
         updatedAt: new Date()
       },
       create: {
@@ -589,7 +572,7 @@ export class LoyaltyScoringService {
         targetId,
         score: result.score,
         window: result.window,
-        breakdown: result.breakdown as any
+        breakdown: result.breakdown as Record<string, unknown>
       }
     })
   }

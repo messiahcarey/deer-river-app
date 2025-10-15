@@ -1,7 +1,7 @@
 // Layout positions API endpoint for persisting node positions
 import { NextRequest, NextResponse } from 'next/server'
 import { PrismaClient } from '@prisma/client'
-import type { NodePosition, LayoutPositions } from '@/types/graph'
+import type { LayoutPositions } from '@/types/graph'
 
 export async function PUT(request: NextRequest) {
   const dbUrl = process.env.DATABASE_URL?.trim()

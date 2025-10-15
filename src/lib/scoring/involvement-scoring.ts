@@ -3,12 +3,7 @@ import { PrismaClient } from '@prisma/client'
 import type {
   InvolvementBreakdown,
   ScoringResult,
-  ScoringConfig,
-  RoleActivityData,
-  EventParticipationData,
-  NetworkCentralityData,
-  InitiativeData,
-  ReliabilityData
+  ScoringConfig
 } from '@/types/scoring'
 
 export class InvolvementScoringService {
@@ -380,14 +375,14 @@ export class InvolvementScoringService {
       update: {
         score: result.score,
         window: result.window,
-        breakdown: result.breakdown as any,
+        breakdown: result.breakdown as Record<string, unknown>,
         updatedAt: new Date()
       },
       create: {
         personId,
         score: result.score,
         window: result.window,
-        breakdown: result.breakdown as any
+        breakdown: result.breakdown as Record<string, unknown>
       }
     })
   }

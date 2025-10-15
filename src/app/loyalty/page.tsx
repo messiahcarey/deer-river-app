@@ -1,8 +1,8 @@
 'use client'
 
 // Loyalty analysis page
-import { useState, useEffect } from 'react'
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ScatterChart, Scatter, LineChart, Line } from 'recharts'
+import { useState, useEffect, useCallback } from 'react'
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 
 interface LoyaltyData {
   personId: string
@@ -43,11 +43,7 @@ export default function LoyaltyPage() {
   const [selectedPerson, setSelectedPerson] = useState<string | null>(null)
   const [selectedFaction, setSelectedFaction] = useState<string | null>(null)
 
-  useEffect(() => {
-    fetchLoyaltyData()
-  }, [])
-
-  const fetchLoyaltyData = async () => {
+  const fetchLoyaltyData = useCallback(async () => {
     try {
       setLoading(true)
       setError(null)
@@ -125,7 +121,11 @@ export default function LoyaltyPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [])
+
+  useEffect(() => {
+    fetchLoyaltyData()
+  }, [fetchLoyaltyData])
 
   const calculateStats = (loyaltyData: LoyaltyData[]) => {
     const totalRelationships = loyaltyData.length

@@ -3,16 +3,16 @@ import Graph from 'graphology'
 import { NodeAttrs, EdgeAttrs, GraphData } from '@/types/graph'
 
 export class GraphBuilder {
-  private graph: Graph<NodeAttrs, EdgeAttrs>
+  private graph: Graph
 
   constructor() {
-    this.graph = new Graph<NodeAttrs, EdgeAttrs>()
+    this.graph = new Graph()
   }
 
   /**
    * Build graph from API data
    */
-  public buildFromData(data: GraphData): Graph<NodeAttrs, EdgeAttrs> {
+  public buildFromData(data: GraphData): Graph {
     this.graph.clear()
 
     // Add nodes
@@ -31,9 +31,9 @@ export class GraphBuilder {
     for (const edge of data.edges) {
       // Only add edge if both nodes exist
       if (this.graph.hasNode(edge.source) && this.graph.hasNode(edge.target)) {
-        this.graph.addEdge(edge.key, edge.source, edge.target, {
-          ...edge,
-          // Ensure required properties
+        this.graph.addEdge(edge.key, edge.source, edge.target)
+        this.graph.mergeEdgeAttributes(edge.key, {
+          kind: edge.kind,
           weight: edge.weight || 0.5,
           sentiment: edge.sentiment || 0.0,
           directed: edge.directed || false
@@ -70,7 +70,7 @@ export class GraphBuilder {
   /**
    * Get edge color based on kind and sentiment
    */
-  public getEdgeColor(edge: EdgeAttrs): string {
+  public getEdgeColor(edge: Record<string, unknown>): string {
     const baseColors = {
       kinship: '#2c3e50',     // dark blue-gray
       household: '#16a085',   // teal
@@ -84,12 +84,12 @@ export class GraphBuilder {
       event_impact: '#1abc9c' // cyan
     }
 
-    const baseColor = baseColors[edge.kind] || '#95a5a6'
+    const baseColor = baseColors[edge.kind as string] || '#95a5a6'
     
     // Adjust color based on sentiment
-    if (edge.sentiment > 0.3) {
+    if ((edge.sentiment as number) > 0.3) {
       return this.lightenColor(baseColor, 0.2) // Positive sentiment - lighter
-    } else if (edge.sentiment < -0.3) {
+    } else if ((edge.sentiment as number) < -0.3) {
       return this.darkenColor(baseColor, 0.2) // Negative sentiment - darker
     }
     
@@ -99,7 +99,7 @@ export class GraphBuilder {
   /**
    * Get edge style based on kind
    */
-  public getEdgeStyle(edge: EdgeAttrs): string {
+  public getEdgeStyle(edge: Record<string, unknown>): string {
     const styles = {
       kinship: 'solid',
       household: 'solid',
@@ -112,16 +112,16 @@ export class GraphBuilder {
       merchant: 'dashed',
       event_impact: 'dotted'
     }
-    return styles[edge.kind] || 'solid'
+    return styles[edge.kind as string] || 'solid'
   }
 
   /**
    * Calculate edge thickness based on weight
    */
-  public getEdgeThickness(edge: EdgeAttrs): number {
+  public getEdgeThickness(edge: Record<string, unknown>): number {
     const minThickness = 1
     const maxThickness = 4
-    const weight = edge.weight || 0.5
+    const weight = (edge.weight as number) || 0.5
     return minThickness + (weight * (maxThickness - minThickness))
   }
 

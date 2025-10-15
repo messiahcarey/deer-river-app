@@ -1,9 +1,15 @@
 'use client'
 
 // Main relationships page with network visualization
+import dynamic from 'next/dynamic'
 import { useState } from 'react'
-import { Sociogram } from '@/components/Sociogram'
 import { NodeAttrs } from '@/types/graph'
+
+// Dynamically import Sigma.js components to avoid SSR issues
+const Sociogram = dynamic(() => import('@/components/Sociogram').then(mod => ({ default: mod.Sociogram })), {
+  ssr: false,
+  loading: () => <div className="flex items-center justify-center h-96">Loading network visualization...</div>
+})
 
 export default function RelationshipsPage() {
   const [selectedNode, setSelectedNode] = useState<NodeAttrs | null>(null)

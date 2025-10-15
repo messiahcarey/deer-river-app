@@ -21,7 +21,6 @@ export async function POST(request: NextRequest) {
     const { 
       personId, 
       targetId, 
-      window = '90d',
       force = false 
     } = body
 
@@ -29,8 +28,7 @@ export async function POST(request: NextRequest) {
 
     if (personId && targetId) {
       // Recalculate loyalty score for specific person-target pair
-      const loyaltyScore = await scoringService.loyalty.calculateLoyalty(personId, targetId, window)
-      await scoringService.loyalty.saveLoyaltyScore(loyaltyScore)
+      const loyaltyScore = await scoringService.calculateAndSaveLoyaltyScore(personId, targetId)
 
       await prisma.$disconnect()
 
@@ -48,7 +46,7 @@ export async function POST(request: NextRequest) {
 
     } else if (personId) {
       // Recalculate all scores for a specific person
-      const result = await scoringService.recalculateAllScoresForPerson(personId)
+      const result = await scoringService.recalculatePersonScores(personId)
 
       await prisma.$disconnect()
 
@@ -84,7 +82,7 @@ export async function POST(request: NextRequest) {
 
       for (const person of people) {
         try {
-          const result = await scoringService.recalculateAllScoresForPerson(person.id)
+          const result = await scoringService.recalculatePersonScores(person.id)
           results.push({
             personId: person.id,
             personName: person.name,
@@ -150,7 +148,7 @@ export async function GET(request: NextRequest) {
 
     if (personId) {
       // Get scores for a specific person
-      const where: any = { personId }
+      const where: { personId: string; targetId?: string } = { personId }
       if (targetId) {
         where.targetId = targetId
       }

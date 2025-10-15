@@ -1,7 +1,7 @@
 'use client'
 
 // Involvement scoring dashboard page
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts'
 
 interface InvolvementData {
@@ -35,90 +35,12 @@ interface InvolvementStats {
 }
 
 export default function InvolvementPage() {
-  const [data, setData] = useState<InvolvementData[]>([])
   const [stats, setStats] = useState<InvolvementStats | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [selectedPerson, setSelectedPerson] = useState<InvolvementData | null>(null)
 
-  useEffect(() => {
-    fetchInvolvementData()
-  }, [])
-
-  const fetchInvolvementData = async () => {
-    try {
-      setLoading(true)
-      setError(null)
-
-      // Fetch involvement scores from the API
-      const response = await fetch('/api/scores/recompute')
-      const result = await response.json()
-
-      if (result.success && result.data.summary) {
-        // For now, we'll create mock data since we need to enhance the API
-        // In a real implementation, we'd fetch actual involvement scores
-        const mockData: InvolvementData[] = [
-          {
-            personId: '1',
-            name: 'Rurik Copperpot',
-            species: 'Dwarf',
-            occupation: 'Guard',
-            score: 0.85,
-            breakdown: {
-              roleActivity: 0.9,
-              eventParticipation: 0.8,
-              networkCentrality: 0.7,
-              initiative: 0.9,
-              reliability: 0.85
-            },
-            updatedAt: new Date().toISOString()
-          },
-          {
-            personId: '2',
-            name: 'Elena Brightwater',
-            species: 'Human',
-            occupation: 'Merchant',
-            score: 0.72,
-            breakdown: {
-              roleActivity: 0.8,
-              eventParticipation: 0.6,
-              networkCentrality: 0.8,
-              initiative: 0.7,
-              reliability: 0.75
-            },
-            updatedAt: new Date().toISOString()
-          },
-          {
-            personId: '3',
-            name: 'Thorin Ironbeard',
-            species: 'Dwarf',
-            occupation: 'Blacksmith',
-            score: 0.68,
-            breakdown: {
-              roleActivity: 0.7,
-              eventParticipation: 0.5,
-              networkCentrality: 0.6,
-              initiative: 0.8,
-              reliability: 0.7
-            },
-            updatedAt: new Date().toISOString()
-          }
-        ]
-
-        setData(mockData)
-        calculateStats(mockData)
-      } else {
-        setError('Failed to fetch involvement data')
-      }
-    } catch (err) {
-      console.error('Failed to fetch involvement data:', err)
-      setError('Failed to load involvement data')
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const calculateStats = (involvementData: InvolvementData[]) => {
+  const calculateStats = useCallback((involvementData: InvolvementData[]) => {
     const totalPeople = involvementData.length
     const averageScore = involvementData.reduce((sum, person) => sum + person.score, 0) / totalPeople
 
@@ -152,7 +74,75 @@ export default function InvolvementPage() {
       topPerformers,
       componentAverages
     })
-  }
+  }, [])
+
+  const fetchInvolvementData = useCallback(async () => {
+    try {
+      setLoading(true)
+      setError(null)
+
+      // For now, we'll create mock data since we need to enhance the API
+      // In a real implementation, we'd fetch actual involvement scores
+      const mockData: InvolvementData[] = [
+        {
+          personId: '1',
+          name: 'Rurik Copperpot',
+          species: 'Dwarf',
+          occupation: 'Guard',
+          score: 0.85,
+          breakdown: {
+            roleActivity: 0.9,
+            eventParticipation: 0.8,
+            networkCentrality: 0.7,
+            initiative: 0.9,
+            reliability: 0.85
+          },
+          updatedAt: new Date().toISOString()
+        },
+        {
+          personId: '2',
+          name: 'Elena Brightwater',
+          species: 'Human',
+          occupation: 'Merchant',
+          score: 0.72,
+          breakdown: {
+            roleActivity: 0.8,
+            eventParticipation: 0.6,
+            networkCentrality: 0.8,
+            initiative: 0.7,
+            reliability: 0.75
+          },
+          updatedAt: new Date().toISOString()
+        },
+        {
+          personId: '3',
+          name: 'Thorin Ironbeard',
+          species: 'Dwarf',
+          occupation: 'Blacksmith',
+          score: 0.68,
+          breakdown: {
+            roleActivity: 0.7,
+            eventParticipation: 0.5,
+            networkCentrality: 0.6,
+            initiative: 0.8,
+            reliability: 0.7
+          },
+          updatedAt: new Date().toISOString()
+        }
+      ]
+
+      calculateStats(mockData)
+    } catch (err) {
+      console.error('Failed to fetch involvement data:', err)
+      setError('Failed to load involvement data')
+    } finally {
+      setLoading(false)
+    }
+  }, [calculateStats])
+
+  useEffect(() => {
+    fetchInvolvementData()
+  }, [fetchInvolvementData])
 
   const formatScore = (score: number) => `${(score * 100).toFixed(1)}%`
 
@@ -255,7 +245,7 @@ export default function InvolvementPage() {
                   cx="50%"
                   cy="50%"
                   labelLine={false}
-                  label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                  label={(props) => `${props.name} ${((props.percent as number) * 100).toFixed(0)}%`}
                   outerRadius={80}
                   fill="#8884d8"
                   dataKey="value"

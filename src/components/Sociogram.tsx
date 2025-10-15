@@ -4,7 +4,7 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
 import Sigma from 'sigma'
 import { GraphBuilder } from '@/lib/graph/GraphBuilder'
-import { NodeAttrs, EdgeAttrs, GraphData, GraphFilters } from '@/types/graph'
+import { NodeAttrs, GraphData, GraphFilters } from '@/types/graph'
 import { SociogramControls } from './SociogramControls'
 import { NodeDetails } from './NodeDetails'
 
@@ -113,9 +113,6 @@ export function Sociogram({
 
       // Interaction settings
       enableEdgeEvents: true,
-      enableNodeEvents: true,
-      enableEdgeHoverEvents: true,
-      enableNodeHoverEvents: true,
 
       // Layout settings
       defaultNodeType: 'circle',
@@ -135,19 +132,19 @@ export function Sociogram({
       const nodeId = event.node
       const attributes = graph.getNodeAttributes(nodeId)
       setSelectedNode(nodeId)
-      onNodeClick?.(nodeId, attributes)
+      onNodeClick?.(nodeId, attributes as NodeAttrs)
     })
 
     sigma.on('clickStage', () => {
       setSelectedNode(null)
-      onNodeClick?.(null, null as any)
+      // Don't call onNodeClick for stage clicks since it expects a valid nodeId
     })
 
     sigma.on('enterNode', (event) => {
       const nodeId = event.node
       const attributes = graph.getNodeAttributes(nodeId)
       setHoveredNode(nodeId)
-      onNodeHover?.(nodeId, attributes)
+      onNodeHover?.(nodeId, attributes as NodeAttrs)
     })
 
     sigma.on('leaveNode', () => {
@@ -155,7 +152,7 @@ export function Sociogram({
       onNodeHover?.(null, null)
     })
 
-    sigma.on('enterEdge', (event) => {
+    sigma.on('enterEdge', () => {
       // Could add edge hover effects here
     })
 
@@ -178,17 +175,6 @@ export function Sociogram({
     fetchGraphData(newFilters)
   }, [fetchGraphData])
 
-  // Handle node selection
-  const handleNodeClick = useCallback((nodeId: string | null, attributes: NodeAttrs | null) => {
-    setSelectedNode(nodeId)
-    onNodeClick?.(nodeId, attributes)
-  }, [onNodeClick])
-
-  // Handle node hover
-  const handleNodeHover = useCallback((nodeId: string | null, attributes: NodeAttrs | null) => {
-    setHoveredNode(nodeId)
-    onNodeHover?.(nodeId, attributes)
-  }, [onNodeHover])
 
   // Initialize on mount and when data changes
   useEffect(() => {

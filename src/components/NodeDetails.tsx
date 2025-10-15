@@ -1,7 +1,7 @@
 'use client'
 
 // Side panel for displaying detailed node information
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { NodeAttrs } from '@/types/graph'
 
 interface NodeDetailsProps {
@@ -68,14 +68,7 @@ export function NodeDetails({ node, onClose }: NodeDetailsProps) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  // Fetch detailed information for person nodes
-  useEffect(() => {
-    if (node.kind === 'person') {
-      fetchPersonDetails()
-    }
-  }, [node])
-
-  const fetchPersonDetails = async () => {
+  const fetchPersonDetails = useCallback(async () => {
     try {
       setLoading(true)
       setError(null)
@@ -97,7 +90,14 @@ export function NodeDetails({ node, onClose }: NodeDetailsProps) {
     } finally {
       setLoading(false)
     }
-  }
+  }, [node])
+
+  // Fetch detailed information for person nodes
+  useEffect(() => {
+    if (node.kind === 'person') {
+      fetchPersonDetails()
+    }
+  }, [node, fetchPersonDetails])
 
   const getNodeTypeLabel = (kind: string) => {
     const labels = {

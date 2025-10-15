@@ -9,7 +9,7 @@ interface Event {
   category: string
   startsAt: string | null
   endsAt: string | null
-  impact: any
+  impact: Record<string, unknown>
   notes: string | null
   createdAt: string
   updatedAt: string
@@ -76,7 +76,7 @@ export default function EventsPage() {
       let parsedImpact = {}
       try {
         parsedImpact = JSON.parse(formData.impact)
-      } catch (err) {
+      } catch {
         throw new Error('Invalid JSON in impact field')
       }
 

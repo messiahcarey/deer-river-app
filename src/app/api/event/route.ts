@@ -72,7 +72,7 @@ export async function POST(request: NextRequest) {
         // Recalculate scores for all people (this could be made async in production)
         for (const person of people) {
           try {
-            await scoringService.recalculateAllScoresForPerson(person.id)
+            await scoringService.recalculatePersonScores(person.id)
           } catch (error) {
             console.error(`Failed to recalculate scores for person ${person.id}:`, error)
             // Continue with other people even if one fails
@@ -134,7 +134,7 @@ export async function GET(request: NextRequest) {
     const offset = parseInt(searchParams.get('offset') || '0')
 
     // Build where clause
-    const where: any = {}
+    const where: { category?: string } = {}
     if (category) {
       where.category = category
     }
