@@ -31,8 +31,7 @@ export class GraphBuilder {
     for (const edge of data.edges) {
       // Only add edge if both nodes exist
       if (this.graph.hasNode(edge.source) && this.graph.hasNode(edge.target)) {
-        this.graph.addEdge(edge.key, edge.source, edge.target)
-        this.graph.mergeEdgeAttributes(edge.key, {
+        this.graph.addEdge(edge.key, edge.source, edge.target, {
           kind: edge.kind,
           weight: edge.weight || 0.5,
           sentiment: edge.sentiment || 0.0,
