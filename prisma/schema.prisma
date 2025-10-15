@@ -19,6 +19,7 @@ model Person {
   householdId      String?
   livesAtId        String
   worksAtId        String?
+  workplaceId      String? // New v3 workplace relationship
   tags             String
   notes            String?
   fromEventEffects EventEffect[]            @relation("FromEventEffects")
@@ -33,6 +34,14 @@ model Person {
   livesAt          Location?                @relation("PersonLivesAt", fields: [livesAtId], references: [id])
   worksAt          Location?                @relation("PersonWorksAt", fields: [worksAtId], references: [id])
   memberships      PersonFactionMembership[]
+  
+  // New v3 relationships
+  household        Household?               @relation("HouseholdResidents", fields: [householdId], references: [id])
+  workplace        Workplace?               @relation("WorkplaceWorkers", fields: [workplaceId], references: [id])
+  involvementScore InvolvementScore?
+  loyaltyScores    LoyaltyScore[]
+  fromRelationships Relationship[]          @relation("FromRelationships")
+  toRelationships   Relationship[]          @relation("ToRelationships")
 }
 
 model Faction {
@@ -51,6 +60,22 @@ model Household {
   name       String?
   locationId String
   notes      String?
+  
+  // New v3 relationships
+  residents  Person[] @relation("HouseholdResidents")
+}
+
+model Workplace {
+  id         String  @id @default(cuid())
+  name       String
+  type       String? // shop, mill, marina, tavern, guard-post, caravan
+  location   String?
+  notes      String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  
+  // New v3 relationships
+  workers    Person[] @relation("WorkplaceWorkers")
 }
 
 model Location {
@@ -297,4 +322,86 @@ model PersonRelationAudit {
   relation   PersonRelation @relation(fields: [relationId], references: [id], onDelete: Cascade)
 
   @@map("person_relation_audit")
+}
+
+// New v3 Models for Involvement & Loyalty Model v3
+
+// Relationship types enum
+enum RelationshipKind {
+  KINSHIP
+  HOUSEHOLD
+  WORK
+  FACTION
+  PATRONAGE
+  FRIENDSHIP
+  RIVALRY
+  COMMAND
+  MERCHANT
+  EVENT_IMPACT
+}
+
+// Generalized relationships table for v3
+model Relationship {
+  id         String           @id @default(cuid())
+  srcId      String
+  dstId      String
+  kind       RelationshipKind
+  directed   Boolean          @default(false)
+  weight     Float            @default(0.5) // 0.0 to 1.0
+  sentiment  Float            @default(0.0) // -1.0 to 1.0
+  metadata   Json?            @default("{}")
+  createdAt  DateTime         @default(now())
+  updatedAt  DateTime         @updatedAt
+  
+  // Relationships
+  src        Person           @relation("FromRelationships", fields: [srcId], references: [id], onDelete: Cascade)
+  dst        Person           @relation("ToRelationships", fields: [dstId], references: [id], onDelete: Cascade)
+  
+  @@unique([srcId, dstId, kind])
+  @@map("relationships")
+}
+
+// Involvement scores
+model InvolvementScore {
+  personId   String   @id
+  score      Float    // 0.0 to 1.0
+  window     String   @default("90d")
+  breakdown  Json?    @default("{}")
+  updatedAt  DateTime @default(now())
+  
+  // Relationships
+  person     Person   @relation(fields: [personId], references: [id], onDelete: Cascade)
+  
+  @@map("involvement_scores")
+}
+
+// Loyalty scores (target can be faction or person)
+model LoyaltyScore {
+  personId   String   @id
+  targetId   String
+  score      Float    // 0.0 to 1.0
+  window     String   @default("180d")
+  breakdown  Json?    @default("{}")
+  updatedAt  DateTime @default(now())
+  
+  // Relationships
+  person     Person   @relation(fields: [personId], references: [id], onDelete: Cascade)
+  
+  @@unique([personId, targetId])
+  @@map("loyalty_scores")
+}
+
+// Enhanced events table for v3
+model EventV3 {
+  id          String   @id @default(cuid())
+  name        String
+  category    String?  // festival, raid, policy, disaster, market
+  startsAt    DateTime?
+  endsAt      DateTime?
+  impact      Json?    @default("{}") // e.g., { "faction_boost": {"Guard": +0.1}, "sentiment": {"Corven": -0.2} }
+  notes       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@map("events_v3")
 }
