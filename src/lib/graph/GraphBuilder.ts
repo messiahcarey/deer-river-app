@@ -31,12 +31,19 @@ export class GraphBuilder {
     for (const edge of data.edges) {
       // Only add edge if both nodes exist
       if (this.graph.hasNode(edge.source) && this.graph.hasNode(edge.target)) {
-        this.graph.addEdge(edge.source, edge.target, {
-          kind: edge.kind,
-          weight: edge.weight || 0.5,
-          sentiment: edge.sentiment || 0.0,
-          directed: edge.directed || false
-        })
+        try {
+          this.graph.addEdge(edge.source, edge.target, {
+            kind: edge.kind,
+            weight: edge.weight || 0.5,
+            sentiment: edge.sentiment || 0.0,
+            directed: edge.directed || false
+          })
+        } catch (error) {
+          console.error('Error adding edge:', error)
+          console.error('Edge data:', edge)
+          console.error('Source node exists:', this.graph.hasNode(edge.source))
+          console.error('Target node exists:', this.graph.hasNode(edge.target))
+        }
       }
     }
 
