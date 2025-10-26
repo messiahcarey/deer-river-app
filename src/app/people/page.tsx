@@ -298,10 +298,10 @@ export default function PeoplePage() {
           const membershipsResponse = await fetch(`/api/memberships?personId=${personId}`);
           const membershipsData = await membershipsResponse.json();
           
-          if (membershipsData.ok && membershipsData.data) {
+          if (membershipsData.success && membershipsData.data) {
             // Remove all existing memberships
             for (const membership of membershipsData.data) {
-              await fetch(`/api/memberships/${membership.id}`, {
+              await fetch(`/api/memberships?id=${membership.id}`, {
                 method: 'DELETE',
               });
             }
@@ -325,7 +325,7 @@ export default function PeoplePage() {
           });
 
           const data = await response.json();
-          if (data.ok) {
+          if (data.success) {
             successCount++;
           } else {
             failedCount++;
